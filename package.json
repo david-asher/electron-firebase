@@ -1,0 +1,48 @@
+{
+  "name": "electron-firebase",
+  "version": "1.0.0",
+  "description": "template app to demonstrate firebase authentication workflow in an electron app",
+  "main": "electron-firebase.js",
+  "config": {
+    "loglevel": "error"
+  },
+  "scripts": {
+    "start": "electron ./sample/main.js",
+    "test": "electron ./tests/test_all_modules.js",
+    "rebuild": "npm --build-from-source install && ./node_modules/.bin/electron-rebuild",
+    "cleanup": "npm prune && npm uninstall * && rm -rf ./node_modules",
+    "gencert": "node ./lib/gencert.js",
+    "gendocs": "node ./lib/gendocs.js"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^3.5.0",
+    "body-parser": "^1.19.0",
+    "electron": "^6.1.4",
+    "electron-rebuild": "^1.8.4",
+    "electron-photon":"^1.1.6",
+    "express": "^4.17.0",
+    "fast-crc32c": "^2.0.0",
+    "firebase": "^7.3.0",
+    "firebaseui": "^4.0.0",
+    "grpc": "^1.24.2",
+    "helmet": "^3.21.2",
+    "https": "^1.0.0",
+    "keytar": "^5.0.0-beta.4",
+    "request": "^2.88.0",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:david-asher/electron-firebase.git"
+  },
+  "keywords": [
+    "electron",
+    "firebase",
+    "authentication",
+    "oauth",
+    "mbaas"
+  ],
+  "author": "David Asher",
+  "license": "MIT"
+}

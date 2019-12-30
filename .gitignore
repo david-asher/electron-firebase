@@ -1,3 +1,9 @@
+# project-specific ignores
+cert/
+fonts/
+firebase-config.json
+package-lock.json
+
 # Logs
 logs
 *.log

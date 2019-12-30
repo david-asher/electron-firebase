@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Electron-Firebase Template App</title>
+      <link rel="stylesheet" href="/css/photon.css">
+	  <link rel="stylesheet" href="/css/json-viewer.css">
+      <script src="/scripts/webutils.js"></script>
+      <script src="/scripts/json-viewer.js"></script>
+      <script src="/scripts/weblocal.js"></script>
+      <script>
+        // note that ipc is defined in weblocal.js
+
+        // send the signout signal back to Main
+        function signout() {
+            ipc.send( 'user-signout', Date.now().toString() ) 
+        }
+
+        // render the user's profile information
+        ipc.on( 'user-profile', ( event, profile ) => {
+            // json viewer at https://www.cssscript.com/minimal-json-data-formatter-jsonviewer/
+            var jsonViewer = new JSONViewer()
+            document.getElementById("json_user").appendChild(jsonViewer.getContainer())
+            jsonViewer.showJSON( profile, -1, 1 )
+            userProfile = profile
+            ipc.send( 'profile-response', userProfile.displayName )
+        })
+        var userProfile = null
+
+      </script>
+    </head>
+    <body>
+
+    <div class="window">
+
+        <!-- .toolbar-header sits at the top of your app 
+        -->
+        <header class="toolbar toolbar-header">
+            <h2 class="title">Electron-Firebase Template App</h2>
+            <button class="btn btn-mini pull-right" onclick="signout()">
+                Sign Out &nbsp;&nbsp;&nbsp;<span class="icon icon-logout"></span>
+            </button>
+        </header>
+
+        <div class="window-content">
+            <h4>Account Information:</h4>
+            <div class="form-group" id="json_user">
+                <label>No User</label>
+            </div>
+
+        </div>
+
+        <footer class="toolbar toolbar-footer">
+        </footer>
+
+    </body>
+
+  </html>

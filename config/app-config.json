@@ -9,11 +9,20 @@
         "complete": "pages/logincomplete.html",
         "firstWidth": 1000,
         "firstHeight": 800,
-        "staticContent": [ "pages", "scripts", "node_modules", "lib", "css", "fonts" ]
+        "staticContent": [
+            "pages",
+            "scripts",
+            "node_modules",
+            "lib",
+            "css",
+            "fonts"
+        ]
     },
     "https": {
         "certFile": "cert/webapp.cert",
-        "keyFile": "cert/webapp.key"
+        "keyFile": "cert/webapp.key",
+        "fingerprint": "sha256/ORQNekFh8x0sRYNmwUVz0F77q+JMj5ccDFRq6dhhKb4=",
+        "hex-fingerprint": "39140D7A4161F31D2C458366C14573D05EFBABE24C8F971C0C546AE9D86129BE\r"
     },
     "apis": {
         "config": "api/appconfig",

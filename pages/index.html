@@ -3,10 +3,10 @@
     <head>
       <meta charset="UTF-8">
       <title>Electron-Firebase Template App</title>
-      <link rel="stylesheet" href="/css/photon.css">
-	  <link rel="stylesheet" href="/css/json-viewer.css">
-      <script src="/scripts/webutils.js"></script>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	    <link rel="stylesheet" href="/css/json-viewer.css">
       <script src="/scripts/json-viewer.js"></script>
+      <script src="/scripts/webutils.js"></script>
       <script src="/scripts/weblocal.js"></script>
       <script>
         // note that ipc is defined in weblocal.js
@@ -31,27 +31,16 @@
     </head>
     <body>
 
-    <div class="window">
+      <div class="alert alert-secondary" role="alert">
+        <h2>Electron-Firebase Template App</h2>
+        <button type="button" class="btn btn-outline-primary" onclick="signout()">Sign Out</button>
+      </div>
 
-        <!-- .toolbar-header sits at the top of your app 
-        -->
-        <header class="toolbar toolbar-header">
-            <h2 class="title">Electron-Firebase Template App</h2>
-            <button class="btn btn-mini pull-right" onclick="signout()">
-                Sign Out &nbsp;&nbsp;&nbsp;<span class="icon icon-logout"></span>
-            </button>
-        </header>
-
-        <div class="window-content">
+      <div class="window-content">
+          <div class="form-group" id="json_user">
             <h4>Account Information:</h4>
-            <div class="form-group" id="json_user">
-                <label>No User</label>
-            </div>
-
-        </div>
-
-        <footer class="toolbar toolbar-footer">
-        </footer>
+          </div>
+      </div>
 
     </body>
 

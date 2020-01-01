@@ -1,6 +1,7 @@
 # project-specific ignores
 cert/
 fonts/
+app-config.json
 firebase-config.json
 package-lock.json
 

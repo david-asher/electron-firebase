@@ -17,6 +17,7 @@ basic file listing and searching.
 * OpenSSL
 * nodejs and npm
 * git
+* For linux systems, libsecret
 
 ## Installation
 ```

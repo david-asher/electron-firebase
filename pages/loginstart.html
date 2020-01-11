@@ -91,7 +91,7 @@
 
         // Do not persist authentication in the browser. We will pass credentials after the first login  
         // which will allow the Main process to keep a session for the user, until they sign out.
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
         var uiConfig = {
             callbacks: {

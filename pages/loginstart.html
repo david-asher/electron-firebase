@@ -84,13 +84,19 @@
         })
     }
 
-    function firebaseAuthUIStart( fbConfig ) {
+    function checkCurrentUser() 
+    {
+        var currentUser = firebase.auth().currentUser
+        if ( !currentUser ) return Promise.reject( "no current user" )
+        return currentUser.getIdToken( true )
+    }
 
+    function firebaseAuthUIStart( fbConfig ) 
+    {
         // initializeApp must be called before any other Firebase APIs
         firebase.initializeApp( fbConfig )
 
-        // Do not persist authentication in the browser. We will pass credentials after the first login  
-        // which will allow the Main process to keep a session for the user, until they sign out.
+        // Set authentication persistence in the browser. 
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
         var uiConfig = {
@@ -119,14 +125,20 @@
             privacyPolicyUrl: fbConfig.privacyUrl
         };
 
-        // set up the configuration for each identity provider that was specified in uiConfig
-        fbConfig.providers.forEach( ( provider ) => {
-            uiConfig.signInOptions.push( getIdentityConfig( provider ) )
+        // check for login persistence before launching a login workflow
+        checkCurrentUser()
+        .then( (idToken) => {
+            postAuthResult( firebase.auth().currentUser )
         })
-
-        // Initialize the FirebaseUI Widget
-        var ui = new firebaseui.auth.AuthUI( firebase.auth() );
-        ui.start('#firebaseui-auth-container', uiConfig);
+        .catch( (error) => {
+            // set up the configuration for each identity provider that was specified in uiConfig
+            fbConfig.providers.forEach( ( provider ) => {
+                uiConfig.signInOptions.push( getIdentityConfig( provider ) )
+            })
+            // Initialize the FirebaseUI Widget
+            var ui = new firebaseui.auth.AuthUI( firebase.auth() );
+            ui.start('#firebaseui-auth-container', uiConfig);
+        })
     }
 
     // when the document is loaded, call Main process to get the app config parameters

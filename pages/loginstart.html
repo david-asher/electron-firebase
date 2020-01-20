@@ -56,8 +56,40 @@
         return null
     }
 
-    function getUserProfile( authUser )
+    async function getUserProfile( authUser )
     {
+        var currentUser = null
+        if ( !authUser ) return Promise.reject( "NO USER" )
+        await authUser.getIdToken()
+        .then( async (idToken) => {
+            var thisUser = authUser.toJSON() 
+            // this is an object, not JSON?!?! You can't make this stuff up.
+
+            const provider = authUser.providerData[0]
+
+            currentUser = {
+                uid: thisUser.uid,
+                displayName: thisUser.displayName,
+                providerId: provider.providerId,
+                providerUid: provider.uid,
+                apiKey: thisUser.apiKey,
+                refreshToken: thisUser.stsTokenManager.refreshToken,
+                accessToken: thisUser.stsTokenManager.accessToken,
+                expirationTime: thisUser.stsTokenManager.expirationTime,
+                lastLoginAt: thisUser.lastLoginAt,
+                createdAt: thisUser.createdAt,
+                idToken: idToken,
+                provider: provider,
+                user: thisUser
+            }
+        })
+        .catch( (error) => {
+            alert( "Authentication error getting identity token: ", error )
+        })
+        return currentUser
+/*
+console.log( "getUserProfile: ", authUser.toJSON() )
+
         return {
             account: authUser.user.toJSON(),
             profile: authUser.additionalUserInfo.profile,
@@ -67,44 +99,109 @@
             idToken: authUser.credential.idToken,
             refreshToken: authUser.user.refreshToken
         }
+*/
+    }
+
+    function convertToOAuth( userIdentity )
+    {
+        // returns: https://firebase.google.com/docs/reference/node/firebase.auth.OAuthCredential
+        if ( !userIdentity ) return null
+
+console.log( "convertToOAuth, userIdentity: ", userIdentity )
+
+        switch( userIdentity.providerId  ) {
+        case 'google.com':
+            return firebase.auth.GoogleAuthProvider.credential( userIdentity.idToken || userIdentity.accessToken ) 
+        case 'facebook.com':
+            return firebase.auth().FacebookAuthProvider.credential( userIdentity.accessToken )
+        case 'twitter.com':
+            return firebase.auth().TwitterAuthProvider.credential( userIdentity.accessToken, userIdentity.secret )
+        case 'github.com':
+            return firebase.auth().GithubAuthProvider.credential( userIdentity.accessToken )
+        case 'password':
+            return firebase.auth().EmailAuthProvider.credentialWithLink( userIdentity.email, userIdentity.emailLink )
+        case 'phone':
+            return firebase.auth().PhoneAuthProvider.credential( userIdentity.verificationId, userIdentity.verificationCode )
+        }
+        return null
     }
 
     function postAuthResult( authResult )
     {
+        getUserProfile( authResult ) 
+        .then( (user) => {
+
+console.log( "postAuthResult, getUserProfile: ", typeof user, user )
+console.log( "postAuthResult, authResult: ", authResult )
+
+//            var authResponse = authResult.getAuthResponse()
+
+//console.log( "postAuthResult, authResponse: ", authResponse )
+
+            return api( 'POST', postTokenUrl, user )
+        })
+        .then( (status) => {
+            // redirect to the login complete page which should close this window
+//            window.location.assign( loginCompleteUrl );
+console.log( "postAuthResult, window.close: ", status )
+////            window.close()
+        })
+        .catch( (error) => {
+//            alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
+//            window.close()
+        })
+/*
         // authResult is https://firebase.google.com/docs/reference/js/firebase.auth#.UserCredential
         // the user's credentials and profile get sent back to Main process via API
         api( 'POST', postTokenUrl, getUserProfile( authResult ) )
         .then( (status) => {
             // redirect to the login complete page which should close this window
-            window.location.assign( loginCompleteUrl );
+////////            window.location.assign( loginCompleteUrl );
         })
         .catch( (error) => {
             alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
             window.close()
         })
+*/
     }
 
     function checkCurrentUser() 
     {
+
+        return Promise.reject( "NOT NOW" )
+
         var currentUser = firebase.auth().currentUser
+
         if ( !currentUser ) return Promise.reject( "no current user" )
+
         return currentUser.getIdToken( true )
     }
 
     function firebaseAuthUIStart( fbConfig ) 
     {
-        // initializeApp must be called before any other Firebase APIs
-        firebase.initializeApp( fbConfig )
-
         // Set authentication persistence in the browser. 
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+
+/////////        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+
+/////////        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+
+
 
         var uiConfig = {
             callbacks: {
                 signInSuccessWithAuthResult: ( authResult, redirectUrl ) => {
+                    // send the authentication event and result back to the main app
+
+console.log( "signInSuccessWithAuthResult authResult: ", authResult )
+
+                    var authCredential = convertToOAuth( authResult.credential )
+console.log( "signInSuccessWithAuthResult authCredential: ", authCredential )
+
                     postAuthResult( authResult )
                     // return false to prevent redirection
-                    return false;
+                    return false
                 },
                 signInFailure: ( error, credential ) => {
                     alert( "Sign in failure: " + error + ". Please restart the app" )
@@ -125,12 +222,27 @@
             privacyPolicyUrl: fbConfig.privacyUrl
         };
 
+    // Initialize the FirebaseUI Widget
+    // set up the configuration for each identity provider that was specified in uiConfig
+    fbConfig.providers.forEach( ( provider ) => {
+        uiConfig.signInOptions.push( getIdentityConfig( provider ) )
+    })
+    var ui = new firebaseui.auth.AuthUI( firebase.auth() );
+    ui.start('#firebaseui-auth-container', uiConfig);
+/***
         // check for login persistence before launching a login workflow
         checkCurrentUser()
         .then( (idToken) => {
+
+console.log( "firebaseAuthUIStart idToken: ", idToken )
+console.log( "firebaseAuthUIStart currentUser: ", currentUser )
+
             postAuthResult( firebase.auth().currentUser )
         })
         .catch( (error) => {
+
+console.log( "firebaseAuthUIStart, error = ", error )
+
             // set up the configuration for each identity provider that was specified in uiConfig
             fbConfig.providers.forEach( ( provider ) => {
                 uiConfig.signInOptions.push( getIdentityConfig( provider ) )
@@ -139,16 +251,208 @@
             var ui = new firebaseui.auth.AuthUI( firebase.auth() );
             ui.start('#firebaseui-auth-container', uiConfig);
         })
+****/
+    }
+
+    function openObjectStore( dataStoreName, dataObjectName, openMode )
+    {
+        var dbReq, fbdb, transaction
+        return new Promise( (resolve, reject) => 
+        {
+            dbReq = indexedDB.open( dataStoreName, 1 )
+            dbReq.onerror = (error) => {
+                reject( "openObjectStore ERROR opening database, ", error )
+            }
+            dbReq.onsuccess = (event) => {
+                fbdb = event.target.result
+                transaction = fbdb.transaction( dataObjectName, openMode || "readonly" )
+                transaction.onerror = (error) => {
+                    reject( "openObjectStore transaction ERROR, ", error )
+                }
+
+console.log( "RESOLVED: ", dataObjectName )
+
+                resolve( transaction.objectStore( dataObjectName ) )
+            }
+        })
+    }
+
+    function findKeyInStore( dbStore, dbKeyName )
+    {
+        var keyReq, keyList, foundKey
+        return new Promise( (resolve, reject) => 
+        {
+            keyReq = dbStore.getAllKeys()
+            keyReq.onerror = (error) => {
+                reject( "findKeyInStore ERROR getting all keys, ", error )
+            }
+            keyReq.onsuccess = (event) => {
+                keyList = event.target.result
+
+console.log( "keyList: ", keyList )
+
+                foundKey = keyList.find( (element, index) => {
+
+console.log( "element: ", typeof element, element )
+console.log( index, element, dbKeyName, element.indexOf( dbKeyName ) )
+
+                    return ( element.indexOf( dbKeyName ) == 0 )
+                })
+
+console.log( "findKeyInStore foundKey = ", typeof foundKey, foundKey )
+
+                if ( !foundKey ) {
+                    return reject( "findKeyInStore: NO KEY" )
+                }
+                resolve( foundKey )
+            }
+        })
+    }
+
+    function getObjectFromStore( dbStore, dbKeyName )
+    {
+        var keyValueReq
+        return new Promise( (resolve, reject) => 
+        {
+            findKeyInStore( dbStore, dbKeyName )
+            .then( (foundKey) => {
+
+console.log( "getObjectFromStore foundKey = ", foundKey )
+
+                keyValueReq = dbStore.get( foundKey )
+                keyValueReq.onerror = (error) => {
+                    reject( "getObjectFromStore ERROR getting value, ", error )
+                }
+                keyValueReq.onsuccess = (event) => {
+                    resolve( event.target.result )
+                }
+            })
+            .catch( (error) => {
+
+console.log( "getObjectFromStore NO KEY " )
+
+                reject( "getObjectFromStore ERROR finding key, ", error )
+            })
+            /*
+            openObjectStore( dbName, dbObject )
+            .then( (dbStore) => {
+                keyReq = dbstore.getAllKeys()
+                keyReq.onerror = (error) => {
+                    reject( "checkForDatabaseObject ERROR getting all keys, ", error )
+                }
+                keyReq.onsuccess = (event) => {
+                    var foundKey = null
+                    keyList = event.target.result
+                    console.log( "key list: ", keyList )
+                    foundKey = keyList.find((element) => {
+                        return element.indexOf( dbKeyName )
+                    })
+                    if ( !foundKey ) {
+                        console.log( "NO KEY" )
+                        return reject( "NO KEY" )
+                    }
+                    console.log( "KEY FOUND = ", foundKey )
+                    keyValueReq = dbstore.get( foundKey )
+                    keyReq.onerror = (error) => {
+                        reject( "checkForDatabaseObject ERROR getting value, ", error )
+                    }
+                    keyValueReq.onsuccess = (event) => {
+                        keyValue = event.target.result
+                        resolve( {key: foundKey, value: keyValue } )
+                    }
+                }
+
+            })
+            .catch( (error) => {
+
+            })
+            dbReq = indexedDB.open( dbName, 1 )
+            dbReq.onerror = (error) => {
+                reject( "checkForDatabaseObject ERROR opening database, ", error )
+            }
+            dbReq.onsuccess = (event) => {
+                fbdb = event.target.result
+                console.log( "StoreNames = ", fbdb.objectStoreNames )
+                transaction = fbdb.transaction( dbObject, "readonly" )
+                dbstore = transaction.objectStore( dbObject )
+            }
+        */
+        })
+    }
+
+    async function checkForPersistentUser()
+    {
+        return new Promise( (resolve, reject) => 
+        {
+            openObjectStore( "firebaseLocalStorageDb", "firebaseLocalStorage" )
+            .then( (dbStore) => {
+                return getObjectFromStore( dbStore, "firebase:authUser" )
+            })
+            .then( (userObject) => {
+                resolve( userObject )
+            })
+            .catch( (error) => {
+
+console.log( "checkForPersistentUser NO USER" )
+
+                reject( "checkForPersistentUser ERROR, ", error )
+            })
+        })
+/*
+        var foundUser = null
+        await checkForDatabaseObject( "firebaseLocalStorageDb", "firebaseLocalStorage", "firebase:authuser" )
+        .then( (foundIt) => {
+            foundUser = foundIt
+        })
+        .catch( (error) => {
+        })
+        console.log( "foundUser = ", foundUser )
+        return foundUser
+        */
+    }
+
+    function authStateChangedEvent( user )
+    {
+        console.log( "Auth State Changed: ", user ? user.displayName : "NO USER" )
+        if (user) {
+            // User is signed in.
+            postAuthResult( user )
+        }
     }
 
     // when the document is loaded, call Main process to get the app config parameters
     // and then we can start firebaseui
     document.onreadystatechange = function () {
         if ( document.readyState !== 'complete' ) return
+
         // ask the Main process to get the configuration parameters for firebase authentication
         api( 'GET', getConfigUrl, null )
         .then( (response) => {
-            firebaseAuthUIStart( response )
+
+            // initializeApp must be called before any other Firebase APIs
+            firebase.initializeApp( response )
+
+            
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+///////        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+
+            checkForPersistentUser()
+            .then( (foundUser) => 
+            {
+                console.log( "checkForPersistentUser = ", typeof foundUser, foundUser )
+                if ( foundUser ) {
+                    console.log( "foundUser: ", foundUser )
+                    firebase.auth().onAuthStateChanged( authStateChangedEvent )
+                }
+                else {
+                    throw( "NO USER" )
+                }
+            })
+            .catch( (error) => {
+                // no persisted user, so start the login UI
+                firebaseAuthUIStart( response )
+            })
         })
         .catch( (error) => {
             alert( "ERROR getting app configuration, please restart application" )

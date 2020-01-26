@@ -201,7 +201,7 @@ console.log( "convertToOAuth, userIdentity: ", userIdentity )
 
         switch( userIdentity.providerData[0].providerId  ) {
         case 'google.com':
-            return firebase.auth.GoogleAuthProvider.credential( userIdentity.accessToken || userIdentity.stsTokenManager.accessToken ) 
+            return firebase.auth.GoogleAuthProvider.credential( userIdentity.idToken ) 
         case 'facebook.com':
             return firebase.auth().FacebookAuthProvider.credential( userIdentity.accessToken )
         case 'twitter.com':
@@ -218,16 +218,41 @@ console.log( "convertToOAuth, userIdentity: ", userIdentity )
 
     function postAuthResult( authResult )
     {
-        const appUpdate = {
-            user: firebase.auth().currentUser.toJSON(),
-            credential: authResult.credential ? authResult.credential.toJSON() : null,
-            operationType: authResult.operationType || null,
-            additionalUserInfo: authResult.additionalUserInfo
-        }
-        api( 'POST', postTokenUrl, appUpdate )
+        console.log( "postAuthResult: ", authResult )
+
+        const thisUser = firebase.auth().currentUser
+
+        console.log( "thisUser: ", thisUser.displayName )
+        console.log( "persistentUser: ", persistentUser )
+
+        thisUser.getIdToken()
+        .then( (newToken) => {
+            console.log( "idTokenResult: ", newToken)
+            const appUpdate = {
+                user: thisUser.toJSON(),
+                operationType: authResult.operationType || null,
+                additionalUserInfo: authResult.additionalUserInfo,
+                refreshToken: authResult.refreshToken || authResult.user.refreshToken,
+                persistent: persistentUser,
+                idToken: newToken
+            }
+            console.log( "appUpdate (1): ", appUpdate )
+
+            if ( authResult.credential ) {
+                appUpdate.credentialIdentity = firebase.auth.GoogleAuthProvider.credential( authResult.credential.idToken ).toJSON()
+                appUpdate.credentialAccess = firebase.auth.GoogleAuthProvider.credential( authResult.credential.accessToken ).toJSON()
+            }
+
+            console.log( "appUpdate (2): ", appUpdate )
+            return api( 'POST', postTokenUrl, appUpdate )
+        })
         .then( (status) => {
             // redirect to the login complete page which should close this window
-            window.location.assign( loginCompleteUrl );
+            
+            
+////            window.location.assign( loginCompleteUrl );
+
+
 // console.log( "postAuthResult, window.close: ", status )
 ////            window.close()
         })
@@ -378,7 +403,7 @@ console.log( "persistentUser: ", persistentUser )
         {
             persistence = firebase.auth.Auth.Persistence.LOCAL
         }
-        firebase.auth().setPersistence( persistence )
+        return firebase.auth().setPersistence( persistence )
     }
 
     function authStateChangedEvent( user )
@@ -413,11 +438,11 @@ console.log( "fb initialized, remember: ", rememberThisUser )
 
             // whether or not the user is forced to log in every time
             setUserPersistence( rememberThisUser )
-
-console.log( "user persistence set " )
-
-            // we must make a decision: if there is a persistent user then do not start the login workflow
-            checkForPersistentUser()
+            .then( () => {
+                console.log( "user persistence set " )
+                // we must make a decision: if there is a persistent user then do not start the login workflow
+                return checkForPersistentUser()
+            })
             .then( (foundUser) => 
             {
 

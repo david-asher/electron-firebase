@@ -26,7 +26,9 @@
     },
     "apis": {
         "config": "api/appconfig",
-        "token": "api/logintoken"
+        "token": "api/logintoken",
+        "success": "api/loginsuccess",
+        "signin": "api/oauthsignin"
     },
     "logout": {
         "google.com": "https://accounts.google.com/Logout",

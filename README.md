@@ -33,6 +33,9 @@ const fb = require('lib/firebase')
 fb.auth.initializeFirebase()
 ```
 
+You can manage your Firebase API credentials in the Google APIs console:
+https://console.developers.google.com/apis/credentials 
+
 | API | Description |
 | --- | --- |
 | [mainapp](docs/mainapp.js.md) | Higher-level functions for quickly building your app.  |

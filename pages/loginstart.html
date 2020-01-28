@@ -216,6 +216,14 @@ console.log( "convertToOAuth, userIdentity: ", userIdentity )
         return null
     }
 
+/**
+ * Permission iam.serviceAccounts.signBlob is required to perform this operation
+ * on service account projects/-/serviceAccounts/{your-service-account-id}.
+ * The easiest way to resolve this is to grant the "Service Account Token Creator" 
+ * IAM role to the service account in question, usually 
+ * {project-name}@appspot.gserviceaccount.com:
+*/
+
     function postAuthResult( authResult )
     {
         console.log( "postAuthResult: ", authResult )

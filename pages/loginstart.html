@@ -162,12 +162,9 @@
                 displayName: thisUser.displayName,
                 providerId: provider.providerId,
                 providerUid: provider.uid,
-                apiKey: thisUser.apiKey,
                 refreshToken: thisUser.stsTokenManager.refreshToken,
                 accessToken: thisUser.stsTokenManager.accessToken,
                 expirationTime: thisUser.stsTokenManager.expirationTime,
-                lastLoginAt: thisUser.lastLoginAt,
-                createdAt: thisUser.createdAt,
                 idToken: idToken,
                 provider: provider,
                 user: thisUser
@@ -177,27 +174,12 @@
             alert( "Authentication error getting identity token: ", error )
         })
         return currentUser
-/*
-console.log( "getUserProfile: ", authUser.toJSON() )
-
-        return {
-            account: authUser.user.toJSON(),
-            profile: authUser.additionalUserInfo.profile,
-            providerId: authUser.additionalUserInfo.providerId,
-            credential: authUser.credential,
-            accessToken: authUser.credential.accessToken,
-            idToken: authUser.credential.idToken,
-            refreshToken: authUser.user.refreshToken
-        }
-*/
     }
 
     function getProviderCredential( userIdentity )
     {
         // returns: https://firebase.google.com/docs/reference/node/firebase.auth.OAuthCredential
         if ( !userIdentity ) return null
-
-console.log( "convertToOAuth, userIdentity: ", userIdentity )
 
         switch( userIdentity.providerData[0].providerId  ) {
         case 'google.com':
@@ -216,132 +198,30 @@ console.log( "convertToOAuth, userIdentity: ", userIdentity )
         return null
     }
 
-/**
- * Permission iam.serviceAccounts.signBlob is required to perform this operation
- * on service account projects/-/serviceAccounts/{your-service-account-id}.
- * The easiest way to resolve this is to grant the "Service Account Token Creator" 
- * IAM role to the service account in question, usually 
- * {project-name}@appspot.gserviceaccount.com:
-*/
-
     function postAuthResult( authResult )
     {
-        console.log( "postAuthResult: ", authResult )
-
-        const thisUser = firebase.auth().currentUser
-
-        console.log( "thisUser: ", thisUser.displayName )
-        console.log( "persistentUser: ", persistentUser )
-
-        thisUser.getIdToken()
-        .then( (newToken) => {
-            console.log( "idTokenResult: ", newToken)
-            const appUpdate = {
-                user: thisUser.toJSON(),
-                operationType: authResult.operationType || null,
-                additionalUserInfo: authResult.additionalUserInfo,
-                refreshToken: authResult.refreshToken || authResult.user.refreshToken,
-                persistent: persistentUser,
-                idToken: newToken
-            }
-            console.log( "appUpdate (1): ", appUpdate )
-
-            if ( authResult.credential ) {
-                appUpdate.credentialIdentity = firebase.auth.GoogleAuthProvider.credential( authResult.credential.idToken ).toJSON()
-                appUpdate.credentialAccess = firebase.auth.GoogleAuthProvider.credential( authResult.credential.accessToken ).toJSON()
-            }
-
-            console.log( "appUpdate (2): ", appUpdate )
-            return api( 'POST', postTokenUrl, appUpdate )
-        })
-        .then( (status) => {
-            // redirect to the login complete page which should close this window
-            
-            
-////            window.location.assign( loginCompleteUrl );
-
-
-// console.log( "postAuthResult, window.close: ", status )
-////            window.close()
-        })
-        .catch( (error) => {
-            alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
-            window.close()
-        })
-
-/****
-        const thisUser = firebase.auth().currentUser
-
-        console.log( "postAuthResult authResult: ", authResult )
-        console.log( "postAuthResult thisUser: ", thisUser )
-
-        thisUser.getIdToken()
-        .then( (token) => {
-
-            console.log( "postAuthResult token: ", token )
-            console.log( "authResult.credential: ", authResult.credential )
-
-            const authCredential = firebase.auth.GoogleAuthProvider.credential( token ) 
-
-            authCredential.id_token = "" + authCredential.idToken
-            console.log( "authCredential: ", authCredential )
-
-            firebase.auth().signInWithCredential( authResult.credential )
-            .then( (userCredential) => {
-                console.log( "userCredential: ", userCredential )
-            })
-            .catch( (error) => {
-                console.log( "signInWithCredential ERROR: ", error )
-            })
-
-        })
-****/
-/*****
-        //        getUserProfile( authResult ) 
-//        .then( (user) => {
-
-console.log( "postAuthResult, authResult: ", authResult )
-
-            const thisUser = firebase.auth().currentUser.toJSON()
-//            thisUser.credential = getProviderCredential( thisUser )
-
-//console.log( "thisUser.credential: ", thisUser.credential )
-
-//            firebase.auth().signInWithCredential( thisUser.credential )
-//            .then( (response) => {
-//                console.log( "signInWithCredential: ", response )
-//                return api( 'POST', postTokenUrl, thisUser )
-//            })
-              return api( 'POST', postTokenUrl, thisUser )
-//        })
-        .then( (status) => {
-            // redirect to the login complete page which should close this window
-//            window.location.assign( loginCompleteUrl );
-console.log( "postAuthResult, window.close: ", status )
-////            window.close()
-        })
-        .catch( (error) => {
-//            alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
-//            window.close()
-        })
-
-
-*****/
-
-
-/*
         // authResult is https://firebase.google.com/docs/reference/js/firebase.auth#.UserCredential
-        // the user's credentials and profile get sent back to Main process via API
-        api( 'POST', postTokenUrl, getUserProfile( authResult ) )
+        // the user's credentials get sent back to Main process via API
+
+        const thisUser = firebase.auth().currentUser
+
+        const appUpdate = {
+            user: thisUser.toJSON(),
+            operationType: authResult.operationType || null,
+            additionalUserInfo: authResult.additionalUserInfo,
+            refreshToken: authResult.refreshToken || authResult.user.refreshToken,
+            persistent: persistentUser,
+            credential: authResult.credential || null
+        }
+        return api( 'POST', postTokenUrl, appUpdate )
         .then( (status) => {
             // redirect to the login complete page which should close this window
-////////            window.location.assign( loginCompleteUrl );
+            window.location.assign( loginCompleteUrl )
         })
         .catch( (error) => {
             alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
             window.close()
         })
-*/
     }
 
     function firebaseAuthUIStart( fbConfig ) 
@@ -350,7 +230,6 @@ console.log( "postAuthResult, window.close: ", status )
             callbacks: {
                 signInSuccessWithAuthResult: ( authResult, redirectUrl ) => {
                     // send the authentication event and result back to the main app
-////                    var authCredential = convertToOAuth( authResult.credential )
                     postAuthResult( authResult )
                     // return false to prevent redirection
                     return false
@@ -389,11 +268,7 @@ console.log( "postAuthResult, window.close: ", status )
         {
             openObjectStore( fbDatabaseName, fbStorageName )
             .then( (dbStore) => {
-                const persistentUser = getObjectFromStore( dbStore, fbStoredUserKey )
-
-console.log( "persistentUser: ", persistentUser )
-
-                return persistentUser
+                return getObjectFromStore( dbStore, fbStoredUserKey )
             })
             .then( (userObject) => {
                 resolve( userObject )
@@ -416,8 +291,6 @@ console.log( "persistentUser: ", persistentUser )
 
     function authStateChangedEvent( user )
     {
-        console.log( "authStateChangedEvent: ", user ? user.displayName : "NO USER" )
-        
         if (user) {
             // User is signed in.
             postAuthResult( user )
@@ -429,41 +302,28 @@ console.log( "persistentUser: ", persistentUser )
     document.onreadystatechange = function () {
         if ( document.readyState !== 'complete' ) return
 
-console.log( "READY!" )
-
         // ask the Main process to get the configuration parameters for firebase authentication
         api( 'GET', getConfigUrl, null )
         .then( (response) => {
             // allow functions to access the firebase configuration set
             const fbConfig = response
 
-console.log( "fbConfig = ", fbConfig )
-
             // initializeApp must be called before any other Firebase APIs
             firebase.initializeApp( fbConfig )
-
-console.log( "fb initialized, remember: ", rememberThisUser )
 
             // whether or not the user is forced to log in every time
             setUserPersistence( rememberThisUser )
             .then( () => {
-                console.log( "user persistence set " )
                 // we must make a decision: if there is a persistent user then do not start the login workflow
                 return checkForPersistentUser()
             })
             .then( (foundUser) => 
             {
-
-console.log( "foundUser: ", foundUser )
-
                 if ( !foundUser ) {
                     throw( "NO USER" )
                 }
                 // we found a user defined in the IndexedDB object store, so wait for the login
                 persistentUser = foundUser.value
-
-console.log( "sts: ", foundUser.value )
-
                 firebase.auth().onAuthStateChanged( authStateChangedEvent )
             })
             .catch( (error) => {

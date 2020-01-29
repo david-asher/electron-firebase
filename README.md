@@ -36,6 +36,14 @@ fb.auth.initializeFirebase()
 You can manage your Firebase API credentials in the Google APIs console:
 https://console.developers.google.com/apis/credentials 
 
+MUST ENABLE IAM API
+go to https://console.developers.google.com/apis/library/iam.googleapis.com?project=test-electron-eeab2
+ * Permission iam.serviceAccounts.signBlob is required to perform this operation
+ * on service account projects/-/serviceAccounts/{your-service-account-id}.
+ * The easiest way to resolve this is to grant the "Service Account Token Creator" 
+ * IAM role to the service account in question, usually 
+ * {project-name}@appspot.gserviceaccount.com:
+
 | API | Description |
 | --- | --- |
 | [mainapp](docs/mainapp.js.md) | Higher-level functions for quickly building your app.  |

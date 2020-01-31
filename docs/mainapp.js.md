@@ -15,7 +15,6 @@ High-level functions for quickly building the main application.
     * [signoutUser()](#exp_module_mainapp--signoutUser) ⏏
     * [createMainWindow()](#exp_module_mainapp--createMainWindow) ⏏
     * [onUserLogin(user, [bForceUpdate])](#exp_module_mainapp--onUserLogin) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
-    * [signInUser()](#exp_module_mainapp--signInUser) ⇒ <code>Promise</code> ⏏
     * [apiPostLoginToken(req, res, next)](#exp_module_mainapp--apiPostLoginToken) ⏏
     * [apiGetAppConfig(req, res, next)](#exp_module_mainapp--apiGetAppConfig) ⏏
     * [evtSetAppContext(browserInfo)](#exp_module_mainapp--evtSetAppContext) ⏏
@@ -119,14 +118,6 @@ workflow, or after a re-login from a previous session. Fires the user-login even
 | user | <code>object</code> | The user object that was returned from the login workflow |
 | [bForceUpdate] | <code>boolean</code> | Optional, set to true to force the user's persistent profile in the Firebase Cloudstore to be update with the latest identity provider information |
 
-<a name="exp_module_mainapp--signInUser"></a>
-
-### signInUser() ⇒ <code>Promise</code> ⏏
-Initiates the workflow to sign in a user, first checking if there is a persistent session and if not, 
-then starting the UI to log in.
-
-**Kind**: Exported function  
-**Returns**: <code>Promise</code> - Promise is resolved when the user login is complete  
 <a name="exp_module_mainapp--apiPostLoginToken"></a>
 
 ### apiPostLoginToken(req, res, next) ⏏

@@ -27,7 +27,6 @@
     "helmet": "^3.21.2",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
-    "keytar": "^5.0.0-beta.4",
     "request": "^2.88.0",
     "url": "^0.11.0"
   },

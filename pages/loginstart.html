@@ -154,9 +154,7 @@
         .then( async (idToken) => {
             var thisUser = authUser.toJSON() 
             // this is an object, not JSON?!?! You can't make this stuff up.
-
             const provider = authUser.providerData[0]
-
             currentUser = {
                 uid: thisUser.uid,
                 displayName: thisUser.displayName,
@@ -289,6 +287,26 @@
         return firebase.auth().setPersistence( persistence )
     }
 
+    function checkForSignout()
+    {
+        return new Promise( (resolve, reject) => 
+        {
+            const query = new URLSearchParams( location.search )
+            if ( !query.has( "signoutuser" ) ) return resolve( true )
+            firebase.auth().setPersistence( firebase.auth.Auth.Persistence.NONE )
+            .then( () => {
+                return firebase.auth().signOut()
+            })
+            .then( () => {
+                resolve( true )
+            })
+            .catch( (error) => {
+                alert( "Error in signout process: ", error )
+                reject( error )
+            })
+        })
+    }
+
     function authStateChangedEvent( user )
     {
         if (user) {
@@ -299,7 +317,8 @@
 
     // when the document is loaded, call Main process to get the app config parameters
     // and then we can start firebaseui
-    document.onreadystatechange = function () {
+    document.onreadystatechange = function () 
+    {
         if ( document.readyState !== 'complete' ) return
 
         // ask the Main process to get the configuration parameters for firebase authentication
@@ -311,8 +330,12 @@
             // initializeApp must be called before any other Firebase APIs
             firebase.initializeApp( fbConfig )
 
-            // whether or not the user is forced to log in every time
-            setUserPersistence( rememberThisUser )
+            // a signout request may be passed in the browser querystring
+            checkForSignout()
+            .then( () => {
+                // whether or not the user is forced to log in every time
+                return setUserPersistence( rememberThisUser )
+            })
             .then( () => {
                 // we must make a decision: if there is a persistent user then do not start the login workflow
                 return checkForPersistentUser()

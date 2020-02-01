@@ -1,6 +1,6 @@
 {
   "name": "electron-firebase",
-  "productName": "Electron-Firebase Quickstart Framework",
+  "productName": "Electron-Firebase Quickstart Cloud Framework",
   "version": "1.0.0",
   "description": "template app to demonstrate firebase authentication workflow in an electron app",
   "main": "electron-firebase.js",
@@ -16,13 +16,13 @@
     "gendocs": "node ./lib/gendocs.js"
   },
   "dependencies": {
-    "@google-cloud/storage": "^4.2.0",
+    "@google-cloud/storage": "^4.3.0",
     "body-parser": "^1.19.0",
-    "electron": "^7.1.9",
-    "electron-rebuild": "^1.8.4",
+    "electron": "^7.1.11",
+    "electron-rebuild": "^1.10.0",
     "express": "^4.17.0",
     "fast-crc32c": "^2.0.0",
-    "firebase": "^7.7.0",
+    "firebase": "^7.8.0",
     "firebaseui": "^4.0.0",
     "grpc": "^1.24.2",
     "helmet": "^3.21.2",

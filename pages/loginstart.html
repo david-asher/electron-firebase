@@ -19,6 +19,7 @@
 
     const getConfigUrl      = "/api/appconfig"
     const postTokenUrl      = "/api/logintoken"
+    const getLoginReadyUrl  = "/api/loginready"
     const loginCompleteUrl  = "/pages/logincomplete.html"
     const fbDatabaseName    = "firebaseLocalStorageDb"
     const fbStorageName     = "firebaseLocalStorage"
@@ -222,6 +223,19 @@
         })
     }
 
+    async function showLoginWindow()
+    {
+        var responseCode = null
+        await api( 'GET', getLoginReadyUrl, null )
+        .then( (response) => {
+            responseCode = response.status
+        })
+        .catch( (error ) => {
+            console.error( "showLoginWindow ERROR: ", error )
+        })
+        return responseCode
+    }
+
     function firebaseAuthUIStart( fbConfig ) 
     {
         var uiConfig = {
@@ -351,7 +365,14 @@
             })
             .catch( (error) => {
                 // no persisted user or some error, so start the login UI workflow from firebaseUI
-                firebaseAuthUIStart( fbConfig )
+                showLoginWindow()
+                .then( (response) => {
+                    firebaseAuthUIStart( fbConfig )
+                })
+                .catch( (error) => {
+                    // how to notify the user if we fail to show the window??
+                    console.log( "showLoginWindow ERROR: ", error )
+                })
             })
         })
         .catch( (error) => {

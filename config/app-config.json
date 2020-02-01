@@ -1,5 +1,5 @@
 {
-    "debugMode": true,
+    "debugMode": false,
     "webapp": {
         "port": "3090",
         "folderPath": "/pages/",
@@ -25,10 +25,9 @@
         "hex-fingerprint": "39140D7A4161F31D2C458366C14573D05EFBABE24C8F971C0C546AE9D86129BE\r"
     },
     "apis": {
-        "config": "api/appconfig",
-        "token": "api/logintoken",
-        "success": "api/loginsuccess",
-        "signin": "api/oauthsignin"
+        "appconfig": "api/appconfig",
+        "logintoken": "api/logintoken",
+        "loginready": "api/loginready"
     },
     "logout": {
         "google.com": "https://accounts.google.com/Logout",

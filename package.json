@@ -1,5 +1,6 @@
 {
   "name": "electron-firebase",
+  "productName": "Electron-Firebase Quickstart Framework",
   "version": "1.0.0",
   "description": "template app to demonstrate firebase authentication workflow in an electron app",
   "main": "electron-firebase.js",
@@ -28,6 +29,7 @@
     "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.0",
+    "selfsigned": "^1.10.7",
     "url": "^0.11.0"
   },
   "devDependencies": {},

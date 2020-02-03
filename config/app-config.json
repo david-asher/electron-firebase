@@ -5,10 +5,11 @@
         "folderPath": "/pages/",
         "hostUrl": "https://localhost:3090",
         "main": "pages/index.html",
-        "login": "pages/loginstart.html",
-        "complete": "pages/logincomplete.html",
+        "loginStart": "pages/loginStart.html",
+        "loginRedirect": "/pages/logincomplete.html",
         "firstWidth": 1000,
         "firstHeight": 800,
+        "persistentUser": true,
         "staticContent": [
             "pages",
             "scripts",
@@ -19,9 +20,9 @@
         ]
     },
     "apis": {
-        "appconfig": "api/appconfig",
-        "logintoken": "api/logintoken",
-        "loginready": "api/loginready"
+        "firebaseconfig": "/api/firebaseconfig",
+        "logintoken": "/api/logintoken",
+        "loginready": "/api/loginready"
     },
     "logout": {
         "google.com": "https://accounts.google.com/Logout",

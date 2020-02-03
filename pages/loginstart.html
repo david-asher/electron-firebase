@@ -17,16 +17,25 @@
      * process and the Main process happens through API calls over HTTPS.
      */
 
-    const getConfigUrl      = "/api/appconfig"
-    const postTokenUrl      = "/api/logintoken"
-    const getLoginReadyUrl  = "/api/loginready"
-    const loginCompleteUrl  = "/pages/logincomplete.html"
+    // These specify the local storage location for persistent user credentials,
+    // which we can use to determine if there is a persistent credential that is
+    // used for auto-login. 
     const fbDatabaseName    = "firebaseLocalStorageDb"
     const fbStorageName     = "firebaseLocalStorage"
     const fbStoredUserKey   = "firebase:authUser"
 
-    var   rememberThisUser  = true
-    var   persistentUser    = null
+    const queryParams = new URLSearchParams( location.search )
+
+    function getQueryParam( paramName )
+    {
+        return queryParams.get( paramName )
+    }
+
+    function getTrueQueryParam( paramName )
+    {
+        const value = queryParams.get( paramName ) || ""
+        return ( value === true ) || ( value.toLowerCase() === 'true' )
+    }
 
     function openObjectStore( dataStoreName, dataObjectName, openMode )
     {
@@ -209,13 +218,13 @@
             operationType: authResult.operationType || null,
             additionalUserInfo: authResult.additionalUserInfo,
             refreshToken: authResult.refreshToken || authResult.user.refreshToken,
-            persistent: persistentUser,
             credential: authResult.credential || null
         }
-        return api( 'POST', postTokenUrl, appUpdate )
+        
+        return api( 'POST', getQueryParam( "logintoken" ), appUpdate )
         .then( (status) => {
             // redirect to the login complete page which should close this window
-            window.location.assign( loginCompleteUrl )
+            window.location.assign( getQueryParam( "loginRedirect" ) )
         })
         .catch( (error) => {
             alert( "ERROR in sign-in process, please restart this application: ", stringifyJSON(error) )
@@ -226,7 +235,8 @@
     async function showLoginWindow()
     {
         var responseCode = null
-        await api( 'GET', getLoginReadyUrl, null )
+
+        await api( 'GET', getQueryParam( "loginready" ), null )
         .then( (response) => {
             responseCode = response.status
         })
@@ -300,13 +310,15 @@
         }
         return firebase.auth().setPersistence( persistence )
     }
-
+    
     function checkForSignout()
     {
         return new Promise( (resolve, reject) => 
         {
-            const query = new URLSearchParams( location.search )
-            if ( !query.has( "signoutuser" ) ) return resolve( true )
+            // normal case is no signout, just leave
+            if ( !getTrueQueryParam( "signoutuser" ) ) return resolve( true )
+
+            // clear the user persistence, then sign out
             firebase.auth().setPersistence( firebase.auth.Auth.Persistence.NONE )
             .then( () => {
                 return firebase.auth().signOut()
@@ -336,7 +348,7 @@
         if ( document.readyState !== 'complete' ) return
 
         // ask the Main process to get the configuration parameters for firebase authentication
-        api( 'GET', getConfigUrl, null )
+        api( 'GET', getQueryParam( "firebaseconfig" ), null )
         .then( (response) => {
             // allow functions to access the firebase configuration set
             const fbConfig = response
@@ -348,7 +360,7 @@
             checkForSignout()
             .then( () => {
                 // whether or not the user is forced to log in every time
-                return setUserPersistence( rememberThisUser )
+                return setUserPersistence( getTrueQueryParam( "persistentUser" ) )
             })
             .then( () => {
                 // we must make a decision: if there is a persistent user then do not start the login workflow
@@ -360,7 +372,6 @@
                     throw( "NO USER" )
                 }
                 // we found a user defined in the IndexedDB object store, so wait for the login
-                persistentUser = foundUser.value
                 firebase.auth().onAuthStateChanged( authStateChangedEvent )
             })
             .catch( (error) => {

@@ -121,7 +121,7 @@ workflow, or after a re-login from a previous session. Fires the user-login even
 <a name="exp_module_mainapp--apiPostLoginToken"></a>
 
 ### apiPostLoginToken(req, res, next) ⏏
-Called at the end of the Firebase UI workflow for user login when the loginstart.html BrowserWindow
+Called at the end of the Firebase UI workflow for user login when the loginStart.html BrowserWindow
 has completed the login cycle and has credentials to report back to the app. req.body will contain the 
 new user credentials.
 

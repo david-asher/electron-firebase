@@ -1,5 +1,5 @@
 {
-    "debugMode": false,
+    "debugMode": true,
     "webapp": {
         "port": "3090",
         "folderPath": "/pages/",

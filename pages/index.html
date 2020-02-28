@@ -3,37 +3,89 @@
     <head>
       <meta charset="UTF-8">
       <title>Electron-Firebase Quickstart Cloud Framework</title>
+      <!--
+        load Bootstrap components - NOTE we have to swap the module definition to make jQuery happy
+      -->
+      <script> 
+        if (typeof module === 'object') {window.module = module; module = undefined;} 
+      </script>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+      <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+      <script>
+        if (window.module) module = window.module; 
+      </script>
+      <!--
+        electron-firebase components
+      -->
 	    <link rel="stylesheet" href="/css/json-viewer.css">
       <script src="/scripts/json-viewer.js"></script>
       <script src="/scripts/webutils.js"></script>
       <script src="/scripts/weblocal.js"></script>
       <script>
-        // note that ipc is defined in weblocal.js
+      // functions for interacting with main app
+      // note that ipc is defined in weblocal.js
 
-        // send the signout signal back to Main
-        function signout() {
-            ipc.send( 'user-signout', Date.now().toString() ) 
-        }
+      // send the signout signal back to Main
+      function signout() {
+          ipc.send( 'user-signout', Date.now().toString() ) 
+      }
 
-        // render the user's profile information
-        ipc.on( 'user-profile', ( event, profile ) => {
-            // json viewer at https://www.cssscript.com/minimal-json-data-formatter-jsonviewer/
-            var jsonViewer = new JSONViewer()
-            document.getElementById("json_user").appendChild(jsonViewer.getContainer())
-            jsonViewer.showJSON( profile, -1, 1 )
-            userProfile = profile
-            ipc.send( 'profile-response', userProfile.displayName )
-        })
-        var userProfile = null
+      function modalOkay() {
+        console.log( "It Is OKAY!" )
+      }
 
-      </script>
+      // render the user's profile information
+      ipc.on( 'user-profile', ( event, profile ) => {
+          // json viewer at https://www.cssscript.com/minimal-json-data-formatter-jsonviewer/
+          var jsonViewer = new JSONViewer()
+          document.getElementById("json_user").appendChild(jsonViewer.getContainer())
+          jsonViewer.showJSON( profile, -1, 1 )
+          userProfile = profile
+          ipc.send( 'profile-response', userProfile.displayName )
+      })
+      var userProfile = null
+    </script>
+
     </head>
     <body>
 
       <div class="alert alert-secondary" role="alert">
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
-        <button type="button" class="btn btn-outline-primary" onclick="signout()">Sign Out</button>
+        <button type="button" class="btn btn-warning btn-sm" onclick="signout()">Sign Out</button>
+      </div>
+
+      <div class="container border border-info rounded text-info m-3 p-3 vw-100">
+        <h3>
+          Profile Information
+        </h3>
+        <button type="button" class="btn btn-info" data-title="profile" data-toggle="modal" data-target="#ProfileModalInfo">
+          User Identity
+        </button>
+        <button type="button" class="btn btn-info" data-title="provider" data-toggle="modal" data-target="#ProfileModalInfo">
+          ID Provider
+        </button>
+
+        <!-- Modal - ProfileModalInfo -->
+        <div class="modal fade" id="ProfileModalInfo" tabindex="-1" role="dialog" aria-labelledby="ProfileModalInfoLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="ProfileModalInfoLabel">---</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                ...
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="modalOkay()">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="window-content">
@@ -42,6 +94,27 @@
           </div>
       </div>
 
+      <script>
+
+        var modalTitles = {
+          profile: "User Profile Info",
+          provider: "Identity Provider Info"
+        }
+
+        function setModalTitle( modal, event )
+        {
+          var button = $(event.relatedTarget) // Button that triggered the modal
+          var recipient = button.data('title') // Extract info from data-* attributes
+          modal.find('.modal-title').text( modalTitles[recipient] )
+        }
+
+        $('#ProfileModalInfo').on('show.bs.modal', function (event) {
+          var modal = $(this)
+          setModalTitle( modal, event )
+        })
+  
+        </script>
+  
     </body>
 
   </html>

@@ -43,6 +43,28 @@ mainapp.event.once( "main-window-open", (window) => {
     mainapp.getFromBrowser( "profile-response", (response) => {
         console.log( "EVENT profile-response: ", response )
     })
+
+    mainapp.getFromBrowser( 'InfoRequest', (response) => {
+        console.log( "EVENT getFromBrowser: InfoRequest = ", response )
+        switch( response ) {
+        case 'profile':
+            mainapp.sendToBrowser( 'InfoRequest', {
+                "Name": global.user.displayName,
+                "Email": global.user.email,
+                "User ID": global.user.uid,
+                "Last Login": (new Date( parseInt(global.user.lastLoginAt,10) )).toString(),
+                "login ms": global.user.lastLoginAt,
+                "Photo:": global.user.photoURL
+            })
+            break
+        case 'provider':
+            mainapp.sendToBrowser( 'InfoRequest', global.user.providerData[0] )
+            break
+        case 'appcontext':
+            mainapp.sendToBrowser( 'InfoRequest', global.appContext )
+                break
+        }
+    })    
 })
 
 mainapp.event.once( "main-window-close", (window) => {

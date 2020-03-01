@@ -60,28 +60,40 @@
         <h3>
           Profile Information
         </h3>
-        <button type="button" class="btn btn-info" data-title="profile" data-toggle="modal" data-target="#ProfileModalInfo">
+        <button type="button" class="btn btn-info" data-title="profile" data-toggle="modal" data-target="#ModalDialog">
           User Identity
         </button>
-        <button type="button" class="btn btn-info" data-title="provider" data-toggle="modal" data-target="#ProfileModalInfo">
+        <button type="button" class="btn btn-info" data-title="provider" data-toggle="modal" data-target="#ModalDialog">
           ID Provider
         </button>
+        <button type="button" class="btn btn-info" data-title="appcontext" data-toggle="modal" data-target="#ModalDialog">
+          App Context
+        </button>
 
-        <!-- Modal - ProfileModalInfo -->
-        <div class="modal fade" id="ProfileModalInfo" tabindex="-1" role="dialog" aria-labelledby="ProfileModalInfoLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+        <!--
+          global.
+          appConfig
+          fbConfig
+          appContext
+
+
+          user
+
+        -->
+
+        <!-- ModalDialog -->
+        <div class="modal fade" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="ProfileModalInfoLabel">---</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">---</h5>
               </div>
               <div class="modal-body">
-                ...
+                <table class="table">
+                </table>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="modalOkay()">OK</button>
+                <button type="button" id="ModalDialogAccept" class="btn btn-secondary" data-dismiss="modal">OK</button>
               </div>
             </div>
           </div>
@@ -101,19 +113,76 @@
           provider: "Identity Provider Info"
         }
 
-        function setModalTitle( modal, event )
+        function isImagePath(url) 
         {
-          var button = $(event.relatedTarget) // Button that triggered the modal
-          var recipient = button.data('title') // Extract info from data-* attributes
-          modal.find('.modal-title').text( modalTitles[recipient] )
+          if ( !url ) return false
+          return( url.match( /\.(jpeg|jpg|gif|png)$/, 'i' ) != null )
         }
 
-        $('#ProfileModalInfo').on('show.bs.modal', function (event) {
+        function isURL( whatever )
+        {
+          if ( !whatever ) return false
+          return( whatever.match( /^(http|https):\/\//, 'i' ) != null )
+        }
+        
+        function makeImageElement( url )
+        {
+          var elem = document.createElement("img")
+          elem.src = url
+          elem.height = 128
+          return elem
+        }
+
+        function makeJsonElement( arg )
+        {
+          var elem = document.createElement("pre")
+          elem.innerHTML = JSON.stringify( arg, null, 4 )
+          return elem
+        }
+
+        function createTableRow( table, ...args )
+        {
+          // check for JS objects, image URLs, and text
+          var domTable = table[0]
+          var row = domTable.insertRow()
+          for (let arg of args) {
+            if ( $.isPlainObject(arg) ) {
+              row.insertCell().appendChild( makeJsonElement(arg) )
+            }
+            else if ( isURL(arg) ) {
+              row.insertCell().appendChild( makeImageElement(arg) )
+            }
+            else {
+              row.insertCell().innerHTML = arg
+            }
+          }
+        }
+
+        function setModalContent( table, recipient )
+        {
+          ipc.once( 'InfoRequest', ( event, response ) => {
+            Object.entries(response).forEach( ([key,value]) => {
+              createTableRow( table, key, value )
+            })
+          })
+          ipc.send( 'InfoRequest', recipient )
+        }
+
+        $('#ModalDialog').on('show.bs.modal', function (event) {
+          var recipient = $(event.relatedTarget).data('title') // Extract info from data-* attributes
           var modal = $(this)
-          setModalTitle( modal, event )
+          var table = modal.find('.table')
+          modal.find('tr').remove()
+          modal.find('.modal-title').text( modalTitles[recipient] )
+          setModalContent( table, recipient )
+        })
+
+        $('#ModalDialogAccept').on('click', function (event) {
+          var button = $(event.relatedTarget) // Button that triggered the modal
+console.log( "CLICK ModalDialogAccept" )
         })
   
-        </script>
+      </script>
   
     </body>
 

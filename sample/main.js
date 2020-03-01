@@ -48,14 +48,15 @@ mainapp.event.once( "main-window-open", (window) => {
         console.log( "EVENT getFromBrowser: InfoRequest = ", response )
         switch( response ) {
         case 'profile':
-            mainapp.sendToBrowser( 'InfoRequest', {
+            var userinfo = {
                 "Name": global.user.displayName,
                 "Email": global.user.email,
                 "User ID": global.user.uid,
-                "Last Login": (new Date( parseInt(global.user.lastLoginAt,10) )).toString(),
+                "Photo:": global.user.photoURL,
                 "login ms": global.user.lastLoginAt,
-                "Photo:": global.user.photoURL
-            })
+                "Last Login": (new Date( parseInt(global.user.lastLoginAt,10) )).toString()
+            }
+            mainapp.sendToBrowser( 'InfoRequest', userinfo )
             break
         case 'provider':
             mainapp.sendToBrowser( 'InfoRequest', global.user.providerData[0] )

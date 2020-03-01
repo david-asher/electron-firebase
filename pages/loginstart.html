@@ -156,56 +156,6 @@
         return null
     }
 
-    async function getUserProfile( authUser )
-    {
-        var currentUser = null
-        if ( !authUser ) return Promise.reject( "NO USER" )
-        await authUser.getIdToken()
-        .then( async (idToken) => {
-            var thisUser = authUser.toJSON() 
-            // this is an object, not JSON?!?! You can't make this stuff up.
-            const provider = authUser.providerData[0]
-            currentUser = {
-                uid: thisUser.uid,
-                displayName: thisUser.displayName,
-                providerId: provider.providerId,
-                providerUid: provider.uid,
-                refreshToken: thisUser.stsTokenManager.refreshToken,
-                accessToken: thisUser.stsTokenManager.accessToken,
-                expirationTime: thisUser.stsTokenManager.expirationTime,
-                idToken: idToken,
-                provider: provider,
-                user: thisUser
-            }
-        })
-        .catch( (error) => {
-            alert( "Authentication error getting identity token: ", error )
-        })
-        return currentUser
-    }
-
-    function getProviderCredential( userIdentity )
-    {
-        // returns: https://firebase.google.com/docs/reference/node/firebase.auth.OAuthCredential
-        if ( !userIdentity ) return null
-
-        switch( userIdentity.providerData[0].providerId  ) {
-        case 'google.com':
-            return firebase.auth.GoogleAuthProvider.credential( userIdentity.idToken ) 
-        case 'facebook.com':
-            return firebase.auth().FacebookAuthProvider.credential( userIdentity.accessToken )
-        case 'twitter.com':
-            return firebase.auth().TwitterAuthProvider.credential( userIdentity.accessToken, userIdentity.secret )
-        case 'github.com':
-            return firebase.auth().GithubAuthProvider.credential( userIdentity.accessToken )
-        case 'password':
-            return firebase.auth().EmailAuthProvider.credentialWithLink( userIdentity.email, userIdentity.emailLink )
-        case 'phone':
-            return firebase.auth().PhoneAuthProvider.credential( userIdentity.verificationId, userIdentity.verificationCode )
-        }
-        return null
-    }
-
     function postAuthResult( authResult )
     {
         // authResult is https://firebase.google.com/docs/reference/js/firebase.auth#.UserCredential

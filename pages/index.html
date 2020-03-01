@@ -70,18 +70,11 @@
           App Context
         </button>
 
-        <!--
-          global.
-          appConfig
-          fbConfig
-          appContext
-
-
-          user
-
-        -->
-
-        <!-- ModalDialog -->
+                <!--
+                <table class="table">
+                </table>
+                -->
+        <!-- ModalDialog with table content -->
         <div class="modal fade" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -89,8 +82,6 @@
                 <h5 class="modal-title">---</h5>
               </div>
               <div class="modal-body">
-                <table class="table">
-                </table>
               </div>
               <div class="modal-footer">
                 <button type="button" id="ModalDialogAccept" class="btn btn-secondary" data-dismiss="modal">OK</button>
@@ -127,33 +118,34 @@
         
         function makeImageElement( url )
         {
-          var elem = document.createElement("img")
-          elem.src = url
-          elem.height = 128
-          return elem
+          var image = $('<img>')
+          image.attr( 'src', url )
+          image.attr( 'height', 128 )
+          return image
         }
 
         function makeJsonElement( arg )
         {
-          var elem = document.createElement("pre")
-          elem.innerHTML = JSON.stringify( arg, null, 4 )
-          return elem
+          var pretext = $('<pre>')
+          pretext.text( JSON.stringify( arg, null, 4 ) )
+          return pretext
         }
 
         function createTableRow( table, ...args )
         {
-          // check for JS objects, image URLs, and text
-          var domTable = table[0]
-          var row = domTable.insertRow()
+          var row = $('<tr>')
+          table.append(row) 
           for (let arg of args) {
+            var cell = $('<td>')
+            row.append(cell)
             if ( $.isPlainObject(arg) ) {
-              row.insertCell().appendChild( makeJsonElement(arg) )
+              cell.append( makeJsonElement(arg) )
             }
             else if ( isURL(arg) ) {
-              row.insertCell().appendChild( makeImageElement(arg) )
+              cell.append( makeImageElement(arg) )
             }
             else {
-              row.insertCell().innerHTML = arg
+              cell.text(arg)
             }
           }
         }
@@ -171,9 +163,10 @@
         $('#ModalDialog').on('show.bs.modal', function (event) {
           var recipient = $(event.relatedTarget).data('title') // Extract info from data-* attributes
           var modal = $(this)
-          var table = modal.find('.table')
-          modal.find('tr').remove()
           modal.find('.modal-title').text( modalTitles[recipient] )
+          modal.find('.table').remove()
+          var table = $('<table class="table">') 
+          modal.find('.modal-body').append(table)
           setModalContent( table, recipient )
         })
 

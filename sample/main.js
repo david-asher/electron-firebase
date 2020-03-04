@@ -31,7 +31,7 @@ mainapp.event.once( "app-context", (appContext) => {
 
 mainapp.event.once( "user-login", (user) => {
     console.log( "EVENT user-login: ", user.displayName )
-    mainapp.sendToBrowser( "user-profile", user || "NO USER" )
+    //// mainapp.sendToBrowser( "user-profile", user || "NO USER" )
 })
 
 mainapp.event.once( "main-window-open", (window) => {
@@ -47,7 +47,7 @@ mainapp.event.once( "main-window-open", (window) => {
     mainapp.getFromBrowser( 'InfoRequest', (response) => {
         console.log( "EVENT getFromBrowser: InfoRequest = ", response )
         switch( response ) {
-        case 'profile':
+        case 'user-profile':
             var userinfo = {
                 "Name": global.user.displayName,
                 "Email": global.user.email,
@@ -58,10 +58,10 @@ mainapp.event.once( "main-window-open", (window) => {
             }
             mainapp.sendToBrowser( 'InfoRequest', userinfo )
             break
-        case 'provider':
+        case 'id-provider':
             mainapp.sendToBrowser( 'InfoRequest', global.user.providerData[0] )
             break
-        case 'appcontext':
+        case 'app-context':
             mainapp.sendToBrowser( 'InfoRequest', global.appContext )
                 break
         }

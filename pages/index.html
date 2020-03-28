@@ -59,10 +59,10 @@
       </div>
       <div class="container border border-info rounded text-info m-3 p-3 vw-100">
         <h3>Cloud Firestore Objects</h3>
-        <button is="info-button" data-title="cloud-account">docs/account</button>
-        <button is="info-button" data-title="cloud-profile">docs/profile</button>
-        <button is="info-button" data-title="cloud-provider">docs/provider</button>
-        <button is="info-button" data-title="cloud-session">docs/session</button>
+        <button is="info-button" data-title="docs-account">docs/account</button>
+        <button is="info-button" data-title="docs-profile">docs/profile</button>
+        <button is="info-button" data-title="docs-provider">docs/provider</button>
+        <button is="info-button" data-title="docs-session">docs/session</button>
       </div>
       <div class="modal fade text-info" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
@@ -140,30 +140,36 @@
         }
       }
 
-      function setModalContent( table, recipient )
+      async function setModalContent( table, dataTitle )
       {
-        ipc.once( 'InfoRequest', ( event, response ) => {
-          Object.entries(response).forEach( ([key,value]) => {
-            createTableRow( table, key, value )
-          })
+        var response = await askMain( 'InfoRequest', dataTitle )
+        Object.entries(response).forEach( ([key,value]) => {
+          createTableRow( table, key, value )
         })
-        ipc.send( 'InfoRequest', recipient )
+        return response
       }
 
-      $('#ModalDialog').on('show.bs.modal', function (event) {
+      $('#ModalDialog').on('show.bs.modal', function (event) 
+      {
         var button = $(event.relatedTarget)
-        var recipient = button.data('title') // Extract info from data-* attributes
+        var dataTitle = button.data('title')
         var modal = $(this)
         modal.find('.modal-title').text( button.text() )
         modal.find('.table').remove()
         var table = $('<table class="table">') 
         modal.find('.modal-body').append(table)
-        setModalContent( table, recipient )
+        setModalContent( table, dataTitle )
+
+        askMain( 'list-docs' ).then( (list) => {
+          alert( "list-docs: ", list )
+        })
+
       })
 
-      $('#ModalDialogAccept').on('click', function (event) {
+      $('#ModalDialogAccept').on('click', function (event) 
+      {
         var button = $(event.relatedTarget) // Button that triggered the modal
-        // console.log( "CLICK ModalDialogAccept" )
+        console.log( "CLICK ModalDialogAccept" )
       })
   
       </script>

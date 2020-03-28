@@ -20,6 +20,16 @@ ipc.on( 'localStorage', ( event, command, key, value ) => {
     }
 })
 
+function askMain( topic, question )
+{
+  return new Promise( (resolve, reject) => {
+    ipc.once( topic, ( event, response ) => {
+      resolve( response )
+    })
+    ipc.send( topic, question )
+  })
+}
+
 ipc.send( 'about-browser', {
     language: navigator.language,
     userAgent: navigator.userAgent,

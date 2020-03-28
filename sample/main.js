@@ -18,7 +18,7 @@
 
 const { app } = require('electron')
 
-const { mainapp } = require( '../electron-firebase' )
+const { mainapp, data } = require( '../electron-firebase' )
 
 // one call to setup the electron-firebase framework
 mainapp.setupAppConfig()
@@ -46,24 +46,43 @@ mainapp.event.once( "main-window-open", (window) => {
 
     mainapp.getFromBrowser( 'InfoRequest', (response) => {
         console.log( "EVENT getFromBrowser: InfoRequest = ", response )
-        switch( response ) {
-        case 'user-profile':
-            var userinfo = {
-                "Name": global.user.displayName,
-                "Email": global.user.email,
-                "User ID": global.user.uid,
-                "Photo:": global.user.photoURL,
-                "login ms": global.user.lastLoginAt,
-                "Last Login": (new Date( parseInt(global.user.lastLoginAt,10) )).toString()
+        function answer( content )
+        {
+            mainapp.sendToBrowser( 'InfoRequest', content )
+        }
+        function buildProfile( user )
+        {
+            return {
+                "Name": user.displayName,
+                "Email": user.email,
+                "User ID": user.uid,
+                "Photo:": user.photoURL,
+                "Last Login": (new Date( parseInt(user.lastLoginAt,10) )).toString()
             }
-            mainapp.sendToBrowser( 'InfoRequest', userinfo )
+        }
+        switch( response ) {
+
+        case 'user-profile':    answer( buildProfile(global.user) );        break;
+        case 'id-provider':     answer( global.user.providerData[0] );      break;
+        case 'app-context':     answer( global.appContext );                break;
+
+        case 'list-docs':       
+        data.docRef( data.DOCS ).get( (docList) => {
+            console.log(  "docList: ", docList )
+            answer( docList )    
+        })
+        break;
+
+        case 'docs-account':   
+        case 'docs-profile':   
+        case 'docs-provider':  
+        case 'docs-session':
+            var docParts = response.split( "-" )
+            data.docRead( data.DOCS, docParts[1] )
+            .then( (docContent) => {
+                answer( docContent )
+            })
             break
-        case 'id-provider':
-            mainapp.sendToBrowser( 'InfoRequest', global.user.providerData[0] )
-            break
-        case 'app-context':
-            mainapp.sendToBrowser( 'InfoRequest', global.appContext )
-                break
         }
     })    
 })

@@ -25,24 +25,13 @@
       <script src="/scripts/weblocal.js"></script>
 
       <script>
-      // functions for interacting with main app
-      // note that ipc is defined in weblocal.js
+      // functions for interacting with main app, note that ipc is defined in weblocal.js
 
       // send the signout signal back to Main
       function signout() {
           ipc.send( 'user-signout', Date.now().toString() ) 
       }
 
-      // render the user's profile information
-      ipc.on( 'user-profile', ( event, profile ) => {
-          // json viewer at https://www.cssscript.com/minimal-json-data-formatter-jsonviewer/
-          var jsonViewer = new JSONViewer()
-          document.getElementById("json_user").appendChild(jsonViewer.getContainer())
-          jsonViewer.showJSON( profile, -1, 1 )
-          userProfile = profile
-          ipc.send( 'profile-response', userProfile.displayName )
-      })
-      var userProfile = null
     </script>
 
     </head>
@@ -53,16 +42,16 @@
       </div>
       <div class="container border border-info rounded text-info m-3 p-3 vw-100">
         <h3>User and App Information</h3>
-        <button is="info-button" data-title="user-profile">User Profile</button>
-        <button is="info-button" data-title="id-provider">Identity Provider</button>
-        <button is="info-button" data-title="app-context">Application Context</button>
+        <button is="info-button" data-set="user" data-ask="profile">User Profile</button>
+        <button is="info-button" data-set="user" data-ask="provider">Identity Provider</button>
+        <button is="info-button" data-set="user" data-ask="context">Application Context</button>
       </div>
       <div class="container border border-info rounded text-info m-3 p-3 vw-100">
         <h3>Cloud Firestore Objects</h3>
-        <button is="info-button" data-title="docs-account">docs/account</button>
-        <button is="info-button" data-title="docs-profile">docs/profile</button>
-        <button is="info-button" data-title="docs-provider">docs/provider</button>
-        <button is="info-button" data-title="docs-session">docs/session</button>
+        <button is="info-button" data-set="docs" data-ask="account">docs/account</button>
+        <button is="info-button" data-set="docs" data-ask="profile">docs/profile</button>
+        <button is="info-button" data-set="docs" data-ask="provider">docs/provider</button>
+        <button is="info-button" data-set="docs" data-ask="session">docs/session</button>
       </div>
       <div class="modal fade text-info" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
@@ -140,9 +129,9 @@
         }
       }
 
-      async function setModalContent( table, dataTitle )
+      async function setModalContent( table, request, parameter )
       {
-        var response = await askMain( 'InfoRequest', dataTitle )
+        var response = await askMain( 'InfoRequest', request, parameter )
         Object.entries(response).forEach( ([key,value]) => {
           createTableRow( table, key, value )
         })
@@ -152,13 +141,12 @@
       $('#ModalDialog').on('show.bs.modal', function (event) 
       {
         var button = $(event.relatedTarget)
-        var dataTitle = button.data('title')
         var modal = $(this)
         modal.find('.modal-title').text( button.text() )
         modal.find('.table').remove()
         var table = $('<table class="table">') 
         modal.find('.modal-body').append(table)
-        setModalContent( table, dataTitle )
+        setModalContent( table, button.data('set'), button.data('ask') )
 
         askMain( 'list-docs' ).then( (list) => {
           alert( "list-docs: ", list )

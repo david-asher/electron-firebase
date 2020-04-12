@@ -20,13 +20,13 @@ ipc.on( 'localStorage', ( event, command, key, value ) => {
     }
 })
 
-function askMain( topic, question )
+function askMain( topic, request, parameters = null )
 {
   return new Promise( (resolve, reject) => {
     ipc.once( topic, ( event, response ) => {
       resolve( response )
     })
-    ipc.send( topic, question )
+    ipc.send( topic, request, parameters )
   })
 }
 

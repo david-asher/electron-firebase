@@ -13,7 +13,7 @@ module.exports = {
     auth:    require('./lib/modules/authentication'),
     store:   require('./lib/modules/fbstorage'),
     file:    require('./lib/modules/fileutils'),
-    data:    require('./lib/modules/firestore'),
+    data:    require('./lib/modules/fbdata'),
     local:   require('./lib/modules/localstorage'),
     server:  require('./lib/modules/webserver'),
     window:  require('./lib/modules/windows'),

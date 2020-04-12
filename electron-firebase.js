@@ -9,13 +9,13 @@
  */
 
 module.exports = {
-    applib:  require('./lib/modules/applibrary'),
-    auth:    require('./lib/modules/authentication'),
-    store:   require('./lib/modules/fbstorage'),
-    file:    require('./lib/modules/fileutils'),
-    data:    require('./lib/modules/fbdata'),
-    local:   require('./lib/modules/localstorage'),
-    server:  require('./lib/modules/webserver'),
-    window:  require('./lib/modules/windows'),
-    mainapp: require('./lib/modules/mainapp')
+    applib:    require('./lib/modules/applibrary'),
+    auth:      require('./lib/modules/authentication'),
+    store:     require('./lib/modules/fbstorage'),
+    file:      require('./lib/modules/fileutils'),
+    firestore: require('./lib/modules/firestore'),
+    local:     require('./lib/modules/localstorage'),
+    server:    require('./lib/modules/webserver'),
+    window:    require('./lib/modules/windows'),
+    mainapp:   require('./lib/modules/mainapp')
 }

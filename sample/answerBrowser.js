@@ -11,7 +11,7 @@
  * @module answerBrowser
  */
 
-const { data } = require( '../electron-firebase' )
+const { firestore } = require( '../electron-firebase' )
 
 function buildProfile( user )
 {
@@ -36,7 +36,7 @@ function getUser( parameter )
 
 async function getDocs( parameter )
 {
-    return await data.docs.read( "docs/" + parameter )
+    return await firestore.docs.read( "docs/" + parameter )
     .then( (docContent) => {
         return docContent
     })

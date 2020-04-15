@@ -34,23 +34,26 @@ function getUser( parameter )
     }
 }
 
-async function getDocs( parameter )
+async function getDocs( filename )
 {
-    return await firestore.docs.read( "docs/" + parameter )
+    return await firestore.docs.read( "docs/" + filename )
     .then( (docContent) => {
         return docContent
     })
+    .catch( (error) => {
+        console.error( "getDocs: ", error )
+    })
 }
 
-function infoRequest( request, parameter )
+async function infoRequest( request, parameter )
 {
     var sendContent
     switch( request ) {
     case 'user': 
-        sendContent = getUser( parameter )
+        sendContent = await getUser( parameter )
         break;
     case 'docs':
-        sendContent = getDocs( parameter )
+        sendContent = await getDocs( parameter )
         break;
     }
     return sendContent

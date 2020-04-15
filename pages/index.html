@@ -4,7 +4,8 @@
       <meta charset="UTF-8">
       <title>Electron-Firebase Quickstart Cloud Framework</title>
       <!--
-        load Bootstrap components - NOTE we have to swap the module definition to make jQuery happy
+        Load Bootstrap components - NOTE we have to swap the module definition to make 
+        jQuery happy (which Bootstrap needs)
       -->
       <script> 
         if (typeof module === 'object') {window.module = module; module = undefined;} 
@@ -19,23 +20,26 @@
       <!--
         electron-firebase components
       -->
-	    <link rel="stylesheet" href="/css/json-viewer.css">
-      <script src="/scripts/json-viewer.js"></script>
       <script src="/scripts/webutils.js"></script>
       <script src="/scripts/weblocal.js"></script>
-
+      <!--
+        functions for interacting with main app, note that ipc is defined in weblocal.js
+      -->
       <script>
-      // functions for interacting with main app, note that ipc is defined in weblocal.js
-
-      // send the signout signal back to Main
-      function signout() {
+      function signout() 
+      {
+          // send the signout signal back to Main
           ipc.send( 'user-signout', Date.now().toString() ) 
       }
-
-    </script>
-
+      </script>
     </head>
+
     <body>
+      <!--
+        This page is simple, just a title bar and a few horizontal sections that 
+        contain buttons, each button will send a request back to the main app and
+        open a dialog box that will show the response data.
+      -->
       <div class="alert alert-secondary" role="alert">
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
         <button type="button" class="btn btn-warning btn-sm" onclick="signout()">Sign Out</button>
@@ -53,6 +57,10 @@
         <button is="info-button" data-set="docs" data-ask="provider">docs/provider</button>
         <button is="info-button" data-set="docs" data-ask="session">docs/session</button>
       </div>
+      <!--
+        The following is the modal dialog, which is normally not seen until one of the
+        info-button objects is clicked.
+      -->
       <div class="modal fade text-info" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
           <div class="modal-content">
@@ -82,17 +90,15 @@
       }
       customElements.define('info-button', InfoButton, {extends: 'button'});
 
-      // functions for info-buttons
+      // functions for formatting data returned from info-buttons requests
       function isImagePath(url) 
       {
-        if ( !url ) return false
-        return( url.match( /\.(jpeg|jpg|gif|png)$/, 'i' ) != null )
+        return( ( url || "" ).match( /\.(jpeg|jpg|gif|png)$/, 'i' ) != null )
       }
 
       function isURL( whatever )
       {
-        if ( !whatever ) return false
-        return( whatever.match( /^(http|https):\/\//, 'i' ) != null )
+        return( ( whatever || "" ).match( /^(http|https):\/\//, 'i' ) != null )
       }
       
       function makeImageElement( url )
@@ -117,21 +123,18 @@
         for (let arg of args) {
           var cell = $('<td>')
           row.append(cell)
-          if ( $.isPlainObject(arg) ) {
-            cell.append( makeJsonElement(arg) )
-          }
-          else if ( isURL(arg) ) {
-            cell.append( makeImageElement(arg) )
-          }
-          else {
-            cell.text(arg)
-          }
+          // make a formatting decision based on the content of this arg
+          if ( $.isPlainObject(arg) )  cell.append( makeJsonElement(arg) )
+          else if ( isURL(arg) )       cell.append( makeImageElement(arg) )
+          else                         cell.text(arg)
         }
       }
 
       async function setModalContent( table, request, parameter )
       {
-        var response = await askMain( 'InfoRequest', request, parameter )
+        // send the info-request back to the main app, and 
+        // stuff each response into a table row
+        var response = await askMain( 'info-request', request, parameter )
         Object.entries(response).forEach( ([key,value]) => {
           createTableRow( table, key, value )
         })
@@ -140,6 +143,8 @@
 
       $('#ModalDialog').on('show.bs.modal', function (event) 
       {
+        // The modal dialog is about to open, but it's generic.
+        // So we need to set its title, and build a table with the right content.
         var button = $(event.relatedTarget)
         var modal = $(this)
         modal.find('.modal-title').text( button.text() )
@@ -147,17 +152,13 @@
         var table = $('<table class="table">') 
         modal.find('.modal-body').append(table)
         setModalContent( table, button.data('set'), button.data('ask') )
-
-        askMain( 'list-docs' ).then( (list) => {
-          alert( "list-docs: ", list )
-        })
-
       })
 
       $('#ModalDialogAccept').on('click', function (event) 
       {
         var button = $(event.relatedTarget) // Button that triggered the modal
-        console.log( "CLICK ModalDialogAccept" )
+        // do whatever you want after the user accepts OK
+        // alert( "CLICKED ModalDialogAccept" )
       })
   
       </script>

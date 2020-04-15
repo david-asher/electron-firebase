@@ -27,46 +27,65 @@ mainapp.setupAppConfig()
 
 // electron-firebase framework event handling
 
-mainapp.event.once( "app-context", (appContext) => {
+mainapp.event.once( "app-context", (appContext) => 
+{
     console.log( "EVENT app-context: ", appContext.name )
 })
 
-mainapp.event.once( "user-login", (user) => {
+mainapp.event.once( "user-login", (user) => 
+{
     console.log( "EVENT user-login: ", user.displayName )
-    //// mainapp.sendToBrowser( "user-profile", user || "NO USER" )
 })
 
-mainapp.event.once( "main-window-open", (window) => {
+mainapp.event.once( "main-window-close", (window) => 
+{
+    console.log( "EVENT main-window-close: ", window.getTitle() )
+})
+
+mainapp.event.once( "main-window-open", (window) => 
+{
     console.log( "EVENT main-window-open: ", window.getTitle() )
 
     // signout button was pressed
     mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
 
     // one of the information request buttons was clicked
-    mainapp.getFromBrowser( 'InfoRequest', (request, parameter) => {
-        console.log( "EVENT getFromBrowser: InfoRequest = ", request, parameter )
+    mainapp.getFromBrowser( 'info-request', (request, parameter) => {
         infoRequest( request, parameter )
-        .then( (content) =>
-        {
-            mainapp.sendToBrowser( 'InfoRequest', content )
+        .then( (content) => {
+            mainapp.sendToBrowser( 'info-request', content )
+        })
+        .catch( (error) => {
+            console.error( "info-request: ", error )
         })
     })    
 })
 
-mainapp.event.once( "main-window-close", (window) => {
-    console.log( "EVENT main-window-close: ", window.getTitle() )
-})
-
 // electron app event handling
 
+// see: https://www.electronjs.org/docs/api/app#event-window-all-closed
 // Quit when all windows are closed.
-app.on( 'window-all-closed', mainapp.closeMainWindow )
+app.on( 'window-all-closed', () => 
+{
+    mainapp.closeMainWindow()
+})
+
+// see: https://www.electronjs.org/docs/api/app#event-ready
+// This method will be called when Electron has finished initialization and is ready to create 
+// browser windows. Some APIs can only be used after this event occurs.
+app.on( 'ready', (launchInfo) => 
+{
+    // launchInfo is macOS specific
+    mainapp.startMainApp()
+})
 
 // see: https://electronjs.org/docs/api/app#event-activate-macos
-app.on( 'activate', (appEvent,hasVisibleWindows) => {
+// macOS specific - Emitted when the application is activated. Various actions can trigger this 
+// event, such as launching the application for the first time, attempting to re-launch the 
+// application when it's already running, or clicking on the application's dock or taskbar icon.
+app.on( 'activate', (appEvent,hasVisibleWindows) => 
+{
+    console.log( "EVENT app activate: " )
     // do whatever
 })
 
-// This method will be called when Electron has finished initialization and is ready 
-// to create browser windows. Some APIs can only be used after this event occurs.
-app.on( 'ready', mainapp.startMainApp )

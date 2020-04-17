@@ -21,6 +21,7 @@ const { app } = require('electron')
 const { mainapp } = require( '../electron-firebase' )
 
 const { infoRequest } = require('./answerBrowser')
+const { updateUserDocs } = require('./setupApp')
 
 // one call to setup the electron-firebase framework
 mainapp.setupAppConfig()
@@ -29,17 +30,27 @@ mainapp.setupAppConfig()
 
 mainapp.event.once( "app-context", (appContext) => 
 {
+    // this is an early event that fires when the app context is established
     console.log( "EVENT app-context: ", appContext.name )
 })
 
 mainapp.event.once( "user-login", (user) => 
 {
+    // this event will trigger on sign-in, not every time the app runs with cached credentials
     console.log( "EVENT user-login: ", user.displayName )
 })
 
 mainapp.event.once( "main-window-close", (window) => 
 {
+    // use this to clean up things
     console.log( "EVENT main-window-close: ", window.getTitle() )
+})
+
+mainapp.event.once( "user-ready", ( user ) => 
+{
+    console.log( "EVENT user-ready: ", user.displayName )
+    updateUserDocs( user, global.appContext, global.appConfig )
+    mainapp.sendToBrowser( 'user-ready' )
 })
 
 mainapp.event.once( "main-window-open", (window) => 

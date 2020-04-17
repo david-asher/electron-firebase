@@ -11,23 +11,17 @@
  * @module setupapp
  */
 
- 
-function _makeBaseDocuments( user )
+const { firestore } = require( '../electron-firebase' )
+
+const docAboutmeFolder = "aboutme/"
+
+function makeUserDocuments( user, appContext, appConfig )
 {
     if ( !user || !user.uid || !user.displayName ) {
         return null
     }
 
     const isNow = ( new Date() ).toISOString()
-
-    // there should be a root document which could contain arrays or subcontainers
-    // in the root document, put fields that you want to index for searching across all users
-    const root = {
-        uid: user.uid,
-        name: user.displayName,
-        created: user.creationTime || isNow,
-        collections: []
-    }
 
     // fixups
     const profile = { ... user.profile }
@@ -40,37 +34,49 @@ function _makeBaseDocuments( user )
     if ( !provider.phoneNumber ) provider.phoneNumber = user.phoneNumber || null
     if ( !provider.photoURL )    provider.photoURL = user.photoURL || null
 
-    const application = {
-        name: global.appContext.name,
-        version: global.appContext.appVersion,
-        node: global.appContext.nodeVersion,
-        chrome: global.appContext.chromeVersion,
-        electron: global.appContext.electronVersion
-    }
-
     const account = {
         uid: user.uid,
         name: user.displayName,
         photo: user.photoURL || null,
         email: user.email || null,
-        created: user.creationTime || isNow
+        created: user.creationTime || null, 
+        accessed: isNow
     }
 
     const session = {
         apiKey: global.fbConfig.apiKey || null,
         appName: user.appName || null,
         domain: user.authDomain || null,
-        last: user.lastSignInTime || isNow
+        authenticated: user.lastSignInTime || null,
+        start: isNow
     }
 
     return {
-        root: root,
-        application: application,
         profile: profile,
         provider: provider,
         account: account,
         session: session,
+        application: appContext,
+        configuration: appConfig
     }
+}
+
+async function updateUserDocs( user, appContext, appConfig )
+{
+    const userDocs = makeUserDocuments( user, appContext, appConfig )
+    await firestore.docs.write( docAboutmeFolder + "profile", userDocs.profile )
+    await firestore.docs.write( docAboutmeFolder + "provider", userDocs.provider )
+    await firestore.docs.write( docAboutmeFolder + "account", userDocs.account )
+    await firestore.docs.write( docAboutmeFolder + "session", userDocs.session )
+}
+
+module.exports = {
+    updateUserDocs: updateUserDocs
+}
+
+function makeAppDocuments( )
+{
+
 }
 
 
@@ -78,7 +84,7 @@ async function _buildUserDocSet( user )
 {
     /************************************************************************************
 
-    const baseDocs = _makeBaseDocuments( user )
+    const baseDocs = makeBaseDocuments( user )
     if ( !baseDocs ) {
         throw( "invalid user object at buildUserRoot" )
     }

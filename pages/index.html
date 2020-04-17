@@ -22,16 +22,6 @@
       -->
       <script src="/scripts/webutils.js"></script>
       <script src="/scripts/weblocal.js"></script>
-      <!--
-        functions for interacting with main app, note that ipc is defined in weblocal.js
-      -->
-      <script>
-      function signout() 
-      {
-          // send the signout signal back to Main
-          ipc.send( 'user-signout', Date.now().toString() ) 
-      }
-      </script>
     </head>
 
     <body>
@@ -44,18 +34,32 @@
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
         <button type="button" class="btn btn-warning btn-sm" onclick="signout()">Sign Out</button>
       </div>
-      <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-        <h3>User and App Information</h3>
-        <button is="info-button" data-set="user" data-ask="profile">User Profile</button>
-        <button is="info-button" data-set="user" data-ask="provider">Identity Provider</button>
-        <button is="info-button" data-set="user" data-ask="context">Application Context</button>
+      <div id="main-window-content" class="d-none">
+        <div class="container border border-info rounded text-info m-3 p-3 vw-100">
+          <h3>User and App Information</h3>
+          <button is="info-button" data-set="user" data-ask="profile">User Profile</button>
+          <button is="info-button" data-set="user" data-ask="provider">Identity Provider</button>
+          <button is="info-button" data-set="user" data-ask="context">Application Context</button>
+        </div>
+        <div class="container border border-info rounded text-info m-3 p-3 vw-100">
+          <h3>Cloud Firestore Objects</h3>
+          <button is="info-button" data-set="docs" data-ask="account">docs/account</button>
+          <button is="info-button" data-set="docs" data-ask="profile">docs/profile</button>
+          <button is="info-button" data-set="docs" data-ask="provider">docs/provider</button>
+          <button is="info-button" data-set="docs" data-ask="session">docs/session</button>
+        </div>  
       </div>
-      <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-        <h3>Cloud Firestore Objects</h3>
-        <button is="info-button" data-set="docs" data-ask="account">docs/account</button>
-        <button is="info-button" data-set="docs" data-ask="profile">docs/profile</button>
-        <button is="info-button" data-set="docs" data-ask="provider">docs/provider</button>
-        <button is="info-button" data-set="docs" data-ask="session">docs/session</button>
+      <!--
+        The main-window-loading is shown when the app starts, until is gets the signal
+        from the main app to start, which should happen once the user is authenticated.
+      -->
+      <div id="main-window-loading" class="jumbotron jumbotron-fluid">
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="spinner-border spinner-border-lg text-secondary m-3" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <h3 class="text-secondary">Starting the application...</h3>
+        </div>
       </div>
       <!--
         The following is the modal dialog, which is normally not seen until one of the
@@ -77,6 +81,23 @@
       </div>
 
       <script>
+
+      // functions for interacting with main app, note that ipc is defined in weblocal.js
+
+      function signout() 
+      {
+          // send the signout signal back to Main
+          ipc.send( 'user-signout', Date.now().toString() ) 
+      }
+
+      function doneStarting()
+      {
+          // hide the opening spinner and show the contents
+          $("#main-window-loading").addClass("d-none")
+          $("#main-window-content").removeClass("d-none")
+      }
+
+      ipc.on( 'user-ready', doneStarting )
 
       // custom elements
       class InfoButton extends HTMLButtonElement {
@@ -160,7 +181,7 @@
         // do whatever you want after the user accepts OK
         // alert( "CLICKED ModalDialogAccept" )
       })
-  
+
       </script>
   
     </body>

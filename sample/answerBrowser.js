@@ -13,6 +13,8 @@
 
 const { firestore } = require( '../electron-firebase' )
 
+const docAboutmeFolder = "aboutme/"
+
 function buildProfile( user )
 {
     return {
@@ -36,7 +38,7 @@ function getUser( parameter )
 
 async function getDocs( filename )
 {
-    return await firestore.docs.read( "docs/" + filename )
+    return await firestore.doc.read( docAboutmeFolder + filename )
     .then( (docContent) => {
         return docContent
     })

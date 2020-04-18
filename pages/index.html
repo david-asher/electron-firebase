@@ -36,17 +36,17 @@
       </div>
       <div id="main-window-content" class="d-none">
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-          <h3>User and App Information</h3>
+          <h3>Global User and App Information</h3>
           <button is="info-button" data-set="user" data-ask="profile">User Profile</button>
           <button is="info-button" data-set="user" data-ask="provider">Identity Provider</button>
           <button is="info-button" data-set="user" data-ask="context">Application Context</button>
         </div>
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-          <h3>Cloud Firestore Objects</h3>
-          <button is="info-button" data-set="docs" data-ask="account">docs/account</button>
-          <button is="info-button" data-set="docs" data-ask="profile">docs/profile</button>
-          <button is="info-button" data-set="docs" data-ask="provider">docs/provider</button>
-          <button is="info-button" data-set="docs" data-ask="session">docs/session</button>
+          <h3>Cloud Firestore Objects in /aboutme</h3>
+          <button is="info-button" data-set="docs" data-ask="account">/account</button>
+          <button is="info-button" data-set="docs" data-ask="profile">/profile</button>
+          <button is="info-button" data-set="docs" data-ask="provider">/provider</button>
+          <button is="info-button" data-set="docs" data-ask="session">/session</button>
         </div>  
       </div>
       <!--
@@ -68,7 +68,10 @@
       <div class="modal fade text-info" id="ModalDialog" tabindex="-1" role="dialog" aria-labelledby="ModalDialogLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
           <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header align-items-center justify-content-start text-light bg-secondary">
+              <div class="spinner-border m-2">
+                  <span class="sr-only">Loading...</span>
+              </div>
               <h5 class="modal-title">---</h5>
             </div>
             <div class="modal-body">
@@ -84,20 +87,18 @@
 
       // functions for interacting with main app, note that ipc is defined in weblocal.js
 
+      ipc.on( 'user-ready', () => 
+      {
+          // hide the opening spinner and show the contents
+          $("#main-window-loading").addClass("d-none")
+          $("#main-window-content").removeClass("d-none")
+      })
+
       function signout() 
       {
           // send the signout signal back to Main
           ipc.send( 'user-signout', Date.now().toString() ) 
       }
-
-      function doneStarting()
-      {
-          // hide the opening spinner and show the contents
-          $("#main-window-loading").addClass("d-none")
-          $("#main-window-content").removeClass("d-none")
-      }
-
-      ipc.on( 'user-ready', doneStarting )
 
       // custom elements
       class InfoButton extends HTMLButtonElement {
@@ -114,12 +115,14 @@
       // functions for formatting data returned from info-buttons requests
       function isImagePath(url) 
       {
-        return( ( url || "" ).match( /\.(jpeg|jpg|gif|png)$/, 'i' ) != null )
+        if ( typeof url !== 'string' ) return false
+        return null != url.match( /\.(jpeg|jpg|gif|png)$/, 'i' )
       }
 
       function isURL( whatever )
       {
-        return( ( whatever || "" ).match( /^(http|https):\/\//, 'i' ) != null )
+        if ( typeof whatever !== 'string' ) return false
+        return null != whatever.match( /^(http|https):\/\//, 'i' )
       }
       
       function makeImageElement( url )
@@ -137,6 +140,11 @@
         return pretext
       }
 
+      function makeBasicElement( arg )
+      {
+        return String( arg )
+      }
+
       function createTableRow( table, ...args )
       {
         var row = $('<tr>')
@@ -147,7 +155,7 @@
           // make a formatting decision based on the content of this arg
           if ( $.isPlainObject(arg) )  cell.append( makeJsonElement(arg) )
           else if ( isURL(arg) )       cell.append( makeImageElement(arg) )
-          else                         cell.text(arg)
+          else                         cell.text( makeBasicElement( arg ) )
         }
       }
 
@@ -156,7 +164,7 @@
         // send the info-request back to the main app, and 
         // stuff each response into a table row
         var response = await askMain( 'info-request', request, parameter )
-        Object.entries(response).forEach( ([key,value]) => {
+        await Object.entries(response).forEach( ([key,value]) => {
           createTableRow( table, key, value )
         })
         return response
@@ -166,20 +174,24 @@
       {
         // The modal dialog is about to open, but it's generic.
         // So we need to set its title, and build a table with the right content.
-        var button = $(event.relatedTarget)
-        var modal = $(this)
+        const button = $(event.relatedTarget)
+        const modal = $(this)
+        const modalSpinner = modal.find('.modal-header').find('.spinner-border')
+        modalSpinner.removeClass("invisible")
         modal.find('.modal-title').text( button.text() )
         modal.find('.table').remove()
         var table = $('<table class="table">') 
         modal.find('.modal-body').append(table)
         setModalContent( table, button.data('set'), button.data('ask') )
+        .then( () => {
+          modalSpinner.addClass("invisible")
+        })
       })
 
       $('#ModalDialogAccept').on('click', function (event) 
       {
         var button = $(event.relatedTarget) // Button that triggered the modal
         // do whatever you want after the user accepts OK
-        // alert( "CLICKED ModalDialogAccept" )
       })
 
       </script>

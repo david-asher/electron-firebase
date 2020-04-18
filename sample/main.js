@@ -17,9 +17,7 @@
 // process.on('warning', e => console.warn(e.stack));
 
 const { app } = require('electron')
-
 const { mainapp } = require( '../electron-firebase' )
-
 const { infoRequest } = require('./answerBrowser')
 const { updateUserDocs } = require('./setupApp')
 
@@ -27,12 +25,6 @@ const { updateUserDocs } = require('./setupApp')
 mainapp.setupAppConfig()
 
 // electron-firebase framework event handling
-
-mainapp.event.once( "app-context", (appContext) => 
-{
-    // this is an early event that fires when the app context is established
-    console.log( "EVENT app-context: ", appContext.name )
-})
 
 mainapp.event.once( "user-login", (user) => 
 {
@@ -78,6 +70,7 @@ mainapp.event.once( "main-window-open", (window) =>
 // Quit when all windows are closed.
 app.on( 'window-all-closed', () => 
 {
+    console.log( "EVENT app window-all-closed" )
     mainapp.closeMainWindow()
 })
 
@@ -86,7 +79,10 @@ app.on( 'window-all-closed', () =>
 // browser windows. Some APIs can only be used after this event occurs.
 app.on( 'ready', (launchInfo) => 
 {
+    console.log( "EVENT app ready" )
     // launchInfo is macOS specific
+    // can't get the appContext until electron declares the app is ready
+    mainapp.getAppContext()
     mainapp.startMainApp()
 })
 

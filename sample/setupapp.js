@@ -39,15 +39,16 @@ function makeUserDocuments( user, appContext, appConfig )
         name: user.displayName,
         photo: user.photoURL || null,
         email: user.email || null,
-        created: user.creationTime || null, 
+        created: user.metadata.creationTime || null, 
         accessed: isNow
     }
 
     const session = {
+        uid: user.uid,
         apiKey: global.fbConfig.apiKey || null,
-        appName: user.appName || null,
-        domain: user.authDomain || null,
-        authenticated: user.lastSignInTime || null,
+        project: global.fbConfig.projectId || null,
+        domain: global.fbConfig.authDomain || null,
+        authenticated: user.metadata.lastSignInTime || null,
         start: isNow
     }
 
@@ -64,10 +65,10 @@ function makeUserDocuments( user, appContext, appConfig )
 async function updateUserDocs( user, appContext, appConfig )
 {
     const userDocs = makeUserDocuments( user, appContext, appConfig )
-    await firestore.docs.write( docAboutmeFolder + "profile", userDocs.profile )
-    await firestore.docs.write( docAboutmeFolder + "provider", userDocs.provider )
-    await firestore.docs.write( docAboutmeFolder + "account", userDocs.account )
-    await firestore.docs.write( docAboutmeFolder + "session", userDocs.session )
+    await firestore.doc.write( docAboutmeFolder + "profile", userDocs.profile )
+    await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
+    await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
+    await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
 }
 
 module.exports = {

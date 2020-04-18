@@ -37,5 +37,6 @@ ipc.send( 'about-browser', {
     dateFormat: Intl.DateTimeFormat().resolvedOptions(),
     numberFormat: Intl.NumberFormat().resolvedOptions(),
     startUTC: (new Date()).toUTCString(),
-    started: Date.now().toString()
+    started: Date.now().toString(),
+    online: navigator.onLine
 })

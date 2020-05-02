@@ -160,17 +160,13 @@
     {
         // authResult is https://firebase.google.com/docs/reference/js/firebase.auth#.UserCredential
         // the user's credentials get sent back to Main process via API
-
-        const thisUser = firebase.auth().currentUser
-
         const appUpdate = {
-            user: thisUser.toJSON(),
+            user: firebase.auth().currentUser.toJSON(),
             operationType: authResult.operationType || null,
             additionalUserInfo: authResult.additionalUserInfo,
             refreshToken: authResult.refreshToken || authResult.user.refreshToken,
             credential: authResult.credential || null
         }
-        
         return api( 'POST', getQueryParam( "logintoken" ), appUpdate )
         .then( (status) => {
             // redirect to the login complete page which should close this window
@@ -299,9 +295,7 @@
 
         // ask the Main process to get the configuration parameters for firebase authentication
         api( 'GET', getQueryParam( "firebaseconfig" ), null )
-        .then( (response) => {
-            // allow functions to access the firebase configuration set
-            const fbConfig = response
+        .then( (fbConfig) => {
 
             // initializeApp must be called before any other Firebase APIs
             firebase.initializeApp( fbConfig )

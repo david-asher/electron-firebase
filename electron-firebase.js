@@ -11,7 +11,7 @@
 module.exports = {
     applib:    require('./lib/modules/applibrary'),
     auth:      require('./lib/modules/authentication'),
-    store:     require('./lib/modules/fbstorage'),
+    fbstorage: require('./lib/modules/fbstorage'),
     file:      require('./lib/modules/fileutils'),
     firestore: require('./lib/modules/firestore'),
     local:     require('./lib/modules/localstorage'),

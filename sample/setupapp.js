@@ -11,7 +11,7 @@
  * @module setupapp
  */
 
-const { firestore } = require( '../electron-firebase' )
+const { firestore, fbstorage } = require( '../electron-firebase' )
 
 const docAboutmeFolder = "aboutme/"
 
@@ -69,6 +69,7 @@ async function updateUserDocs( user, appContext, appConfig )
     await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
     await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
     await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
+    await fbstorage.file.upload( "MyProfile", userDocs.profile )
 }
 
 module.exports = {

@@ -22,7 +22,10 @@ var App = null
 
 const customToken = functions.https.onCall( (data,context) => 
 {
-    if ( !App ) App = admin.initializeApp( { serviceAccountId: data.serviceAccountId } )
+    if ( !App ) App = admin.initializeApp( { 
+        serviceAccountId: data.serviceAccountId,
+        projectId: data.projectId
+    })
     return admin.auth().createCustomToken( data.userid )
 })
 

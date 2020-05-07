@@ -64,12 +64,25 @@ function makeUserDocuments( user, appContext, appConfig )
 
 async function updateUserDocs( user, appContext, appConfig )
 {
-    const userDocs = makeUserDocuments( user, appContext, appConfig )
-    await firestore.doc.write( docAboutmeFolder + "profile", userDocs.profile )
-    await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
-    await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
-    await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
-    await fbstorage.file.upload( "MyProfile", userDocs.profile )
+    try {
+        const userDocs = makeUserDocuments( user, appContext, appConfig )
+        await firestore.doc.write( docAboutmeFolder + "profile", userDocs.profile )
+        await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
+        await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
+        await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
+
+        await fbstorage.file.upload( "info/MyProfile", userDocs.profile )
+        await fbstorage.file.upload( "info/MyProvider", userDocs.provider )
+    //    await fbstorage.file.upload( "account/my-account", userDocs.account )
+    //    await fbstorage.file.upload( "account/my-session", userDocs.session )
+
+    //    await fbstorage.file.delete( "account/my-account" )
+        await fbstorage.file.delete( "account/my-session" )
+
+    }
+    catch (error) {
+        console.error( error )
+    }
 }
 
 module.exports = {

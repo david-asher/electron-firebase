@@ -17,7 +17,7 @@
 // process.on('warning', e => console.warn(e.stack));
 
 const { app } = require('electron')
-const { mainapp } = require( '../electron-firebase' )
+const { mainapp, fbstorage } = require( '../electron-firebase' )
 const { infoRequest } = require('./answerBrowser')
 const { updateUserDocs } = require('./setupApp')
 
@@ -43,6 +43,15 @@ mainapp.event.once( "user-ready", ( user ) =>
     console.log( "EVENT user-ready: ", user.displayName )
     updateUserDocs( user, global.appContext, global.appConfig )
     mainapp.sendToBrowser( 'user-ready' )
+
+    fbstorage.file.list("info")
+    .then( (response) => {
+        console.log( "info: ", response )
+    })
+    fbstorage.file.list("account")
+    .then( (response) => {
+        console.log( "account: ", response )
+    })
 })
 
 mainapp.event.once( "main-window-open", (window) => 
@@ -82,8 +91,13 @@ app.on( 'ready', (launchInfo) =>
     console.log( "EVENT app ready" )
     // launchInfo is macOS specific
     // can't get the appContext until electron declares the app is ready
-    mainapp.getAppContext()
-    mainapp.startMainApp()
+    try {
+        mainapp.getAppContext()
+        mainapp.startMainApp()
+    }
+    catch (error) {
+        console.error( error )
+    }
 })
 
 // see: https://electronjs.org/docs/api/app#event-activate-macos

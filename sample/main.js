@@ -43,15 +43,22 @@ mainapp.event.once( "user-ready", ( user ) =>
     console.log( "EVENT user-ready: ", user.displayName )
     updateUserDocs( user, global.appContext, global.appConfig )
     mainapp.sendToBrowser( 'user-ready' )
-
+/*****
     fbstorage.file.list("info")
     .then( (response) => {
         console.log( "info: ", response )
+    })
+    .catch( (error) => {
+        console.error( "info ERROR: ", error )
     })
     fbstorage.file.list("account")
     .then( (response) => {
         console.log( "account: ", response )
     })
+    .catch( (error) => {
+        console.error( "account ERROR: ", error )
+    })
+    */
 })
 
 mainapp.event.once( "main-window-open", (window) => 

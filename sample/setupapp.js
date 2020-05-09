@@ -73,12 +73,20 @@ async function updateUserDocs( user, appContext, appConfig )
 
         await fbstorage.file.upload( "info/MyProfile", userDocs.profile )
         await fbstorage.file.upload( "info/MyProvider", userDocs.provider )
-    //    await fbstorage.file.upload( "account/my-account", userDocs.account )
-    //    await fbstorage.file.upload( "account/my-session", userDocs.session )
+        await fbstorage.file.upload( "account/my-account", userDocs.account )
+        await fbstorage.file.upload( "account/my-session", userDocs.session )
 
-    //    await fbstorage.file.delete( "account/my-account" )
-        await fbstorage.file.delete( "account/my-session" )
+        await fbstorage.app.upload( "account/my-session", userDocs.session )
+        await fbstorage.app.upload( "info/MyProvider", userDocs.provider )
 
+        await fbstorage.public.upload( "account/my-session", userDocs.session )
+        await fbstorage.public.upload( "info/MyProvider", userDocs.provider )
+
+//        await fbstorage.file.delete( "account/does-not-exist" )
+//        await fbstorage.file.delete( "account/my-account" )
+//        await fbstorage.file.delete( "account/my-session" )
+
+        console.log( "updateUserDocs DONE" )
     }
     catch (error) {
         console.error( error )

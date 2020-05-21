@@ -71,10 +71,10 @@ async function updateUserDocs( user, appContext, appConfig )
         await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
         await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
 
-        await fbstorage.file.upload( "info/MyProfile", userDocs.profile )
-        await fbstorage.file.upload( "info/MyProvider", userDocs.provider )
-        await fbstorage.file.upload( "account/my-account", userDocs.account )
-        await fbstorage.file.upload( "account/my-session", userDocs.session )
+        await fbstorage.file.upload( "/info/first/second/MyProfile", userDocs.profile )
+        await fbstorage.file.upload( "/info/MyProvider", userDocs.provider )
+        await fbstorage.file.upload( "/account/third/my-account", userDocs.account )
+        await fbstorage.file.upload( "/account/my-session", userDocs.session )
 
         await fbstorage.app.upload( "account/my-session", userDocs.session )
         await fbstorage.app.upload( "info/MyProvider", userDocs.provider )
@@ -82,9 +82,13 @@ async function updateUserDocs( user, appContext, appConfig )
         await fbstorage.public.upload( "account/my-session", userDocs.session )
         await fbstorage.public.upload( "info/MyProvider", userDocs.provider )
 
-        await fbstorage.file.delete( "account/does-not-exist" )
-        await fbstorage.file.delete( "account/my-account" )
-//        await fbstorage.file.delete( "account/my-session" )
+        fbstorage.file.folders().then( (folderList) => {
+            console.log( "NOTHING folderList: ", folderList )
+        })
+
+        fbstorage.file.folders( "account" ).then( (folderList) => {
+            console.log( "account folderList: ", folderList )
+        })
 
         console.log( "updateUserDocs DONE" )
     }

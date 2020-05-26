@@ -66,31 +66,32 @@ async function updateUserDocs( user, appContext, appConfig )
 {
     try {
         const userDocs = makeUserDocuments( user, appContext, appConfig )
-        await firestore.doc.write( docAboutmeFolder + "profile", userDocs.profile )
-        await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
-        await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
-        await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )
 
-        await fbstorage.file.upload( "/info/first/second/MyProfile", userDocs.profile )
-        await fbstorage.file.upload( "/info/MyProvider", userDocs.provider )
-        await fbstorage.file.upload( "/account/third/my-account", userDocs.account )
-        await fbstorage.file.upload( "/account/my-session", userDocs.session )
+        const aboutMe = await firestore.doc.about( docAboutmeFolder + "profile" )
 
-        await fbstorage.app.upload( "account/my-session", userDocs.session )
-        await fbstorage.app.upload( "info/MyProvider", userDocs.provider )
+        if ( !aboutMe || !aboutMe.exists ) {
+            await firestore.doc.write( docAboutmeFolder + "profile", userDocs.profile )
+            await firestore.doc.write( docAboutmeFolder + "provider", userDocs.provider )
+            await firestore.doc.write( docAboutmeFolder + "account", userDocs.account )
+            await firestore.doc.write( docAboutmeFolder + "session", userDocs.session )    
+        }
 
-        await fbstorage.public.upload( "account/my-session", userDocs.session )
-        await fbstorage.public.upload( "info/MyProvider", userDocs.provider )
+        const myProfile = await fbstorage.file.about( "aboutme/MyProfile" )
 
-        fbstorage.file.folders().then( (folderList) => {
-            console.log( "NOTHING folderList: ", folderList )
-        })
-
-        fbstorage.file.folders( "account" ).then( (folderList) => {
-            console.log( "account folderList: ", folderList )
-        })
-
-        console.log( "updateUserDocs DONE" )
+        if ( !myProfile || !myProfile.exists ) {
+            await fbstorage.file.upload( "aboutme/MyProfile", userDocs.profile )
+            await fbstorage.file.upload( "aboutme/MyAccount", userDocs.account )
+            await fbstorage.file.upload( "/info/first/second/MyProfile", userDocs.profile )
+            await fbstorage.file.upload( "/info/MyProvider", userDocs.provider )
+            await fbstorage.file.upload( "/account/third/my-account", userDocs.account )
+            await fbstorage.file.upload( "/account/my-session", userDocs.session )
+    
+            await fbstorage.app.upload( "account/my-session", userDocs.session )
+            await fbstorage.app.upload( "info/MyProvider", userDocs.provider )
+    
+            await fbstorage.public.upload( "account/my-session", userDocs.session )
+            await fbstorage.public.upload( "info/MyProvider", userDocs.provider )  
+        }
     }
     catch (error) {
         console.error( error )

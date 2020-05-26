@@ -11,7 +11,7 @@
  * @module answerBrowser
  */
 
-const { firestore } = require( '../electron-firebase' )
+const { firestore, fbstorage } = require( '../electron-firebase' )
 
 const docAboutmeFolder = "aboutme/"
 
@@ -38,24 +38,59 @@ function getUser( parameter )
 
 async function getDocs( filename )
 {
-    return await firestore.doc.read( docAboutmeFolder + filename )
-    .then( (docContent) => {
-        return docContent
-    })
-    .catch( (error) => {
-        console.error( "getDocs: ", error )
-    })
+    var docContent
+    try {
+        docContent = await firestore.doc.read( docAboutmeFolder + filename )
+    }
+    catch (error) {
+        console.error( "getDocs: ", filename, error )
+        docContent = {}
+    }
+    return docContent
 }
 
-async function infoRequest( request, parameter )
+async function listFolders( domain = file )
+// domain is file | app | public
+{
+    var folderList
+    try {
+        folderList = await fbstorage[ domain ].folders()
+    }
+    catch (error) {
+        console.error( "listFolders: ", domain, error )
+        folderList = {}
+    }
+    return folderList
+}
+
+async function listFiles( domain, folderPath )
+{
+    var fileList
+    try {
+        fileList = await fbstorage[ domain ].list( folderPath )
+    }
+    catch (error) {
+        console.error( "listFiles: ", domain, error )
+        fileList = {}
+    }
+    return fileList
+}
+
+async function infoRequest( request, parameters )
 {
     var sendContent
     switch( request ) {
     case 'user': 
-        sendContent = await getUser( parameter )
+        sendContent = await getUser( parameters[0] )
         break;
     case 'docs':
-        sendContent = await getDocs( parameter )
+        sendContent = await getDocs( parameters[0] )
+        break;
+    case 'folder-list':
+        sendContent = await listFolders( parameters[0] )
+        break;
+    case 'file-list':
+        sendContent = await listFiles( parameters[0], parameters[1] )
         break;
     }
     return sendContent

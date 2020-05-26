@@ -22,14 +22,15 @@
       -->
       <script src="/scripts/webutils.js"></script>
       <script src="/scripts/weblocal.js"></script>
-    </head>
+      <style>
+        a.nav-link:hover:not(.active) {
+            color: #F00F00 !important;
+            cursor: pointer;
+        }
+      </style>
+      </head>
 
     <body>
-      <!--
-        This page is simple, just a title bar and a few horizontal sections that 
-        contain buttons, each button will send a request back to the main app and
-        open a dialog box that will show the response data.
-      -->
       <div class="alert alert-secondary" role="alert">
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
         <button type="button" class="btn btn-warning btn-sm" onclick="signout()">Sign Out</button>
@@ -47,6 +48,19 @@
           <button is="info-button" data-set="docs" data-ask="profile">/profile</button>
           <button is="info-button" data-set="docs" data-ask="provider">/provider</button>
           <button is="info-button" data-set="docs" data-ask="session">/session</button>
+        </div>  
+        <div class="container border border-info rounded text-info m-3 p-3 vw-100">
+          <h3>Cloud Firestore Objects</h3>
+          <div class="row">
+            <div class="col-3">
+              <div id="nav-folder-links" class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+              </div>
+            </div>
+            <div class="col-9">
+              <div id="nav-folder-files" class="tab-content" id="v-pills-tabContent">
+              </div>
+            </div>
+          </div>
         </div>  
       </div>
       <!--
@@ -86,13 +100,6 @@
       <script>
 
       // functions for interacting with main app, note that ipc is defined in weblocal.js
-
-      ipc.on( 'user-ready', () => 
-      {
-          // hide the opening spinner and show the contents
-          $("#main-window-loading").addClass("d-none")
-          $("#main-window-content").removeClass("d-none")
-      })
 
       function signout() 
       {
@@ -163,17 +170,57 @@
       {
         // send the info-request back to the main app, and 
         // stuff each response into a table row
-        var response = await askMain( 'info-request', request, parameter )
+        const response = await askMain( 'info-request', request, parameter )
         await Object.entries(response).forEach( ([key,value]) => {
           createTableRow( table, key, value )
         })
         return response
       }
 
+      function createNavLink( navColumn, link )
+      {
+        var anchor = $('<a>')
+        anchor.addClass( "nav-link" )
+        anchor.attr( "data-toggle", "pill" )
+        anchor.attr( "role", "tab" )
+        anchor.attr( "aria-controls", "v-pills-profile" )
+        anchor.attr( 'href', '#folder-list-anchor')
+        anchor.attr( "data-link", link )
+        anchor.text( link )
+        navColumn.append( anchor )
+      }
+
+      async function setFolderList( domain = "file" )
+      {
+        // ask the main app for the folder list
+        // put each folder into a nav column of links
+        var navColumn = $("#nav-folder-links")
+        const response = await askMain( "info-request", "folder-list", domain )
+        await response.forEach( (element) => {
+          createNavLink( navColumn, element )
+        })
+        return response
+      }
+
+      $('#nav-folder-links').on('click', function (event) {
+        event.preventDefault()
+        const anchor = $(event.target)
+        const panel = $(this)
+
+        alert( anchor.data('link') )
+        askMain( "info-request", "file-list", 'file', anchor.data('link') )
+        .then( (response) => {
+          response.forEach( (element) => {
+            console.log( element )
+          })
+        })
+      })
+
       $('#ModalDialog').on('show.bs.modal', function (event) 
       {
         // The modal dialog is about to open, but it's generic.
         // So we need to set its title, and build a table with the right content.
+        event.preventDefault()
         const button = $(event.relatedTarget)
         const modal = $(this)
         const modalSpinner = modal.find('.modal-header').find('.spinner-border')
@@ -192,6 +239,16 @@
       {
         var button = $(event.relatedTarget) // Button that triggered the modal
         // do whatever you want after the user accepts OK
+      })
+
+      ipc.on( 'user-ready', () => 
+      {
+          // hide the opening spinner and show the contents
+          $("#main-window-loading").addClass("d-none")
+          $("#main-window-content").removeClass("d-none")
+
+          // populate the folder list
+          setFolderList('file')
       })
 
       </script>

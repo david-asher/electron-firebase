@@ -49,7 +49,7 @@ async function getDocs( filename )
     return docContent
 }
 
-async function listFolders( domain = file )
+async function listFolders( domain = "file" )
 // domain is file | app | public
 {
     var folderList
@@ -63,11 +63,18 @@ async function listFolders( domain = file )
     return folderList
 }
 
-async function listFiles( domain, folderPath )
+async function listFiles( folderPath, domain = "file"  )
 {
+
+console.log( "listFiles: ", folderPath, domain )
+
     var fileList
     try {
         fileList = await fbstorage[ domain ].list( folderPath )
+
+console.log( "fileList: ", fileList )
+
+        
     }
     catch (error) {
         console.error( "listFiles: ", domain, error )

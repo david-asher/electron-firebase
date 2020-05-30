@@ -28,8 +28,8 @@
             cursor: pointer;
         }
       </style>
-      </head>
-
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
     <body>
       <div class="alert alert-secondary" role="alert">
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
@@ -43,13 +43,6 @@
           <button is="info-button" data-set="user" data-ask="context">Application Context</button>
         </div>
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-          <h3>Cloud Firestore Objects in /aboutme</h3>
-          <button is="info-button" data-set="docs" data-ask="account">/account</button>
-          <button is="info-button" data-set="docs" data-ask="profile">/profile</button>
-          <button is="info-button" data-set="docs" data-ask="provider">/provider</button>
-          <button is="info-button" data-set="docs" data-ask="session">/session</button>
-        </div>  
-        <div class="container border border-info rounded text-info m-3 p-3 vw-100">
           <h3>Cloud Firestore Objects</h3>
           <div class="row">
             <div class="col-3">
@@ -57,7 +50,21 @@
               </div>
             </div>
             <div class="col-9">
-              <div id="nav-folder-files" class="tab-content" id="v-pills-tabContent">
+              <div id="nav-folder-files" class="tab-content" style="overflow-y: scroll;">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">File</th>
+                      <th scope="col">Modified</th>
+                      <th scope="col">Size</th>
+                    </tr>
+                  </thead>
+                  <tbody class="tableBody">
+                    <!--
+                      <th scope="col">Link</th>
+                    -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -96,7 +103,6 @@
           </div>
         </div>
       </div>
-
       <script>
 
       // functions for interacting with main app, note that ipc is defined in weblocal.js
@@ -179,14 +185,14 @@
 
       function createNavLink( navColumn, link )
       {
-        var anchor = $('<a>')
-        anchor.addClass( "nav-link" )
-        anchor.attr( "data-toggle", "pill" )
-        anchor.attr( "role", "tab" )
+        const anchor = $('<a class="nav-link">') // text-info
+        anchor.attr( "data-toggle", "tab" )
+        anchor.attr( "role", "pill" )
         anchor.attr( "aria-controls", "v-pills-profile" )
         anchor.attr( 'href', '#folder-list-anchor')
         anchor.attr( "data-link", link )
         anchor.text( link )
+        anchor.prepend( $('<i class="fa fa-fw fa-lg fa-folder mr-1 ">') )
         navColumn.append( anchor )
       }
 
@@ -202,25 +208,46 @@
         return response
       }
 
-      $('#nav-folder-links').on('click', function (event) {
-        event.preventDefault()
+      function displayDate( fileISOString )
+      {
+        const fileDate = new Date( fileISOString )
+        var showDate = fileDate.toLocaleDateString( undefined, displayDate.doptions )
+        if ( showDate == (new Date()).toLocaleDateString( undefined, displayDate.doptions ) ) {
+          showDate = fileDate.toLocaleTimeString()
+        }
+        return showDate
+      }
+
+      displayDate.doptions = {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }
+
+      async function setFileList( fileList )
+      {
+        var tableBody = $("#nav-folder-files").find('.tableBody')
+        fileList.forEach( (element) => {
+          console.log( element )
+          createTableRow( tableBody, element.name, displayDate(element.updated), element.size )
+        })
+      }
+
+      $('#nav-folder-links').on('click', function (event) 
+      {
         const anchor = $(event.target)
         const panel = $(this)
-
-        alert( anchor.data('link') )
-        askMain( "info-request", "file-list", 'file', anchor.data('link') )
-        .then( (response) => {
-          response.forEach( (element) => {
-            console.log( element )
-          })
-        })
+        // allow the default handler to operate, then come back
+        setTimeout( () => {
+          askMain( "info-request", "file-list", anchor.data('link'), 'file' )
+          .then( setFileList )
+        }, 1 )
       })
 
       $('#ModalDialog').on('show.bs.modal', function (event) 
       {
         // The modal dialog is about to open, but it's generic.
         // So we need to set its title, and build a table with the right content.
-        event.preventDefault()
         const button = $(event.relatedTarget)
         const modal = $(this)
         const modalSpinner = modal.find('.modal-header').find('.spinner-border')

@@ -18,7 +18,7 @@
 
 const { app } = require('electron')
 const { mainapp, fbstorage } = require( '../electron-firebase' )
-const { infoRequest } = require('./answerBrowser')
+const { infoRequest, showFile } = require('./answerBrowser')
 const { updateUserDocs } = require('./setupApp')
 
 // one call to setup the electron-firebase framework
@@ -69,15 +69,10 @@ mainapp.event.once( "main-window-open", (window) =>
     mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
 
     // one of the information request buttons was clicked
-    mainapp.getFromBrowser( 'info-request', (request, parameter) => {
-        infoRequest( request, parameter )
-        .then( (content) => {
-            mainapp.sendToBrowser( 'info-request', content )
-        })
-        .catch( (error) => {
-            console.error( "info-request: ", error )
-        })
-    })    
+    mainapp.getFromBrowser( 'info-request', infoRequest )
+
+    // action request from browser
+    mainapp.getFromBrowser( 'show-file', showFile )
 })
 
 // electron app event handling

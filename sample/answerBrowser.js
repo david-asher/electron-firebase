@@ -11,7 +11,7 @@
  * @module answerBrowser
  */
 
-const { firestore, fbstorage } = require( '../electron-firebase' )
+const { mainapp, firestore, fbstorage } = require( '../electron-firebase' )
 
 const docAboutmeFolder = "aboutme/"
 
@@ -65,16 +65,9 @@ async function listFolders( domain = "file" )
 
 async function listFiles( folderPath, domain = "file"  )
 {
-
-console.log( "listFiles: ", folderPath, domain )
-
     var fileList
     try {
         fileList = await fbstorage[ domain ].list( folderPath )
-
-console.log( "fileList: ", fileList )
-
-        
     }
     catch (error) {
         console.error( "listFiles: ", domain, error )
@@ -89,20 +82,39 @@ async function infoRequest( request, parameters )
     switch( request ) {
     case 'user': 
         sendContent = await getUser( parameters[0] )
-        break;
+        break
     case 'docs':
         sendContent = await getDocs( parameters[0] )
-        break;
+        break
     case 'folder-list':
         sendContent = await listFolders( parameters[0] )
-        break;
+        break
     case 'file-list':
         sendContent = await listFiles( parameters[0], parameters[1] )
+        break
+    }
+    mainapp.sendToBrowser( 'info-request', sendContent )
+}
+
+async function getContent( filepath, domain = "file" )
+{
+    if ( !filepath || filepath.length == 0 ) return {}
+    return await fbstorage[ domain ].download( filepath )
+}
+
+async function showFile( request, parameters )
+{
+    switch( request ) {
+    case 'path': 
+        mainapp.sendToBrowser( 'show-file', await getContent( parameters[0], parameters[1] ) )
+        break;
+    case 'url':
+//        sendContent = await getDocs( parameters[0] )
         break;
     }
-    return sendContent
 }
 
 module.exports = {
-    infoRequest: infoRequest
+    infoRequest: infoRequest,
+    showFile: showFile
 }

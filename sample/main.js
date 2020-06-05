@@ -17,7 +17,7 @@
 // process.on('warning', e => console.warn(e.stack));
 
 const { app } = require('electron')
-const { mainapp, fbstorage } = require( '../electron-firebase' )
+const { mainapp } = require( '../electron-firebase' )
 const { infoRequest, showFile } = require('./answerBrowser')
 const { updateUserDocs } = require('./setupApp')
 

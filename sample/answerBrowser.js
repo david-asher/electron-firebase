@@ -11,7 +11,7 @@
  * @module answerBrowser
  */
 
-const { mainapp, firestore, fbstorage } = require( '../electron-firebase' )
+const { mainapp, firestore, fbstorage, fbwindow } = require( '../electron-firebase' )
 
 const docAboutmeFolder = "aboutme/"
 
@@ -76,7 +76,7 @@ async function listFiles( folderPath, domain = "file"  )
     return fileList
 }
 
-async function infoRequest( request, parameters )
+async function infoRequest( request, ...parameters )
 {
     var sendContent
     switch( request ) {
@@ -102,14 +102,27 @@ async function getContent( filepath, domain = "file" )
     return await fbstorage[ domain ].download( filepath )
 }
 
-async function showFile( request, parameters )
+function openWithUrl( url, contentType )
+{
+    // see BrowserWindow options: https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
+    const openOptions = {
+        show: true,
+        title: url,
+        skipTaskbar: true,
+        parent: global.mainWindow,
+        autoHideMenuBar: true
+    }
+    return new fbwindow.open( url, openOptions )
+}
+
+async function showFile( request, ...parameters )
 {
     switch( request ) {
     case 'path': 
-        mainapp.sendToBrowser( 'show-file', await getContent( parameters[0], parameters[1] ) )
+        mainapp.sendToBrowser( 'show-file', await getContent( parameters[0], parameters[1] || undefined ) )
         break;
     case 'url':
-//        sendContent = await getDocs( parameters[0] )
+        openWithUrl( parameters[0], parameters[1] )
         break;
     }
 }

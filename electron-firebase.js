@@ -16,6 +16,6 @@ module.exports = {
     firestore: require('./lib/modules/firestore'),
     local:     require('./lib/modules/localstorage'),
     server:    require('./lib/modules/webserver'),
-    window:    require('./lib/modules/windows'),
+    fbwindow:  require('./lib/modules/windows'),
     mainapp:   require('./lib/modules/mainapp')
 }

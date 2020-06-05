@@ -233,22 +233,22 @@
         year: "numeric"
       }
 
-      function imageLink( iconClass, url )
+      function imageLink( iconClass, url, mime )
       {
-        return `<a class="fa fa-fw fa-lg fa-${iconClass} mr-1" href="#" data-url="${url}">`
+        const link = `<a class="fa fa-fw fa-lg fa-${iconClass} mr-1" href="#" data-url="${url}" data-content="${mime}">`
+        return link
       }
 
       async function setFileList( fileList )
       {
         var tableBody = $("#nav-folder-files").find('.tableBody')
         fileList.forEach( (element) => {
-          console.log( element )
           createTableRow( tableBody, 
             element.name, 
             displayDate(element.updated), 
             element.size,
             imageLink( "file-text", element.path ),
-            imageLink( "cloud-download", element.downloadUrl ) )
+            imageLink( "cloud-download", element.downloadUrl, element.contentType ) )
         })
       }
 
@@ -263,33 +263,30 @@
       {
         const anchor = $(event.target)
         const panel = $(this)
-        // allow the default handler to operate, then come back
-        setTimeout( () => {
-          askMain( "info-request", "file-list", anchor.data('link'), 'file' )
-          .then( setFileList )
-        }, 1 )
+        askMain( "info-request", "file-list", anchor.data('link'), 'file' )
+        .then( setFileList )
       })
 
       $(document).on( "click", "a.fa-file-text", async (event) =>
       {
-        const url = $(event.target).data("url") 
+        const target = $(event.target)
+        const url = target.data("url") 
         const modal = $("#ModalDialog")
-        modal.modal('show')
+        const card = $('<div class="card-body">') 
         modal.find('.modal-title').text( url )
-        await askMain( "show-file", "path", url )
-        .then( (response) => {
-          const card = $('<div class="card-body">') 
-          card.append( makeJsonElement(response) )
-          modal.find('.modal-body').append(card)
-          showSpinner( modal, false )
-        })
+        modal.modal('show')
+        const response = await askMain( "show-file", "path", url )
+        card.append( makeJsonElement(response) )
+        modal.find('.modal-body').append(card)
+        showSpinner( modal, false )
       })
 
       $(document).on( "click", "a.fa-cloud-download", (event) =>
       {
         const anchor = $(event.target)
-        askMain( "show-file", "url", anchor.data( "url") )
-//        console.log( "a.fa-cloud-download: ", anchor.data( "url"), anchor )
+        const url = anchor.data("url") 
+        const mime = anchor.data("content")
+        askMain( "show-file", "url", url, mime )
       })
 
       $('#ModalDialog').on('show.bs.modal', async (event) =>

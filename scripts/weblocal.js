@@ -26,7 +26,7 @@ function askMain( topic, request, ...parameters )
     ipc.once( topic, ( event, response ) => {
       resolve( response )
     })
-    ipc.send( topic, request, parameters )
+    ipc.send( topic, request, parameters[0], parameters[1], parameters[2]  )
   })
 }
 

@@ -47,6 +47,9 @@
           <div class="row">
             <div class="col-3">
               <div id="nav-folder-links" class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                <div class="spinner-border spinner-border-lg text-secondary m-3" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
               </div>
             </div>
             <div class="col-9">
@@ -62,9 +65,6 @@
                     </tr>
                   </thead>
                   <tbody class="tableBody">
-                    <!--
-                      <th scope="col">Link</th>
-                    -->
                   </tbody>
                 </table>
               </div>
@@ -126,6 +126,20 @@
         }
       }
       customElements.define('info-button', InfoButton, {extends: 'button'});
+
+      function showSpinner( parent, bShowState )
+      {
+        const spinner = parent.find('.spinner-border')
+        if ( bShowState ) spinner.removeClass("invisible")
+        else spinner.addClass("invisible")
+      }
+
+      function insertSpinner( parent, bShowState )
+      {
+        const spinner = parent.find('.spinner-border')
+        if ( bShowState ) spinner.removeClass("d-none")
+        else spinner.addClass("d-none")
+      }
 
       // functions for formatting data returned from info-buttons requests
       function isImagePath(url) 
@@ -211,6 +225,7 @@
         // put each folder into a nav column of links
         var navColumn = $("#nav-folder-links")
         const response = await askMain( "info-request", "folder-list", domain )
+        insertSpinner( navColumn, false )
         await response.forEach( (element) => {
           createNavLink( navColumn, element )
         })
@@ -242,6 +257,7 @@
       async function setFileList( fileList )
       {
         var tableBody = $("#nav-folder-files").find('.tableBody')
+        tableBody.empty()
         fileList.forEach( (element) => {
           createTableRow( tableBody, 
             element.name, 
@@ -250,13 +266,6 @@
             imageLink( "file-text", element.path ),
             imageLink( "cloud-download", element.downloadUrl, element.contentType ) )
         })
-      }
-
-      function showSpinner( parent, bShowState )
-      {
-        const spinner = parent.find('.modal-header').find('.spinner-border')
-        if ( bShowState ) spinner.removeClass("invisible")
-        else spinner.addClass("invisible")
       }
 
       $('#nav-folder-links').click( (event) =>
@@ -316,7 +325,7 @@
         // do whatever you want after the user accepts OK
       })
 
-      ipc.on( 'user-ready', () => 
+      ipc.on( 'app-ready', () => 
       {
           // hide the opening spinner and show the contents
           $("#main-window-loading").addClass("d-none")

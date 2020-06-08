@@ -10,6 +10,7 @@
         "firstWidth": 1000,
         "firstHeight": 800,
         "persistentUser": true,
+        "preferCachedReads": true,
         "staticContent": [
             "pages",
             "scripts",

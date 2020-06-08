@@ -53,7 +53,7 @@ function api( method, url, payload )
             // readyState 4 is DONE
             if ( xhr.readyState !== 4 ) return
             if ( xhr.status >= 300 ) {
-                console.log( "ERROR in api: ", method, url, xhr.status, xhr.response )
+                console.error( "ERROR in api: ", method, url, xhr.status, xhr.response )
                 reject( {error: "API ERROR", url: url, payload: payload, status: xhr.status } )
                 return
             }

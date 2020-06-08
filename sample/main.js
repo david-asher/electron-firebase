@@ -26,44 +26,34 @@ mainapp.setupAppConfig()
 
 // electron-firebase framework event handling
 
+function logwrite( ...stuff )
+{
+    if ( !global.appConfig.debugMode ) return
+    console.log.apply( null, stuff )
+}
+
 mainapp.event.once( "user-login", (user) => 
 {
     // this event will trigger on sign-in, not every time the app runs with cached credentials
-    console.log( "EVENT user-login: ", user.displayName )
+    logwrite( "EVENT user-login: ", user.displayName )
 })
 
 mainapp.event.once( "main-window-close", (window) => 
 {
     // use this to clean up things
-    console.log( "EVENT main-window-close: ", window.getTitle() )
+    logwrite( "EVENT main-window-close: ", window.getTitle() )
 })
 
-mainapp.event.once( "user-ready", ( user ) => 
+mainapp.event.once( "user-ready", async ( user ) => 
 {
-    console.log( "EVENT user-ready: ", user.displayName )
-    updateUserDocs( user, global.appContext, global.appConfig )
-    mainapp.sendToBrowser( 'user-ready' )
-/*****
-    fbstorage.file.list("info")
-    .then( (response) => {
-        console.log( "info: ", response )
-    })
-    .catch( (error) => {
-        console.error( "info ERROR: ", error )
-    })
-    fbstorage.file.list("account")
-    .then( (response) => {
-        console.log( "account: ", response )
-    })
-    .catch( (error) => {
-        console.error( "account ERROR: ", error )
-    })
-    */
+    await updateUserDocs( user, global.appContext, global.appConfig )
+    logwrite( "EVENT user-ready: ", user.displayName )
+    mainapp.sendToBrowser( 'app-ready' )
 })
 
 mainapp.event.once( "main-window-open", (window) => 
 {
-    console.log( "EVENT main-window-open: ", window.getTitle() )
+    logwrite( "EVENT main-window-open: ", window.getTitle() )
 
     // signout button was pressed
     mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
@@ -81,7 +71,7 @@ mainapp.event.once( "main-window-open", (window) =>
 // Quit when all windows are closed.
 app.on( 'window-all-closed', () => 
 {
-    console.log( "EVENT app window-all-closed" )
+    logwrite( "EVENT app window-all-closed" )
     mainapp.closeMainWindow()
 })
 
@@ -90,7 +80,7 @@ app.on( 'window-all-closed', () =>
 // browser windows. Some APIs can only be used after this event occurs.
 app.on( 'ready', (launchInfo) => 
 {
-    console.log( "EVENT app ready" )
+    logwrite( "EVENT app ready" )
     // launchInfo is macOS specific
     // can't get the appContext until electron declares the app is ready
     try {
@@ -108,7 +98,7 @@ app.on( 'ready', (launchInfo) =>
 // application when it's already running, or clicking on the application's dock or taskbar icon.
 app.on( 'activate', (appEvent,hasVisibleWindows) => 
 {
-    console.log( "EVENT app activate: " )
+    logwrite( "EVENT app activate " )
     // do whatever
 })
 

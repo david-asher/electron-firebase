@@ -37,13 +37,19 @@
       </div>
       <div id="main-window-content" class="d-none">
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-          <h3>Global User and App Information</h3>
+          <h3>User and App Information (firebase.database)</h3>
           <button is="info-button" data-set="user" data-ask="profile">User Profile</button>
           <button is="info-button" data-set="user" data-ask="provider">Identity Provider</button>
           <button is="info-button" data-set="user" data-ask="context">Application Context</button>
         </div>
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
-          <h3>Cloud Firestore Objects</h3>
+          <h3>Cloud Objects (firebase.firestore)
+            <div id="file-domain" class="btn-group float-right font-weight-bold" role="group" aria-label="File Domain Selector">
+              <button type="button" class="btn btn-sm btn-outline-info active" value="file" >My Files</button>
+              <button type="button" class="btn btn-sm btn-outline-info " value="app" >Shared App Files</button>
+              <button type="button" class="btn btn-sm btn-outline-info " value="public" >Public Files</button>
+            </div>
+          </h3>
           <div class="row">
             <div class="col-3">
               <div id="nav-folder-links" class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
@@ -219,11 +225,14 @@
         navColumn.append( anchor )
       }
 
-      async function setFolderList( domain = "file" )
+      async function setFolderList()
       {
         // ask the main app for the folder list
         // put each folder into a nav column of links
-        var navColumn = $("#nav-folder-links")
+        const domain = $("#file-domain").find("button.active").val()
+        const navColumn = $("#nav-folder-links")
+        navColumn.find(".nav-link").remove()
+        insertSpinner( navColumn, true )
         const response = await askMain( "info-request", "folder-list", domain )
         insertSpinner( navColumn, false )
         await response.forEach( (element) => {
@@ -268,11 +277,17 @@
         })
       }
 
+      $('#file-domain button').on('click', function() {
+        var thisBtn = $(this);
+        thisBtn.addClass('active').siblings().removeClass('active');
+        setFolderList()
+      });
+
       $('#nav-folder-links').click( (event) =>
       {
         const anchor = $(event.target)
         const panel = $(this)
-        askMain( "info-request", "file-list", anchor.data('link'), 'file' )
+        askMain( "info-request", "file-list", anchor.data('link'), $("#file-domain").find("button.active").val() )
         .then( setFileList )
       })
 
@@ -282,8 +297,8 @@
         const url = target.data("url") 
         const modal = $("#ModalDialog")
         const card = $('<div class="card-body">') 
-        modal.find('.modal-title').text( url )
         modal.modal('show')
+        modal.find('.modal-title').text( url )
         const response = await askMain( "show-file", "path", url )
         card.append( makeJsonElement(response) )
         modal.find('.modal-body').append(card)
@@ -332,7 +347,7 @@
           $("#main-window-content").removeClass("d-none")
 
           // populate the folder list
-          setFolderList('file')
+          setFolderList()
       })
 
       </script>

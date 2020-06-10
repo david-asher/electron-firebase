@@ -12,6 +12,7 @@
  */
 
 const { mainapp, firestore, fbstorage, fbwindow } = require( '../electron-firebase' )
+const urlParser = require('url').parse
 
 const docAboutmeFolder = "aboutme/"
 
@@ -105,9 +106,12 @@ async function getContent( filepath, domain = "file" )
 function openWithUrl( url, contentType )
 {
     // see BrowserWindow options: https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
+    const urlParts = urlParser( url )
+    const lastPart = urlParts.pathname.split( "/" ).pop()
+    const resource = decodeURIComponent( lastPart )
     const openOptions = {
         show: true,
-        title: url,
+        title: resource,
         skipTaskbar: true,
         parent: global.mainWindow,
         autoHideMenuBar: true

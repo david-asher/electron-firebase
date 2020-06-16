@@ -6,12 +6,12 @@
 'use strict';
 
 var  moduleList = [
-    'test_applibrary',
-    'test_fileutils',
-    'test_firestore',
-    'test_fbstorage',
-    'test_windows',
-    'test_localstorage',
+//    'test_applibrary',
+//    'test_fileutils',
+//    'test_firestore',
+//    'test_fbstorage',
+//    'test_windows',
+//    'test_localstorage',
     'test_webserver'
 ]
 
@@ -41,12 +41,22 @@ process.on( 'unhandledRejection', (reason, p) => {
 
 global.readFile = function( sourceFilename )
 {
-    return fs.readFileSync( sourceFilename ).toString()
+    try {
+        return fs.readFileSync( sourceFilename ).toString()
+    }
+    catch (error) {
+        return null
+    }
 }
 
 global.readJSON = function( sourceFilename )
 {
-    return JSON.parse( global.readFile( sourceFilename ) )
+    try {
+        return JSON.parse( global.readFile( sourceFilename ) )
+    }
+    catch (error) {
+        return null
+    }
 }
 
 // const { auth, data } = require('../lib/electron-firebase')
@@ -72,7 +82,7 @@ async function loginAndSetup()
 {
     efb.auth.initializeFirebase()
 
-    return await efb.auth.signInSavedUser()
+    return await efb.auth.startNewSignIn()  //  signInSavedUser()
     .then( async (user) => {
         return await setupUser( user )
     })

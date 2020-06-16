@@ -26,9 +26,19 @@ mainapp.setupAppConfig()
 
 // electron-firebase framework event handling
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+global.lastStamp = Date.now()
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function logwrite( ...stuff )
 {
-    if ( !global.appConfig.debugMode ) return
+////////    if ( !global.appConfig.debugMode ) return
+
+stuff.unshift( Date.now() - global.lastStamp )
+
     console.log.apply( null, stuff )
 }
 
@@ -41,19 +51,24 @@ mainapp.event.once( "user-login", (user) =>
 mainapp.event.once( "main-window-close", (window) => 
 {
     // use this to clean up things
-    logwrite( "EVENT main-window-close: ", window.getTitle() )
 })
 
 mainapp.event.once( "user-ready", async ( user ) => 
 {
-    await updateUserDocs( user, global.appContext, global.appConfig )
     logwrite( "EVENT user-ready: ", user.displayName )
+    await updateUserDocs( user, global.appContext, global.appConfig )
     mainapp.sendToBrowser( 'app-ready' )
 })
 
-mainapp.event.once( "main-window-open", (window) => 
+mainapp.event.once( "window-open", (window) => 
 {
-    logwrite( "EVENT main-window-open: ", window.getTitle() )
+    // first event will be the main window
+    logwrite( "EVENT window-open: ", window.getTitle() )
+})
+
+mainapp.event.once( "main-window-ready", (window) => 
+{
+    logwrite( "EVENT main-window-ready: ", window.getTitle() )
 
     // signout button was pressed
     mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
@@ -75,17 +90,21 @@ app.on( 'window-all-closed', () =>
     mainapp.closeMainWindow()
 })
 
+// This function will be called when Electron has finished initialization and is ready to create 
+// browser windows. Some APIs can only be used after this event occurs. launchInfo is macOS specific.
 // see: https://www.electronjs.org/docs/api/app#event-ready
-// This method will be called when Electron has finished initialization and is ready to create 
-// browser windows. Some APIs can only be used after this event occurs.
-app.on( 'ready', (launchInfo) => 
+app.on( 'ready', async (launchInfo) => 
 {
     logwrite( "EVENT app ready" )
-    // launchInfo is macOS specific
-    // can't get the appContext until electron declares the app is ready
+    global.launchInfo = launchInfo | {}
     try {
-        mainapp.getAppContext()
-        mainapp.startMainApp()
+        await mainapp.startMainApp({
+            title:  "Main Window: " + global.fbConfig.projectId,
+            open_html: "pages/index.html",
+            show:true
+        })
+        // now do some other synchronous startup thing if you want to
+        // otherwise wait for the "user-ready" event
     }
     catch (error) {
         console.error( error )

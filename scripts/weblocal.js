@@ -6,7 +6,8 @@
 var ipc = require('electron').ipcRenderer
 
 // implements the browser interface to localstorage.js
-ipc.on( 'localStorage', ( event, command, key, value ) => {
+ipc.on( 'localStorage', ( event, command, key, value ) => 
+{
     switch( command ) {
     case "setItem": 
         localStorage.setItem( key, value )

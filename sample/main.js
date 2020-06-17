@@ -26,19 +26,9 @@ mainapp.setupAppConfig()
 
 // electron-firebase framework event handling
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-global.lastStamp = Date.now()
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function logwrite( ...stuff )
 {
-////////    if ( !global.appConfig.debugMode ) return
-
-stuff.unshift( Date.now() - global.lastStamp )
-
+    if ( !global.appConfig.debugMode ) return
     console.log.apply( null, stuff )
 }
 
@@ -46,11 +36,6 @@ mainapp.event.once( "user-login", (user) =>
 {
     // this event will trigger on sign-in, not every time the app runs with cached credentials
     logwrite( "EVENT user-login: ", user.displayName )
-})
-
-mainapp.event.once( "main-window-close", (window) => 
-{
-    // use this to clean up things
 })
 
 mainapp.event.once( "user-ready", async ( user ) => 
@@ -80,10 +65,15 @@ mainapp.event.once( "main-window-ready", (window) =>
     mainapp.getFromBrowser( 'show-file', showFile )
 })
 
+mainapp.event.once( "main-window-close", (window) => 
+{
+    // use this to clean up things
+})
+
 // electron app event handling
 
-// see: https://www.electronjs.org/docs/api/app#event-window-all-closed
 // Quit when all windows are closed.
+// see: https://www.electronjs.org/docs/api/app#event-window-all-closed
 app.on( 'window-all-closed', () => 
 {
     logwrite( "EVENT app window-all-closed" )

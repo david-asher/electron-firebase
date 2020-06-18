@@ -10,27 +10,27 @@
 'use strict';
 
 /**
- * High-level functions for quickly building the main application.
- * @module electron-firebase
+ * Testing for all of the electron-firebase modules.
  */
 
-// process.on('warning', e => console.warn(e.stack));
+process.on('warning', e => console.warn(e.stack));
 
 const { app } = require('electron')
 const { mainapp } = require( '../electron-firebase' )
-const { infoRequest, showFile } = require('./answerBrowser')
-const { updateUserDocs } = require('./setupApp')
 
 // one call to setup the electron-firebase framework
 mainapp.setupAppConfig()
 
-// electron-firebase framework event handling
+// inject the tests folder into the webpage static content set
+global.appConfig.webapp.staticContent.push( "tests" )
 
 function logwrite( ...stuff )
 {
-    if ( !global.appConfig.debugMode ) return
+//    if ( !global.appConfig.debugMode ) return
     console.log.apply( null, stuff )
 }
+
+// electron-firebase framework event handling
 
 mainapp.event.once( "user-login", (user) => 
 {
@@ -41,7 +41,6 @@ mainapp.event.once( "user-login", (user) =>
 mainapp.event.once( "user-ready", async ( user ) => 
 {
     logwrite( "EVENT user-ready: ", user.displayName )
-    await updateUserDocs( user, global.appContext, global.appConfig )
     mainapp.sendToBrowser( 'app-ready' )
 })
 
@@ -55,20 +54,23 @@ mainapp.event.once( "main-window-ready", (window) =>
 {
     logwrite( "EVENT main-window-ready: ", window.getTitle() )
 
-    // shut down the app and clean up when the main window closes
-    window.on( 'close', (event) => {
-        console.log( "CLOSE main-window-ready ", event.sender.getTitle() )
-        mainapp.closeApplication(window)
-    })
+//    mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
 
-    // signout button was pressed
-    mainapp.getFromBrowser( "user-signout", mainapp.signoutUser )
+})
 
-    // one of the information request buttons was clicked
-    mainapp.getFromBrowser( 'info-request', infoRequest )
+mainapp.event.once( "main-window-close", (window) => 
+{
+    // use this to clean up things
+})
 
-    // action request from browser
-    mainapp.getFromBrowser( 'show-file', showFile )
+// electron app event handling
+
+// Quit when all windows are closed.
+// see: https://www.electronjs.org/docs/api/app#event-window-all-closed
+app.on( 'window-all-closed', () => 
+{
+    logwrite( "EVENT app window-all-closed" )
+    mainapp.closeMainWindow()
 })
 
 // This function will be called when Electron has finished initialization and is ready to create 
@@ -80,12 +82,10 @@ app.on( 'ready', async (launchInfo) =>
     global.launchInfo = launchInfo | {}
     try {
         await mainapp.startMainApp({
-            title:  "Main Window: " + global.fbConfig.projectId,
-            open_html: "pages/index.html",
+            title:  "TEST Window: " + global.fbConfig.projectId,
+            open_html: "tests/testpage_local.html",
             show:true
         })
-        // now do some other synchronous startup thing if you want to
-        // otherwise wait for the "user-ready" event
     }
     catch (error) {
         console.error( error )

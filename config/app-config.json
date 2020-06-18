@@ -13,10 +13,9 @@
         "staticContent": [
             "pages",
             "scripts",
-            "node_modules",
             "lib",
-            "css",
-            "fonts"
+            "node_modules/firebase",
+            "node_modules/firebaseui/dist"
         ]
     },
     "apis": {

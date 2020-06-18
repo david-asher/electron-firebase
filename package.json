@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "electron ./sample/main.js",
-    "test": "electron ./tests/test_all_modules.js",
+    "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "cleanup": "npm prune && npm uninstall * && rm -rf ./node_modules",
     "gendocs": "node ./lib/gendocs.js"

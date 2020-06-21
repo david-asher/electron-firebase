@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.0.1",
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "electron": "^9.0.3",
     "electron-rebuild": "^1.11.0",
@@ -23,7 +24,6 @@
     "fast-crc32c": "^2.0.0",
     "firebase": "^7.15.0",
     "firebaseui": "^4.5.1",
-    "got": "^11.3.0",
     "grpc": "^1.24.3",
     "helmet": "^3.22.0",
     "https": "^1.0.0",

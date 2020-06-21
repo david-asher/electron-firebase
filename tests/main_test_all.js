@@ -15,8 +15,17 @@
 
 process.on('warning', e => console.warn(e.stack));
 
+global.__TESTMODE__ = true
+global.testDocPath = "./tests/generated.json"
+
+const fs = require('fs')
+
 const { app } = require('electron')
 const { mainapp } = require( '../electron-firebase' )
+
+// run the tests after both the user is ready and main window is open
+var bIsWindowOpen = false
+var bIsUserReady = false
 
 // one call to setup the electron-firebase framework
 mainapp.setupAppConfig()
@@ -30,6 +39,52 @@ function logwrite( ...stuff )
     console.log.apply( null, stuff )
 }
 
+global.readFile = function( sourceFilename )
+{
+    try {
+        return fs.readFileSync( sourceFilename ).toString()
+    }
+    catch (error) {
+        return null
+    }
+}
+
+global.readJSON = function( sourceFilename )
+{
+    try {
+        return JSON.parse( global.readFile( sourceFilename ) )
+    }
+    catch (error) {
+        return null
+    }
+}
+
+async function testModule( moduleName, index )
+{
+    const module = require( `./${moduleName}` )
+    console.log( `${index}: ${module.target()}` )
+    try {
+        await module.testall()
+    }
+    catch (error) {
+        console.error( error )
+    }
+    console.log( "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
+}
+
+async function runTests()
+{
+    process.on( 'unhandledRejection', (reason, p) => {
+        logwrite('Unhandled Rejection at: Promise', p, 'reason:', reason)
+        // application specific logging, throwing an error, or other logic here
+    })
+
+    await testModule( "test_webserver", 0 )
+
+     app.exit(0)
+}
+
+
 // electron-firebase framework event handling
 
 mainapp.event.once( "user-login", (user) => 
@@ -42,12 +97,16 @@ mainapp.event.once( "user-ready", async ( user ) =>
 {
     logwrite( "EVENT user-ready: ", user.displayName )
     mainapp.sendToBrowser( 'app-ready' )
+    if ( bIsWindowOpen ) runTests()
+    bIsUserReady = true
 })
 
 mainapp.event.once( "window-open", (window) => 
 {
     // first event will be the main window
     logwrite( "EVENT window-open: ", window.getTitle() )
+    if ( bIsUserReady ) runTests()
+    bIsWindowOpen = true
 })
 
 mainapp.event.once( "main-window-ready", (window) => 
@@ -70,7 +129,7 @@ mainapp.event.once( "main-window-close", (window) =>
 app.on( 'window-all-closed', () => 
 {
     logwrite( "EVENT app window-all-closed" )
-    mainapp.closeMainWindow()
+    mainapp.closeApplication()
 })
 
 // This function will be called when Electron has finished initialization and is ready to create 

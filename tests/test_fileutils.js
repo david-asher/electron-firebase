@@ -13,7 +13,7 @@ const jsonDoc = global.readFile( global.testDocPath )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
 
-async function testall()
+async function testallFunctions()
 {
     // readFile( fileName )
     console.log( ">> readFile" )
@@ -54,16 +54,16 @@ async function testall()
     assert( 0 <= folderList.indexOf( 'pages' ) )
     assert( 0 <= folderList.indexOf( 'node_modules' ) )
     assert( 0 <= folderList.indexOf( 'tests' ) )
-    assert( -1 == folderList.indexOf( 'main.js' ) )
+    assert( -1 == folderList.indexOf( 'is-not-there' ) )
 
     // listFiles( folderName )
     console.log( ">> listFiles" )
     const fileList = file.listFiles( showFolder )
     assert( 0 <= fileList.indexOf( 'LICENSE' ) )
-    assert( 0 <= fileList.indexOf( 'main.js' ) )
+    assert( 0 <= fileList.indexOf( 'electron-firebase.js' ) )
     assert( 0 <= fileList.indexOf( 'package.json' ) )
     assert( 0 <= fileList.indexOf( 'README.md' ) )
-    assert( -1 == fileList.indexOf( 'lib' ) )
+    assert( -1 == fileList.indexOf( 'is-not-there' ) )
 
     // deleteFile( fileName )
     console.log( ">> deleteFile" )
@@ -99,8 +99,19 @@ async function testall()
     return true
 }
 
+async function testall()
+{
+    try {
+        await testallFunctions()
+        return true
+    }
+    catch (error) {
+        console.error( error )
+        return false
+    }
+}
+
 module.exports = {
-    target: () => { return file.modulename() },
     testall: testall
 }
 

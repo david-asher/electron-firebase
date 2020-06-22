@@ -39,6 +39,9 @@ function logwrite( ...stuff )
     console.log.apply( null, stuff )
 }
 
+// readFile and readJSON are defined here, even though there is a fileutils module,
+// to eliminate that dependency
+
 global.readFile = function( sourceFilename )
 {
     try {
@@ -59,18 +62,22 @@ global.readJSON = function( sourceFilename )
     }
 }
 
+// the process for running one module through a test
+
 async function testModule( moduleName, index )
 {
     const module = require( `./${moduleName}` )
-    console.log( `${index}: ${module.target()}` )
+    console.log( `${index}: ${moduleName}` )
     try {
         await module.testall()
     }
     catch (error) {
         console.error( error )
     }
-    console.log( "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
+    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
 }
+
+// spin through all of the modules
 
 async function runTests()
 {
@@ -79,7 +86,8 @@ async function runTests()
         // application specific logging, throwing an error, or other logic here
     })
 
-    await testModule( "test_webserver", 0 )
+    await testModule( "test_applibrary", 0 )
+    await testModule( "test_fileutils", 1 )
 
      app.exit(0)
 }
@@ -143,7 +151,9 @@ app.on( 'ready', async (launchInfo) =>
         await mainapp.startMainApp({
             title:  "TEST Window: " + global.fbConfig.projectId,
             open_html: "tests/testpage_local.html",
-            show:true
+            show: false,
+            movable: false,
+            resizable: false
         })
     }
     catch (error) {

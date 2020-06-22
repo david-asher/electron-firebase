@@ -4,15 +4,37 @@
 const assert = require('assert').strict
 
 // module under test:
-const { applib } = require('../electron-firebase')
+const { applib } = require('../electron-firebase');
 
 // specimens
 const jsonDoc = global.readFile( global.testDocPath )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
 
-async function testall()
+var baseOptions = { 
+    https: {
+        rejectUnauthorized: false,
+    },
+    headers: {
+        referer: global.appConfig.webapp.hostUrl
+    }
+}
+
+const newDocOptions = { ...baseOptions, ...{
+    method: 'POST',
+    url: `${global.appConfig.webapp.hostUrl}/api/test/newdoc`,
+    data: testObj
+} }
+
+const oldDocOptions = { ...baseOptions, ...{
+    method: 'GET',
+    url: `${global.appConfig.webapp.hostUrl}/api/test/olddoc`
+} }
+
+async function testallFunctions()
 {
+    var newDoc
+
     // isJSON( s ) 
     console.log( ">> isJSON" )
     assert( applib.isJSON( jsonDoc ) )                // valid JSON
@@ -47,11 +69,42 @@ async function testall()
     assert.deepEqual( merged.tags, [].concat( testDoc[0].tags, testDoc[1].tags, testDoc[2].tags ) )
     assert.deepEqual( merged.friends, [].concat( testDoc[0].friends, testDoc[1].friends, testDoc[2].friends ) )
 
+    // set up a route for GET and a route for POST, then test if a GET retreives
+    // the same content that was sent with a POST
+    global.router.post( "/api/test/newdoc", (req, res, next ) => 
+    {
+        newDoc = req.body
+        res.status( 200 ).send()
+    })
+    global.router.get( "/api/test/olddoc", (req, res, next ) => 
+    {
+        res.json( newDoc )
+    })
+
+    console.log( ">> request post" )
+    const postResponse = await applib.request( newDocOptions )
+    assert.equal( postResponse.status, 200 )
+
+    console.log( ">> request get" )
+    const getResponse = await applib.request( oldDocOptions )
+    assert.equal( getResponse.status, 200 )
+    assert.deepEqual( getResponse.data, testObj )
+
     return true
 }
 
-module.exports = {
-    target: () => { return applib.modulename() },
-    testall: testall
+async function testall()
+{
+    try {
+        await testallFunctions()
+        return true
+    }
+    catch (error) {
+        console.error( error )
+        return false
+    }
 }
 
+module.exports = {
+    testall: testall
+}

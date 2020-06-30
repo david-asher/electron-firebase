@@ -31,7 +31,7 @@ const oldDocOptions = { ...baseOptions, ...{
     url: `${global.appConfig.webapp.hostUrl}/api/test/olddoc`
 } }
 
-async function testallFunctions()
+async function testall()
 {
     var newDoc
 
@@ -91,18 +91,6 @@ async function testallFunctions()
     assert.deepEqual( getResponse.data, testObj )
 
     return true
-}
-
-async function testall()
-{
-    try {
-        await testallFunctions()
-        return true
-    }
-    catch (error) {
-        console.error( error )
-        return false
-    }
 }
 
 module.exports = {

@@ -4,7 +4,7 @@
 const assert = require('assert').strict
 
 // module under test:
-const { data } = require('../electron-firebase')
+const { firestore } = require('../electron-firebase')
 
 const extraCollection = "__extra__c__"
 const tempDocName = "temp-object-doc.js"
@@ -12,18 +12,69 @@ const testFieldName = "eyeColor"
 const testFieldValue = "blue"
 const testFieldChanged = "purple"
 
+const testMergeName = "height"
+const testMergeValue = "medium"
+const testUpdateBogusDoc = "testAlpha/does_not_exist"
+
 // specimens
 const jsonDoc = global.readFile( global.testDocPath )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
+const mergeObj = {}
+mergeObj[testMergeName] = testMergeValue
+
+const testPath = "testAlpha/docOne.json"
+
+const domains = [ 'doc', 'app', 'public' ]
 
 function _catchHandler( error )
 {
     return Promise.reject( error )
 }
 
-async function testall()
+async function testallFunctions( data )
 {
+    console.log( ">> write" )
+    await data.write( testPath, testObj )
+
+    console.log( ">> about (ignore possible GRPC stream error)" )
+    var aboutResult = await data.about( testPath )
+    assert.ok( aboutResult.exists )
+    assert.equal( aboutResult.id, testPath.split("/").pop() )
+    assert.equal( aboutResult.get("guid"), testObj.guid )
+
+    console.log( ">> read" )
+    var readResult = await data.read( testPath )
+    assert.deepEqual( testObj, readResult )
+
+    console.log( ">> merge" )
+    assert.ok( !readResult[testMergeName] )
+    await data.merge( testPath, mergeObj )
+    readResult = await data.read( testPath )
+    assert.ok( aboutResult.exists )
+    assert.equal( readResult[testMergeName], testMergeValue )
+    assert.equal( aboutResult.get("guid"), testObj.guid )
+
+    console.log( ">> update" )
+    await data.write( testPath, testObj )
+    readResult = await data.read( testPath )
+    assert.ok( !readResult[testMergeName] )
+    await data.update( testPath, mergeObj )
+    readResult = await data.read( testPath )
+    assert.ok( aboutResult.exists )
+    assert.equal( readResult[testMergeName], testMergeValue )
+    assert.equal( aboutResult.get("guid"), testObj.guid )
+    await data.update( testUpdateBogusDoc, mergeObj )
+    var aboutResult = await data.about( testUpdateBogusDoc )
+    assert.ok( !aboutResult.exists )
+
+
+    return true
+//////////////// NEED TO TEST MERGE
+
+//    assert.deepEqual( testObj, readResult )
+
+    /*
     // listRootCollections( bGetFromServer )
     console.log( ">> listRootCollections" )
     await data.listRootCollections()
@@ -50,6 +101,9 @@ async function testall()
     })
     .catch( _catchHandler )
 
+*/
+
+/*
     // removeFromRootCollections( collectionName )
     console.log( ">> removeFromRootCollections" )
     await data.removeFromRootCollections( extraCollection )
@@ -131,12 +185,21 @@ async function testall()
     // setup( user, bForceUpdate )
     // NOTE: these functions are executed in the base testing document, else several
     // unit tests wouldn't run
-
+*/
     return true
 }
 
+async function testall()
+{
+    return await testallFunctions( firestore.doc )
+
+//    await domains.forEach( async (element) => {
+//        console.log( `========= ${element} =========` )
+//        await testallFunctions( firestore[ element ] )
+//    })
+}
+
 module.exports = {
-    target: () => { return data.modulename() },
     testall: testall
 }
 

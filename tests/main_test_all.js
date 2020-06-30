@@ -15,13 +15,37 @@
 
 process.on('warning', e => console.warn(e.stack));
 
+const { app } = require('electron')
+const { mainapp } = require( '../electron-firebase' )
+
+// console logging is not strictly synchronous, so for testing we force log and error to block
+
+const nodeFS = require('fs')
+const nodeUtil = require('util')
+
+var lastTime = Date.now()
+
+console.log = (...args) => {
+    const isNow = Date.now()
+    nodeFS.writeSync( process.stdout.fd, ( isNow - lastTime ) + " -- " + nodeUtil.format.apply(null,args) + "\n" )
+    lastTime = isNow
+}
+
+console.error = (...args) => {
+    const isNow = Date.now()
+    nodeFS.writeSync( process.stderr.fd, ( isNow - lastTime ) + " xx " + nodeUtil.format.apply(null,args) + "\n" )
+    lastTime = isNow
+}
+
 global.__TESTMODE__ = true
 global.testDocPath = "./tests/generated.json"
 
-const fs = require('fs')
+// catch everything just in case
 
-const { app } = require('electron')
-const { mainapp } = require( '../electron-firebase' )
+process.on( 'unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
+    // application specific logging, throwing an error, or other logic here
+})
 
 // run the tests after both the user is ready and main window is open
 var bIsWindowOpen = false
@@ -45,7 +69,7 @@ function logwrite( ...stuff )
 global.readFile = function( sourceFilename )
 {
     try {
-        return fs.readFileSync( sourceFilename ).toString()
+        return nodeFS.readFileSync( sourceFilename ).toString()
     }
     catch (error) {
         return null
@@ -66,30 +90,56 @@ global.readJSON = function( sourceFilename )
 
 async function testModule( moduleName, index )
 {
-    const module = require( `./${moduleName}` )
-    console.log( `${index}: ${moduleName}` )
+    var result = null
     try {
-        await module.testall()
+        console.log( `${index}: ${moduleName}` )
+        const testModule = require( `./test_${moduleName}` )
+        result = await testModule.testall()
+        console.log( "testModule result = ", result )
     }
     catch (error) {
         console.error( error )
     }
-    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
+    return result
+/*
+    try {
+    }
+    catch (error) {
+        console.error( "testModule ERROR ", error )
+    }
+    */
+    /*
+    console.log( `${index}: ${moduleName}` )
+    try {
+        const testModule = require( `./test_${moduleName}` )
+        await testModule.testall()
+//        console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
+    }
+    catch (error) {
+        console.error( error )
+//        console.log( "xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx ")
+    }
+    */
 }
 
 // spin through all of the modules
 
 async function runTests()
 {
-    process.on( 'unhandledRejection', (reason, p) => {
-        logwrite('Unhandled Rejection at: Promise', p, 'reason:', reason)
-        // application specific logging, throwing an error, or other logic here
-    })
 
-    await testModule( "test_applibrary", 0 )
-    await testModule( "test_fileutils", 1 )
+//    await testModule( "applibrary", 0 )
+//    await testModule( "fileutils", 1 )
+//    await testModule( "localstorage", 2 )
 
-     app.exit(0)
+global.appConfig.webapp.preferCachedReads = false
+var response = await testModule( "firestore", 3 )
+console.log( " - - - - - - - -- - TRY AGAIN - - - - - - - -- -" )
+global.appConfig.webapp.preferCachedReads = true
+response = await testModule( "firestore", 3 )
+console.log( "firestore response = ", response )
+    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
+
+////     app.exit(0)
 }
 
 
@@ -151,7 +201,7 @@ app.on( 'ready', async (launchInfo) =>
         await mainapp.startMainApp({
             title:  "TEST Window: " + global.fbConfig.projectId,
             open_html: "tests/testpage_local.html",
-            show: false,
+            show: true, ///////////////////////////////////////// false,
             movable: false,
             resizable: false
         })

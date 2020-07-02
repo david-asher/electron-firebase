@@ -90,12 +90,11 @@ global.readJSON = function( sourceFilename )
 
 async function testModule( moduleName, index )
 {
-    var result = null
+    var result = 0
     try {
         console.log( `${index}: ${moduleName}` )
         const testModule = require( `./test_${moduleName}` )
         result = await testModule.testall()
-        console.log( "testModule result = ", result )
     }
     catch (error) {
         console.error( error )
@@ -131,12 +130,8 @@ async function runTests()
 //    await testModule( "fileutils", 1 )
 //    await testModule( "localstorage", 2 )
 
-global.appConfig.webapp.preferCachedReads = false
-var response = await testModule( "firestore", 3 )
-console.log( " - - - - - - - -- - TRY AGAIN - - - - - - - -- -" )
-global.appConfig.webapp.preferCachedReads = true
-response = await testModule( "firestore", 3 )
-console.log( "firestore response = ", response )
+    const errorCount = await testModule( "firestore", 3 )
+    console.log( errorCount, " errors" )
     console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
 
 ////     app.exit(0)

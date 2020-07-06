@@ -27,13 +27,15 @@ var lastTime = Date.now()
 
 console.log = (...args) => {
     const isNow = Date.now()
-    nodeFS.writeSync( process.stdout.fd, ( isNow - lastTime ) + " -- " + nodeUtil.format.apply(null,args) + "\n" )
+    const delta = ( "   " + ( isNow - lastTime ) ).slice(-4)
+    nodeFS.writeSync( process.stdout.fd, delta + " -- " + nodeUtil.format.apply(null,args) + "\n" )
     lastTime = isNow
 }
 
 console.error = (...args) => {
     const isNow = Date.now()
-    nodeFS.writeSync( process.stderr.fd, ( isNow - lastTime ) + " xx " + nodeUtil.format.apply(null,args) + "\n" )
+    const delta = ( "   " + ( isNow - lastTime ) ).slice(-4)
+    nodeFS.writeSync( process.stderr.fd, delta + " xx " + nodeUtil.format.apply(null,args) + "\n" )
     lastTime = isNow
 }
 
@@ -86,55 +88,31 @@ global.readJSON = function( sourceFilename )
     }
 }
 
-// the process for running one module through a test
 
-async function testModule( moduleName, index )
+async function testModule( moduleName, withOption = "" )
 {
-    var result = 0
-    try {
-        console.log( `${index}: ${moduleName}` )
-        const testModule = require( `./test_${moduleName}` )
-        result = await testModule.testall()
-    }
-    catch (error) {
-        console.error( error )
-    }
-    return result
-/*
-    try {
-    }
-    catch (error) {
-        console.error( "testModule ERROR ", error )
-    }
-    */
-    /*
-    console.log( `${index}: ${moduleName}` )
-    try {
-        const testModule = require( `./test_${moduleName}` )
-        await testModule.testall()
-//        console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
-    }
-    catch (error) {
-        console.error( error )
-//        console.log( "xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx ")
-    }
-    */
+    // the process for running one module through a test
+    console.log( `++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ${moduleName}.${withOption}` )
+    const testModule = require( `./test_${moduleName}` )
+    await testModule.testall( withOption )
+    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
 }
-
-// spin through all of the modules
 
 async function runTests()
 {
 
-//    await testModule( "applibrary", 0 )
-//    await testModule( "fileutils", 1 )
-//    await testModule( "localstorage", 2 )
-
-    const errorCount = await testModule( "firestore", 3 )
-    console.log( errorCount, " errors" )
-    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
-
-////     app.exit(0)
+    // spin through all of the modules
+    await testModule( "applibrary" )
+    await testModule( "fileutils" )
+    await testModule( "localstorage" )
+    await testModule( "firestore", "doc" )
+    await testModule( "firestore", "app" )
+    await testModule( "firestore", "public" )
+    await testModule( "fbstorage", "file" )
+    await testModule( "fbstorage", "app" )
+    await testModule( "fbstorage", "public" )
+    // done!
+    app.exit(0)
 }
 
 

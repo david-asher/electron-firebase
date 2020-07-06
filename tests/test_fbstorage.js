@@ -4,15 +4,17 @@
 const assert = require('assert').strict
 
 // module under test:
-const { store } = require('../electron-firebase')
+const { fbstorage } = require('../electron-firebase')
 
 // specimens
 const jsonDoc = global.readFile( "./tests/generated.json" )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
 
+var errorCount = 0
+
 const uidSymbol = "<<UID_HERE>>"
-const filepath = "test/this/path_to_file.whatever"
+const filepath = "testFolder/path_to_file.whatever"
 const filemeta =  { 
     name: `users/${uidSymbol}/Test/FileTest`,
     bucket: 'your-app-here.appspot.com',
@@ -47,108 +49,64 @@ function _catchHandler( error )
     return Promise.reject( error )
 }
 
-async function testall() 
+async function testallFunctions( store ) 
 {
-    // _userPrefix( filepath )
-    console.log( ">> _userPrefix" )
-    const userPath = store.probe( "_userPrefix", filepath )
-    assert.equal( `users/${global.user.uid}/${filepath}`, userPath )
-
-    // _objectPathUrl( filepath )
-    console.log( ">> _objectPathUrl" )
-    const objectPath = store.probe( "_objectPathUrl", filepath )
-    assert.equal( "googleapis.com", objectPath.hostname.split(".").slice(1).join(".") )
-    assert( 0 < objectPath.pathname.indexOf( encodeURIComponent( userPath ) ) )
-
-    // _metaFixup( fileMeta )
-    console.log( ">> _metaFixup" )
-    metaKnown.fullPath = filemeta.name = filemeta.name.replace( uidSymbol, global.user.uid )
-    const fixMeta = store.probe( "_metaFixup", filemeta )
-    assert.equal( fixMeta.name, metaKnown.name )
-    assert.equal( fixMeta.fullPath, metaKnown.fullPath )
-    assert.equal( fixMeta.timeCreated, metaKnown.timeCreated )
-    assert.equal( fixMeta.md5Hash, metaKnown.md5Hash )
-
-    // _makeUploadOptions( filepath, contents )
-    console.log( ">> _makeUploadOptions" )
-    const checkOptDoc = store.probe( "_makeUploadOptions", filepath, jsonDoc )
-    assert( checkOptDoc.json )
-    assert.equal( checkOptDoc.method, 'POST' )
-    assert.equal( "googleapis.com", checkOptDoc.url.hostname.split(".").slice(1).join(".") )
-    assert.deepEqual( checkOptDoc.body, testDoc )
-
     // uploadFile( filepath, contents )
-    let uploadResult, aboutResult
-    console.log( ">> uploadFile" )
-    await store.uploadFile( filepath, testObj )
-    .then( async (result) => {
-        uploadResult = result
-        assert.equal( filepath, uploadResult.path )
-    })
-    .catch( _catchHandler )
+    console.log( ">> upload" )
+    var uploadResult = await store.upload( filepath, testObj )
+    assert.equal( filepath, uploadResult.path )
 
     // aboutFile( filepath, bIncludeMetadata )
-    console.log( ">> aboutFile" )
-    await store.aboutFile( filepath, true )
-    .then( async (result) => {
-        aboutResult = result
-        assert.equal( uploadResult.docid, aboutResult.docid )
-        assert.equal( uploadResult.fullPath, aboutResult.fullPath )
-        assert.equal( uploadResult.size, aboutResult.size )
-        assert.equal( uploadResult.updated, aboutResult.updated )
-    })
-    .catch( _catchHandler )
+    console.log( ">> about" )
+    var aboutResult = await store.about( filepath )
+    assert.equal( uploadResult.docid, aboutResult.docid )
+    assert.equal( uploadResult.fullPath, aboutResult.fullPath )
+    assert.equal( uploadResult.size, aboutResult.size )
+    assert.equal( uploadResult.updated, aboutResult.updated )
 
     // downloadFile( filepath )
-    console.log( ">> downloadFile" )
-    await store.downloadFile( filepath )
-    .then( async (content) => {
-        assert.deepEqual( testObj, content )
-    })
-    .catch( _catchHandler )
+    console.log( ">> download" )
+    var fileContent = await store.download( filepath )
+    assert.deepEqual( testObj, fileContent )
 
     // findFileByPath( filepath )
-    console.log( ">> findFileByPath" )
-    await store.findFileByPath( filepath )
-    .then( async (foundFile) => {
-        assert.equal( filepath, foundFile.path )
-        assert.equal( uploadResult.docid, foundFile.docid )
-    })
-    .catch( _catchHandler )
+    console.log( ">> find" )
+    var foundFile = await store.find( filepath )
+    assert.equal( filepath, foundFile.path )
+    assert.equal( uploadResult.docid, foundFile.docid )
 
     // updateFileMeta( filepath, metadata )
-    console.log( ">> updateFileMeta" )
-    await store.updateFileMeta( filepath, { 
+    console.log( ">> update" )
+    var fileMeta = await store.update( filepath, { 
         contentEncoding: 'gzip',
         contentType: 'text/html'
     } )
-    .then( async (fileMeta) => {
-        assert.equal( fileMeta.contentEncoding, 'gzip' )
-        assert.equal( fileMeta.contentType, 'text/html' )
-    })
-    .catch( _catchHandler )
+    assert.equal( fileMeta.contentEncoding, 'gzip' )
+    assert.equal( fileMeta.contentType, 'text/html' )
 
     // deleteFile( filepath )
-    console.log( ">> deleteFile" )
-    await store.deleteFile( filepath )
-    .then( async (result) => {
-        // should return nothing but no error
-        assert( !result )
-    })
-    .then( () => {
-        // now prove it!
-        return store.aboutFile( filepath, true )
-    })
-    .then( async (result) => {
-        // the real file was deleted, too
-        assert( !result )
-    })
-    .catch( _catchHandler )
+    console.log( ">> delete" )
+    var deleteResult = await store.delete( filepath )
+    // should return nothing but no error
+    assert( !deleteResult )
+    aboutResult = await store.about( filepath )
+    assert( !aboutResult.exists )
 
     return true
 }
 
+async function testall( domain )
+{
+    try {
+        await testallFunctions(  fbstorage[domain] )
+    }
+    catch (error) {
+        errorCount++
+        console.error( error )
+    }
+    return errorCount
+}
+
 module.exports = {
-    target: () => { return store.modulename() },
     testall: testall
 }

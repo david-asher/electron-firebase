@@ -13,7 +13,9 @@ const jsonDoc = global.readFile( global.testDocPath )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
 
-async function testall()
+var errorCount = 0
+
+async function testallFunctions()
 {
     // readFile( fileName )
     console.log( ">> readFile" )
@@ -99,8 +101,19 @@ async function testall()
     return true
 }
 
+async function testall()
+{
+    try {
+        await testallFunctions()
+    }
+    catch (error) {
+        errorCount++
+        console.error( error )
+    }
+    return errorCount
+}
+
 module.exports = {
     testall: testall
 }
-
 

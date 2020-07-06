@@ -11,6 +11,8 @@ const jsonDoc = global.readFile( global.testDocPath )
 const testDoc = JSON.parse( jsonDoc )
 const testObj = testDoc[0]
 
+var errorCount = 0
+
 var baseOptions = { 
     https: {
         rejectUnauthorized: false,
@@ -31,7 +33,7 @@ const oldDocOptions = { ...baseOptions, ...{
     url: `${global.appConfig.webapp.hostUrl}/api/test/olddoc`
 } }
 
-async function testall()
+async function testallFunctions()
 {
     var newDoc
 
@@ -91,6 +93,18 @@ async function testall()
     assert.deepEqual( getResponse.data, testObj )
 
     return true
+}
+
+async function testall()
+{
+    try {
+        await testallFunctions()
+    }
+    catch (error) {
+        errorCount++
+        console.error( error )
+    }
+    return errorCount
 }
 
 module.exports = {

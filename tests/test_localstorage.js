@@ -13,7 +13,9 @@ const testValue = {
     two: "second item"
 }
 
-async function testall()
+var errorCount = 0
+
+async function testallFunctions()
 {
     // setItem( key, value ) 
     console.log( ">> setItem" )
@@ -28,6 +30,18 @@ async function testall()
     local.removeItem( testKey )
     const removeValue = await local.getItem( testKey )
     assert.equal( removeValue, null )
+}
+
+async function testall()
+{
+    try {
+        await testallFunctions()
+    }
+    catch (error) {
+        errorCount++
+        console.error( error )
+    }
+    return errorCount
 }
 
 module.exports = {

@@ -25,7 +25,7 @@ const insertTag = "insert-this-tag"
 const checkTag = "occaecat"
 const tagName = "tags"
 
-const errorCount = 0
+var errorCount = 0
 
 async function testallFunctions( data )
 {
@@ -130,7 +130,7 @@ async function testallFunctions( data )
 async function runOne( data, name )
 {
     try {
-        console.log( `========= firestore.${name} =========` )
+////        console.log( `========= firestore.${name} =========` )
         await testallFunctions( data )
     }
     catch (error) {
@@ -139,11 +139,19 @@ async function runOne( data, name )
     }
 }
 
-async function testall()
+async function testall( domain )
 {
-    await runOne( firestore.doc, "doc" )
-    await runOne( firestore.app, "app" )
-    await runOne( firestore.public, "public" )
+    try {
+////        console.log( `========= firestore.${domain} =========` )
+        await testallFunctions( firestore[domain] )
+    }
+    catch (error) {
+        errorCount++
+        console.error( error )
+    }
+//    await runOne( firestore.doc, "doc" )
+//    await runOne( firestore.app, "app" )
+//    await runOne( firestore.public, "public" )
     return errorCount
 }
 

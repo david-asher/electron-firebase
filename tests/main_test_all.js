@@ -88,19 +88,17 @@ global.readJSON = function( sourceFilename )
     }
 }
 
-
 async function testModule( moduleName, withOption = "" )
 {
     // the process for running one module through a test
-    console.log( `++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ${moduleName}.${withOption}` )
+    console.log( `++ ++ ++ ++ ++ ++ ++ ${moduleName}.${withOption}` )
     const testModule = require( `./test_${moduleName}` )
     await testModule.testall( withOption )
-    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ")
+    console.log( "-- -- -- -- -- -- -- -- -- -- -- -- ")
 }
 
 async function runTests()
 {
-
     // spin through all of the modules
     await testModule( "applibrary" )
     await testModule( "fileutils" )
@@ -111,6 +109,7 @@ async function runTests()
     await testModule( "fbstorage", "file" )
     await testModule( "fbstorage", "app" )
     await testModule( "fbstorage", "public" )
+
     // done!
     app.exit(0)
 }

@@ -13,84 +13,84 @@ const testObj = testDoc[0]
 
 var errorCount = 0
 
-const uidSymbol = "<<UID_HERE>>"
-const filepath = "testFolder/path_to_file.whatever"
-const filemeta =  { 
-    name: `users/${uidSymbol}/Test/FileTest`,
-    bucket: 'your-app-here.appspot.com',
-    generation: '123456789123456',
-    metageneration: '1',
-    contentType: 'application/json',
-    timeCreated: '2019-02-05T03:06:24.435Z',
-    updated: '2019-02-05T03:06:24.435Z',
-    storageClass: 'STANDARD',
-    size: '1005',
-    md5Hash: 'H3Anb534+vX2Y1HVwJxlyw==',
-    contentEncoding: 'identity',
-    contentDisposition: 'inline; filename*=utf-8\'\'FileTest',
-    crc32c: 'yTf15w==',
-    etag: 'AAAAAAA=',
-    downloadTokens: '00000000' 
-}
-const metaKnown = { 
-  fullPath: '',
-  name: 'FileTest',
-  parent: 'Test',
-  contentType: 'application/json',
-  timeCreated: '2019-02-05T03:06:24.435Z',
-  updated: '2019-03-06T04:36:50.853Z',
-  size: '1005',
-  md5Hash: 'H3Anb534+vX2Y1HVwJxlyw==',
-  path: 'Test/FileTest'
-}
+const folderPath = "testFolder"
+const filePath = `${folderPath}/path_to_file.whatever`
 
-function _catchHandler( error )
-{
-    return Promise.reject( error )
-}
+const makeFileSet = [
+    `${folderPath}/junk-one/temp-two/test-file-A.tmp`,
+    `${folderPath}/junk-one/temp-two/test-file-B.tmp`,
+    `${folderPath}/junk-one/temp-four/test-file-C.tmp`,
+    `${folderPath}/junk-one/temp-six/test-file-D.tmp`,
+    `${folderPath}/junk-two/temp-four/test-file-E.tmp`,
+    `${folderPath}/junk-two/temp-five/test-file-F.tmp`,
+    `${folderPath}/junk-two/temp-five/test-file-G.tmp`,
+    `${folderPath}/junk-three/temp-six/test-file-H.tmp`,
+    `${folderPath}/junk-three/temp-six/test-file-J.tmp`
+]
+
+const checkFileList = [
+    [`${folderPath}/junk-one/temp-two`,2],
+    [`${folderPath}/junk-one/temp-four`,1],
+    [`${folderPath}/junk-one/temp-six`,1],
+    [`${folderPath}/junk-two/temp-four`,1],
+    [`${folderPath}/junk-two/temp-five`,2],
+    [`${folderPath}/junk-three/temp-six`,2]
+]
 
 async function testallFunctions( store ) 
 {
-    // uploadFile( filepath, contents )
     console.log( ">> upload" )
-    var uploadResult = await store.upload( filepath, testObj )
-    assert.equal( filepath, uploadResult.path )
+    var uploadResult = await store.upload( filePath, testObj )
+    assert.equal( filePath, uploadResult.path )
 
-    // aboutFile( filepath, bIncludeMetadata )
     console.log( ">> about" )
-    var aboutResult = await store.about( filepath )
+    var aboutResult = await store.about( filePath )
     assert.equal( uploadResult.docid, aboutResult.docid )
     assert.equal( uploadResult.fullPath, aboutResult.fullPath )
     assert.equal( uploadResult.size, aboutResult.size )
     assert.equal( uploadResult.updated, aboutResult.updated )
 
-    // downloadFile( filepath )
     console.log( ">> download" )
-    var fileContent = await store.download( filepath )
+    var fileContent = await store.download( filePath )
     assert.deepEqual( testObj, fileContent )
 
-    // findFileByPath( filepath )
     console.log( ">> find" )
-    var foundFile = await store.find( filepath )
-    assert.equal( filepath, foundFile.path )
+    var foundFile = await store.find( filePath )
+    assert.equal( filePath, foundFile.path )
     assert.equal( uploadResult.docid, foundFile.docid )
 
-    // updateFileMeta( filepath, metadata )
     console.log( ">> update" )
-    var fileMeta = await store.update( filepath, { 
+    var fileMeta = await store.update( filePath, { 
         contentEncoding: 'gzip',
         contentType: 'text/html'
     } )
     assert.equal( fileMeta.contentEncoding, 'gzip' )
     assert.equal( fileMeta.contentType, 'text/html' )
 
-    // deleteFile( filepath )
+
+    console.log( ">> folders" )
+    for ( var k in makeFileSet ) {
+        uploadResult = await store.upload( makeFileSet[k], testObj )
+    }
+    var folderList = await store.folders( folderPath )
+    assert.equal( 7, folderList.length )
+
+    console.log( ">> list" )
+    for ( var j in checkFileList ) {
+        var fileList = await store.list( checkFileList[j][0] )
+        assert.equal( fileList.length, checkFileList[j][1] )
+    }
+
     console.log( ">> delete" )
-    var deleteResult = await store.delete( filepath )
-    // should return nothing but no error
+    for ( var m in makeFileSet ) {
+        await store.delete( makeFileSet[m] )
+    }
+    folderList = await store.folders( folderPath )
+    assert.equal( 0, folderList.length )
+    var deleteResult = await store.delete( filePath )
     assert( !deleteResult )
-    aboutResult = await store.about( filepath )
-    assert( !aboutResult.exists )
+    aboutResult = await store.about( filePath )
+    assert.ok( !aboutResult.exists )
 
     return true
 }

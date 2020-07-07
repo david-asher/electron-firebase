@@ -60,6 +60,9 @@
             </div>
             <div class="col-9">
               <div id="nav-folder-files" class="tab-content" style="overflow-y: scroll;">
+                <div class="spinner-border spinner-border-lg text-secondary m-3 d-none" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
                 <table class="table table-striped table-sm">
                   <thead>
                     <tr>
@@ -136,8 +139,16 @@
       function showSpinner( parent, bShowState )
       {
         const spinner = parent.find('.spinner-border')
-        if ( bShowState ) spinner.removeClass("invisible")
-        else spinner.addClass("invisible")
+        switch( bShowState ) {
+          case true: spinner.removeClass("invisible")
+            break;
+          case false: spinner.addClass("invisible")
+            break;
+          case "show": spinner.removeClass("d-none")
+            break;
+          case "hide": spinner.addClass("d-none")
+            break;
+        }
       }
 
       function insertSpinner( parent, bShowState )
@@ -263,9 +274,9 @@
         return link
       }
 
-      async function setFileList( fileList )
+      function setFileList( fileList )
       {
-        var tableBody = $("#nav-folder-files").find('.tableBody')
+        var tableBody = setFileList.fileTable.find('.tableBody')
         tableBody.empty()
         fileList.forEach( (element) => {
           createTableRow( tableBody, 
@@ -285,10 +296,18 @@
 
       $('#nav-folder-links').click( (event) =>
       {
+        setFileList.filesDiv = $("#nav-folder-files")
+        setFileList.fileTable = setFileList.filesDiv.find( ".table" )
+        setFileList.fileTable.addClass("invisible")
+        showSpinner( setFileList.filesDiv, "show" )
         const anchor = $(event.target)
         const panel = $(this)
         askMain( "info-request", "file-list", anchor.data('link'), $("#file-domain").find("button.active").val() )
         .then( setFileList )
+        .finally( () => {
+          setFileList.fileTable.removeClass("invisible")
+          showSpinner( setFileList.filesDiv, "hide" )
+        })
       })
 
       $(document).on( "click", "a.fa-file-text", async (event) =>

@@ -81,7 +81,7 @@ app.on( 'ready', async (launchInfo) =>
     try {
         await mainapp.startMainApp({
             title:  "Main Window: " + global.fbConfig.projectId,
-            open_html: "pages/index.html",
+            open_html: global.appConfig.webapp.mainPage,
             show:true
         })
         // now do some other synchronous startup thing if you want to

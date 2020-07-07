@@ -57,7 +57,7 @@ var bIsUserReady = false
 mainapp.setupAppConfig()
 
 // inject the tests folder into the webpage static content set
-global.appConfig.webapp.staticContent.push( "tests" )
+global.appConfig.webFolders.push( "tests" )
 
 function logwrite( ...stuff )
 {

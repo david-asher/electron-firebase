@@ -5,20 +5,20 @@
         "folderPath": "/pages/",
         "hostUrl": "https://localhost:3090",
         "loginStart": "pages/loginStart.html",
-        "loginRedirect": "/pages/logincomplete.html",
+        "loginRedirect": "pages/logincomplete.html",
         "splashPage": "pages/splashpage.html",
+        "mainPage": "pages/index.html",
         "firstWidth": 1000,
         "firstHeight": 800,
-        "persistentUser": true,
-        "preferCachedReads": true,
-        "staticContent": [
-            "pages",
-            "scripts",
-            "lib",
-            "node_modules/firebase",
-            "node_modules/firebaseui/dist"
-        ]
+        "persistentUser": true
     },
+    "webFolders": [
+        "pages",
+        "scripts",
+        "lib",
+        "node_modules/firebase",
+        "node_modules/firebaseui/dist"
+    ],
     "apis": {
         "firebaseconfig": "/api/firebaseconfig",
         "logintoken": "/api/logintoken",

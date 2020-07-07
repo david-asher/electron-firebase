@@ -24,13 +24,13 @@ const { updateUserDocs } = require('./setupApp')
 // one call to setup the electron-firebase framework
 mainapp.setupAppConfig()
 
-// electron-firebase framework event handling
-
 function logwrite( ...stuff )
 {
-    if ( !global.appConfig.debugMode ) return
+//    if ( !global.appConfig.debugMode ) return
     console.log.apply( null, stuff )
 }
+
+// electron-firebase framework event handling
 
 mainapp.event.once( "user-login", (user) => 
 {

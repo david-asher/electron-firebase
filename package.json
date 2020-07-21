@@ -2,13 +2,13 @@
   "name": "electron-firebase",
   "productName": "Electron-Firebase Quickstart Framework",
   "version": "1.0.0",
-  "description": "template app to demonstrate firebase cloud authentication workflow in an electron app",
+  "description": "framework for building firebase cloud authentication and database in an electron app",
   "main": "electron-firebase.js",
   "config": {
     "loglevel": "error"
   },
   "scripts": {
-    "start": "electron ./sample/main.js",
+    "start": "electron ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "cleanup": "npm prune && npm uninstall * && rm -rf ./node_modules",
@@ -43,5 +43,16 @@
     "mbaas"
   ],
   "author": "David Asher",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "functions",
+    "install_app",
+    "lib",
+    "pages",
+    "scripts",
+    "answerBrowser.js",
+    "electron-firebase.js",
+    "main.js",
+    "setupApp.js"
+  ]
 }

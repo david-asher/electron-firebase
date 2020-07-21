@@ -1,34 +1,58 @@
 /* main.js
  * electron-firebase
  * This is a quickstart template for building Firebase authentication workflow into an electron app
- * Copyright (c) 2019 by David Asher, https://github.com/david-asher
- * 
- * Log output will show DeprecationWarning: grpc.load blah blah
- * which is a know bug: https://github.com/googleapis/nodejs-vision/issues/120 
- * and here: https://github.com/firebase/firebase-js-sdk/issues/1112 
+ * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  */
 'use strict';
 
-/**
- * High-level functions for quickly building the main application.
- * @module electron-firebase
+/*
+ * Why is this function here? Our sample app source code lives in the same folder as the 
+ * electron-firebase module source code, so pulling in a module would look like 
+ * require('./electron-firebase') but when the sample app is in your application, the 
+ * electron-firebase code is in the usual and loadable ./node_modules location. So calling 
+ * loadModule() instead of require() would work in either configuration, but for your app, 
+ * you can just delete this function and use require() like the rest of the world.
  */
-
-// process.on('warning', e => console.warn(e.stack));
-
-const { app } = require('electron')
-const { mainapp } = require( '../electron-firebase' )
-const { infoRequest, showFile } = require('./answerBrowser')
-const { updateUserDocs } = require('./setupApp')
-
-// one call to setup the electron-firebase framework
-mainapp.setupAppConfig()
-
-function logwrite( ...stuff )
+global.loadModule = function ( moduleName )
 {
-//    if ( !global.appConfig.debugMode ) return
-    console.log.apply( null, stuff )
+    var newModule
+    try {
+        newModule = require( moduleName )
+    }
+    catch( error )
+    {
+        newModule = require( './' + moduleName )
+    }
+    return newModule
 }
+
+// Load modules. answerBrowser.js and setupApp.js are two modules in our sample app. mainapp 
+// isn't an app, but a helper library for the main electron-firebase app.
+const { app } = require('electron')
+const { mainapp } = loadModule( 'electron-firebase' )
+const { infoRequest, showFile } = loadModule('answerBrowser')
+const { updateUserDocs } = loadModule('setupApp')
+
+// Some startup code
+
+!function() 
+{
+    // call this instead of console.log, so output will be suppressed if debugMode isn't set
+    global.logwrite = function( ...stuff ) {}
+
+    // one call to setup the electron-firebase framework
+    mainapp.setupAppConfig()
+
+    if ( !global.appConfig.debugMode ) return
+
+    // show all warnings, comment this line of it's too much for you
+    process.on('warning', e => console.warn(e.stack));
+
+    global.logwrite = function( ...stuff )
+    {
+        console.log.apply( null, stuff )
+    }
+}()
 
 // electron-firebase framework event handling
 

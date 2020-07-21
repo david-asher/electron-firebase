@@ -11,7 +11,7 @@
  * @module answerBrowser
  */
 
-const { mainapp, firestore, fbstorage, fbwindow } = require( '../electron-firebase' )
+const { mainapp, firestore, fbstorage, fbwindow } = loadModule( 'electron-firebase' )
 const urlParser = require('url').parse
 
 const docAboutmeFolder = "aboutme/"

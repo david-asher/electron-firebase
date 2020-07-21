@@ -11,7 +11,7 @@
  * @module setupapp
  */
 
-const { firestore, fbstorage } = require( '../electron-firebase' )
+const { firestore, fbstorage } = loadModule( 'electron-firebase' )
 
 const docAboutmeFolder = "aboutme/"
 

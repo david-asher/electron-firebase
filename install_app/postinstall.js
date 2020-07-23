@@ -10,19 +10,28 @@ console.log( "- - - - - - - - - postinstall.js - - - - - - - - -" )
 console.log( "__dirname = ", __dirname )
 console.log( "__filename = ", __filename )
 console.log( "process.cwd() = ", process.cwd() )
-console.log( "process.env = ", process.env )
-//console.log( "process.env.PWD = ", process.env.PWD )
-//console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
+// console.log( "process.env = ", process.env )
+console.log( "process.env.PWD = ", process.env.PWD )
+console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
 // */
+
+// process.cwd() is root of electron-firebase folder in node_modules
+// process.env.INIT_CWD is root of project folder
+// __dirname is postinstall script folder
 
 const fs = require('fs')
 const path = require('path')
 
-//if ( process.env.INIT_CWD == process.env.PWD ) {
 if ( process.env.INIT_CWD == process.cwd() ) {
-    // it's running from project root and not the module subfolder
+    // it's running from project root and not the module subfolder, this won't work
     process.exit( 0 )
 }
+
+// set loglevel to quiet multiple warnings that we can't control
+// process.env.loglevel = "silent"
+
+const moduleRoot = `${process.cwd()}${path.sep}`
+const projectRoot = `${process.env.INIT_CWD}${path.sep}`
 
 const newFolders = [
     "pages",
@@ -59,13 +68,13 @@ console.log( "copying: ", file.name )
 
 function copyFolder( folderName )
 {
-    const sourceFolder = `${process.cwd()}${path.sep}${folderName}`
+    const sourceFolder = moduleRoot + folderName
     if ( !fs.statSync( sourceFolder ).isDirectory() ) {
         console.error( "Source folder does not exist: ", sourceFolder )
         return
     }
 
-    const targetFolder = `${process.env.INIT_CWD}${path.sep}${foldername}`
+    const targetFolder = projectRoot + foldername
     fs.mkdirSync( targetFolder )
     if ( !fs.statSync( targetFolder ).isDirectory() ) {
         console.error( "Failed to create target folder: ", targetFolder )
@@ -76,20 +85,15 @@ function copyFolder( folderName )
 }
 
 
-// set loglevel to quiet multiple warnings that we can't control
-// process.env.loglevel = "silent"
-
 (function () 
 {
     console.log( "** Populate top-level folders" )
     newFolders.forEach( (folderName) => {
         copyFolder( folderName )
     })
-    
-    const sourceFolder = `${process.cwd()}`
-    const targetFolder = `${process.env.INIT_CWD}`
+
     appFileList.forEach( (fileName) => {
-        copyFile( fileName, sourceFolder, targetFolder )
+        copyFile( fileName, moduleRoot, projectRoot )
     })
 })()
 

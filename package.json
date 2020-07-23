@@ -8,8 +8,8 @@
     "loglevel": "error"
   },
   "scripts": {
-    "preinstall": "./install_app/preinstall.js",
-    "postinstall": "./install_app/postinstall.js",
+    "preinstall": "node ./install_app/preinstall.js",
+    "postinstall": "node ./install_app/postinstall.js",
     "start": "electron ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",

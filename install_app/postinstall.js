@@ -74,7 +74,7 @@ function copyFolder( folderName )
         return
     }
 
-    const targetFolder = projectRoot + foldername
+    const targetFolder = projectRoot + folderName
     fs.mkdirSync( targetFolder )
     if ( !fs.statSync( targetFolder ).isDirectory() ) {
         console.error( "Failed to create target folder: ", targetFolder )

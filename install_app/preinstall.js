@@ -5,5 +5,3 @@
  */
 'use strict';
 
-// const files = require( './node_modules/electron-firebase/lib/modules/fileutils' )
-const { execSync } = require('child_process')

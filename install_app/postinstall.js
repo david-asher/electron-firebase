@@ -5,20 +5,16 @@
  */
 'use strict';
 
-/*
+// /*
 console.log( "- - - - - - - - - postinstall.js - - - - - - - - -" )
 console.log( "__dirname = ", __dirname )
 console.log( "__filename = ", __filename )
-console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
-console.log( "process.env.PWD = ", process.env.PWD )
-console.log( "gencert = ", process.env.npm_package_scripts_gencert )
-*/
-
-
+console.log( "process.cwd() = ", process.cwd() )
 console.log( "process.env = ", process.env )
+//console.log( "process.env.PWD = ", process.env.PWD )
+//console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
+// */
 
-const files = require( './modules/fileutils' )
-const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
@@ -28,46 +24,77 @@ if ( process.env.INIT_CWD == process.cwd() ) {
     process.exit( 0 )
 }
 
-// generate a new self-signed cert for localhost
-// do this first in case openssl isn't there, don't wait until install finishes to find out
-// then just copy the created/modified files from /cert and /config
-console.log( "** Generate self-signed certificate" )
-execSync( process.env.npm_package_scripts_gencert )
-
 const newFolders = [
-    "config",
-    "css",
-    "fonts",
     "pages",
     "scripts",
-    "functions",
-    "sample"
+    "functions"
 ]
+
+const appFileList = [
+    "answerBrowser.js",
+    "setupApp.js",
+    "main.js"
+]
+
+function copyFile( filename, sourceFolder, targetFolder )
+{
+    fs.copyFileSync( `${sourceFolder}${path.sep}${filename}`, `${targetFolder}${path.sep}${filename}` )
+}
+
+function copyFolderFiles( sourceFolder, targetFolder )
+{
+
+console.log( "source: ", sourceFolder )
+console.log( "target: ", targetFolder )
+
+    const dirList = fs.readdirSync( sourceFolder, { withFileTypes: true } )
+    dirList.forEach( (file) => {
+        if ( !file.isFile() ) return
+
+console.log( "copying: ", file.name )
+
+        copyFile( file.name, sourceFolder, targetFolder )
+    })
+}
+
+function copyFolder( folderName )
+{
+    const sourceFolder = `${process.cwd()}${path.sep}${folderName}`
+    if ( !fs.statSync( sourceFolder ).isDirectory() ) {
+        console.error( "Source folder does not exist: ", sourceFolder )
+        return
+    }
+
+    const targetFolder = `${process.env.INIT_CWD}${path.sep}${foldername}`
+    fs.mkdirSync( targetFolder )
+    if ( !fs.statSync( targetFolder ).isDirectory() ) {
+        console.error( "Failed to create target folder: ", targetFolder )
+        return
+    }
+
+    copyFolderFiles( sourceFolder, targetFolder )
+}
+
 
 // set loglevel to quiet multiple warnings that we can't control
 // process.env.loglevel = "silent"
 
-console.log( "** Populate top-level folders" )
-newFolders.forEach( (foldername) => {
-    console.log( "foldername = " + foldername )
-    const targetFolder = `${process.env.INIT_CWD}${path.sep}${foldername}`
-    const sourceFolder = `${process.cwd()}${path.sep}${foldername}`
-    console.log( "targetFolder = " + targetFolder )
-    console.log( "sourceFolder = " + sourceFolder )
-    files.makeFolder( targetFolder )
-    const fileList = files.listFiles( sourceFolder )
-    console.log( "fileList = " + fileList )
-    // console.log( `sourceFolder: ${sourceFolder}, `, fileList )
-    if ( !fileList ) return
-    fileList.forEach( (filename) => {
-        console.log( `source: ${sourceFolder}${path.sep}${filename}, target: ${targetFolder}${path.sep}${filename}` )
-        fs.copyFileSync( `${sourceFolder}${path.sep}${filename}`, `${targetFolder}${path.sep}${filename}` )
-        // execSync( `cp "${sourceFolder}/${filename}" "${targetFolder}"` )
+(function () 
+{
+    console.log( "** Populate top-level folders" )
+    newFolders.forEach( (folderName) => {
+        copyFolder( folderName )
     })
-})
+    
+    const sourceFolder = `${process.cwd()}`
+    const targetFolder = `${process.env.INIT_CWD}`
+    appFileList.forEach( (fileName) => {
+        copyFile( fileName, sourceFolder, targetFolder )
+    })
+})()
 
+/*
 const targetFolder = `${process.env.INIT_CWD}`
-
 console.log( "** Update package.json" )
 // first make a backup of the package.json file
 if ( !files.isFile( `${targetFolder}${path.sep}package.old.json` ) ) {
@@ -75,13 +102,13 @@ if ( !files.isFile( `${targetFolder}${path.sep}package.old.json` ) ) {
     fs.copyFileSync( `${targetFolder}${path.sep}package.json`, `${targetFolder}${path.sep}package.old.json` )
     // execSync( `cp "${targetFolder}/package.json" "${targetFolder}/package.old.json"` )
 }
-
+*/
+/*
 const sourceFolder = `${process.cwd()}`
-
 console.log( `readJSON: ${sourceFolder}${path.sep}package-template.json` )
 const packageTemplate = files.readJSON( `${sourceFolder}${path.sep}package-template.json` )
 files.updateJSON( `${targetFolder}${path.sep}package.json`, packageTemplate )
-
+*/
 /*******************
 // if we don't rebuild, electron won't work properly with gRPC
 console.log( "** npm install from source !! PLEASE BE PATIENT !! " )

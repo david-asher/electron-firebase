@@ -110,7 +110,7 @@ function copyFolder( folderName, sourceParent, targetParent )
     })
 
     console.log( "** Rebuilding Electron, this will take a few minutes." )
-    execSync( "./node_modules/.bin/electron-rebuild" )
+    execSync( "node ./node_modules/.bin/electron-rebuild" )
 
     console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
     chdir( "./functions")

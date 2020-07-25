@@ -34,6 +34,8 @@ const appFileList = [
 
 const fs = require('fs')
 const path = require('path')
+const { execSync } = require( 'child_process' )
+const { chdir } = require( 'process' )
 
 function copyFile( filename, sourceFolder, targetFolder )
 {
@@ -110,6 +112,10 @@ function copyFolder( folderName, sourceParent, targetParent )
     console.log( "** Rebuilding Electron, this will take a few minutes." )
     execSync( "./node_modules/.bin/electron-rebuild" )
 
+    console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
+    chdir( "./functions")
+    execSync( "npm install -g firebase-tools" )
+    chdir( "../")
 
 })()
 

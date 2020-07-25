@@ -13,7 +13,6 @@
     "start": "electron ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
-    "cleanup": "npm prune && npm uninstall * && rm -rf ./node_modules",
     "gendocs": "node ./lib/gendocs.js"
   },
   "dependencies": {
@@ -41,8 +40,7 @@
     "electron",
     "firebase",
     "authentication",
-    "oauth",
-    "mbaas"
+    "oauth"
   ],
   "author": "David Asher",
   "license": "MIT",
@@ -52,6 +50,7 @@
     "lib",
     "pages",
     "scripts",
+    "config",
     "answerBrowser.js",
     "electron-firebase.js",
     "main.js",

@@ -1,5 +1,5 @@
 # project-specific ignores
-config/
+developer/
 package-lock.json
 .firebaserc
 .gitignore

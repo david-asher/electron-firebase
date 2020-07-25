@@ -5,4 +5,4 @@
  */
 'use strict';
 
-console.log( "Please be patient, electron and firebase are large projects and install may take a few minutes." )
+console.log( "Please be patient, electron and firebase are large projects and installation may take a few minutes." )

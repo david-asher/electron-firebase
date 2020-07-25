@@ -1,5 +1,5 @@
 /* postinstall.js
- * Copyright (c) 2019 by David Asher, https://github.com/david-asher
+ * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  *
  * post-installation script for electron-firebase
  */
@@ -19,21 +19,8 @@ console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
 // process.env.INIT_CWD is root of project folder
 // __dirname is postinstall script folder
 
-const fs = require('fs')
-const path = require('path')
-
-if ( process.env.INIT_CWD == process.cwd() ) {
-    // it's running from project root and not the module subfolder, this won't work
-    process.exit( 0 )
-}
-
-// set loglevel to quiet multiple warnings that we can't control
-// process.env.loglevel = "silent"
-
-const moduleRoot = `${process.cwd()}${path.sep}`
-const projectRoot = `${process.env.INIT_CWD}${path.sep}`
-
 const newFolders = [
+    "config",
     "pages",
     "scripts",
     "functions"
@@ -45,56 +32,85 @@ const appFileList = [
     "main.js"
 ]
 
+const fs = require('fs')
+const path = require('path')
+
 function copyFile( filename, sourceFolder, targetFolder )
 {
-    fs.copyFileSync( `${sourceFolder}${path.sep}${filename}`, `${targetFolder}${path.sep}${filename}` )
+    const atThisTime = new Date()
+    const sourceFile = `${sourceFolder}${path.sep}${filename}`
+    const targetFile = `${targetFolder}${path.sep}${filename}`
+    fs.copyFileSync( sourceFile, targetFile )
+    fs.utimesSync( targetFile, atThisTime, atThisTime )
 }
 
 function copyFolderFiles( sourceFolder, targetFolder )
-{
-
-console.log( "source: ", sourceFolder )
-console.log( "target: ", targetFolder )
-
+{ 
     const dirList = fs.readdirSync( sourceFolder, { withFileTypes: true } )
     dirList.forEach( (file) => {
         if ( !file.isFile() ) return
-
-console.log( "copying: ", file.name )
-
         copyFile( file.name, sourceFolder, targetFolder )
     })
 }
 
-function copyFolder( folderName )
+function makeFolder( folderPath )
 {
-    const sourceFolder = moduleRoot + folderName
+    try {
+        fs.mkdirSync( folderPath )
+    }
+    catch( error ) {
+        if ( error && error.code == 'EEXIST' ) return
+        console.error( error )
+    } 
+}
+
+function copyFolder( folderName, sourceParent, targetParent )
+{
+    const sourceFolder = sourceParent + folderName
     if ( !fs.statSync( sourceFolder ).isDirectory() ) {
         console.error( "Source folder does not exist: ", sourceFolder )
         return
     }
 
-    const targetFolder = projectRoot + folderName
-    fs.mkdirSync( targetFolder )
+    const targetFolder = targetParent + folderName
+    makeFolder( targetFolder )
     if ( !fs.statSync( targetFolder ).isDirectory() ) {
         console.error( "Failed to create target folder: ", targetFolder )
         return
     }
-
     copyFolderFiles( sourceFolder, targetFolder )
 }
 
 
 (function () 
 {
+    // set loglevel to quiet multiple warnings that we can't control
+    // process.env.loglevel = "silent"
+
+    var moduleRoot = `${process.cwd()}${path.sep}`
+    var projectRoot = `${process.env.INIT_CWD}${path.sep}`
+
+    // this condition lets us test this script without doing a full install
+    if ( moduleRoot == projectRoot ) {
+        moduleRoot += `node_modules${path.sep}electron-firebase${path.sep}`
+    }
+
+    console.log( "moduleRoot = ", moduleRoot )
+    console.log( "projectRoot = ", projectRoot )
+
     console.log( "** Populate top-level folders" )
     newFolders.forEach( (folderName) => {
-        copyFolder( folderName )
+        copyFolder( folderName, moduleRoot, projectRoot )
     })
 
     appFileList.forEach( (fileName) => {
         copyFile( fileName, moduleRoot, projectRoot )
     })
+
+    console.log( "** Rebuilding Electron, this will take a few minutes." )
+    execSync( "./node_modules/.bin/electron-rebuild" )
+
+
 })()
 
 /*

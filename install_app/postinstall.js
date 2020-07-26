@@ -108,8 +108,11 @@ function postInstall()
     // set loglevel to quiet multiple warnings that we can't control
     process.env.npm_config_loglevel = "error"
 
-    var moduleRoot = parentPath( __dirname ) // `${process.cwd()}${path.sep}`
-    var projectRoot = `${process.cwd()}${path.sep}` // `${process.env.INIT_CWD}${path.sep}`
+    var moduleRoot = `${process.cwd()}${path.sep}`
+    var projectRoot = `${process.env.INIT_CWD}${path.sep}`
+    // for local testing:
+//    var moduleRoot = parentPath( __dirname ) 
+//    var projectRoot = `${process.cwd()}${path.sep}`
 
     console.log( "moduleRoot = ", moduleRoot )
     console.log( "projectRoot = ", projectRoot )

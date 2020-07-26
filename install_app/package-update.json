@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "rebuild": "./node_modules/.bin/electron-rebuild"
+  }
+}

@@ -10,9 +10,10 @@ console.log( "- - - - - - - - - postinstall.js - - - - - - - - -" )
 console.log( "__dirname = ", __dirname )
 console.log( "__filename = ", __filename )
 console.log( "process.cwd() = ", process.cwd() )
-// console.log( "process.env = ", process.env )
 console.log( "process.env.PWD = ", process.env.PWD )
 console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
+
+// console.log( "process.env = ", process.env )
 // */
 
 // process.cwd() is root of electron-firebase folder in node_modules
@@ -36,6 +37,11 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require( 'child_process' )
 const { chdir, exit } = require( 'process' )
+
+function parentPath( filePath )
+{
+    return filePath.split( path.sep ).slice( 0, -1 ).join( path.sep ) + path.sep
+}
 
 function copyFile( filename, sourceFolder, targetFolder )
 {
@@ -83,19 +89,27 @@ function copyFolder( folderName, sourceParent, targetParent )
     copyFolderFiles( sourceFolder, targetFolder )
 }
 
+function isObject( it )
+{
+    return ( Object.prototype.toString.call( it ) === '[object Object]' )
+}
+
+function omerge( oTarget, oUpdate ) 
+{
+    if ( !isObject( oUpdate ) ) return oUpdate
+    for ( var key in oUpdate ) {
+        oTarget[key] = omerge( oTarget[key], oUpdate[key] )
+    }
+    return oTarget
+}
 
 function postInstall() 
 {
     // set loglevel to quiet multiple warnings that we can't control
-    // process.env.loglevel = "silent"
+    process.env.npm_config_loglevel = "error"
 
-    var moduleRoot = `${process.cwd()}${path.sep}`
-    var projectRoot = `${process.env.INIT_CWD}${path.sep}`
-
-    // this condition lets us test this script without doing a full install
-    if ( moduleRoot == projectRoot ) {
-        moduleRoot += `node_modules${path.sep}electron-firebase${path.sep}`
-    }
+    var moduleRoot = parentPath( __dirname ) // `${process.cwd()}${path.sep}`
+    var projectRoot = `${process.cwd()}${path.sep}` // `${process.env.INIT_CWD}${path.sep}`
 
     console.log( "moduleRoot = ", moduleRoot )
     console.log( "projectRoot = ", projectRoot )
@@ -105,18 +119,24 @@ function postInstall()
         copyFolder( folderName, moduleRoot, projectRoot )
     })
 
+    console.log( "** Copy sample application files" )
     appFileList.forEach( (fileName) => {
         copyFile( fileName, moduleRoot, projectRoot )
     })
 
+    console.log( "** Update package.json scripts" )
+    const packageFile = projectRoot + "package.json"
+    const packageCopy = projectRoot + "package.old.json"
+    const packageSource = require( packageFile )
+    fs.copyFileSync( packageFile, packageCopy )
+    const packageUpdate = require( `${moduleRoot}${path.sep}install_app${path.sep}package-update.json` )
+    fs.writeFileSync( packageFile, JSON.stringify( omerge( packageSource, packageUpdate ), null, 2 ) )
+
     console.log( "** Rebuilding Electron, this will take a few minutes." )
-//    execSync( "./node_modules/.bin/electron-rebuild" )
+    execSync( "npm run rebuild" )
 
     console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
-    chdir( "./functions")
-//    execSync( "npm install -g firebase-tools" )
-    chdir( "../")
-
+    execSync( "npm install -g firebase-tools" )
 }
 
 (function ()
@@ -130,30 +150,3 @@ function postInstall()
     exit( 0 )
 })()
 
-
-/*
-const targetFolder = `${process.env.INIT_CWD}`
-console.log( "** Update package.json" )
-// first make a backup of the package.json file
-if ( !files.isFile( `${targetFolder}${path.sep}package.old.json` ) ) {
-    console.log( `source: ${targetFolder}${path.sep}package.json, target: ${targetFolder}${path.sep}package.old.json` )
-    fs.copyFileSync( `${targetFolder}${path.sep}package.json`, `${targetFolder}${path.sep}package.old.json` )
-    // execSync( `cp "${targetFolder}/package.json" "${targetFolder}/package.old.json"` )
-}
-*/
-/*
-const sourceFolder = `${process.cwd()}`
-console.log( `readJSON: ${sourceFolder}${path.sep}package-template.json` )
-const packageTemplate = files.readJSON( `${sourceFolder}${path.sep}package-template.json` )
-files.updateJSON( `${targetFolder}${path.sep}package.json`, packageTemplate )
-*/
-/*******************
-// if we don't rebuild, electron won't work properly with gRPC
-console.log( "** npm install from source !! PLEASE BE PATIENT !! " )
-//// execSync( "npm config set [--global] loglevel silent && npm install --build-from-source --no-warnings --silent" )
-execSync( "npm install --build-from-source" )
-***********/
-/***
-console.log( "** Rebuild electron !! BE PATIENT SOME MORE !!" )
-execSync( `.${path.sep}node_modules${path.sep}.bin${path.sep}electron-rebuild` )
-***/

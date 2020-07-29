@@ -5,22 +5,15 @@
  */
 'use strict';
 
-/*
-console.log( "- - - - - - - - - postinstall.js - - - - - - - - -" )
-console.log( "__dirname = ", __dirname )
-console.log( "__filename = ", __filename )
-console.log( "process.cwd() = ", process.cwd() )
-console.log( "process.env.PWD = ", process.env.PWD )
-console.log( "process.env.INIT_CWD = ", process.env.INIT_CWD )
+const { execSync } = require( 'child_process' )
+const prompt = require("readline").createInterface({
+    input: process.stdin,
+    output: process.stdout
+})
+const it = require( './install-tools' );
+const { exit } = require('process');
 
-// console.log( "process.env = ", process.env )
- */
-
-// process.cwd() is root of electron-firebase folder in node_modules
-// process.env.INIT_CWD is root of project folder
-// __dirname is postinstall script folder
-
-const newFolders = [
+const topLevelFolders = [
     "config",
     "pages",
     "scripts",
@@ -33,142 +26,27 @@ const appFileList = [
     "main.js"
 ]
 
-const fs = require('fs')
-const path = require('path')
-const { execSync } = require( 'child_process' )
-const { chdir, exit } = require( 'process' )
-
-function parentPath( filePath )
-{
-    return filePath.split( path.sep ).slice( 0, -1 ).join( path.sep ) + path.sep
-}
-
-function getModified( filePath )
-{
-    const fileStats = fs.statSync( filePath )
-    return new Date( fileStats.mtime )
-}
-
-function touchFile( filePath, timeStamp )
-{
-    if ( !timeStamp ) timeStamp = new Date()
-    fs.utimesSync( filePath, timeStamp, timeStamp )
-}
-
-function copyFile( filename, sourceFolder, targetFolder, timeStamp )
-{
-    const sourceFile = `${sourceFolder}${path.sep}${filename}`
-    const targetFile = `${targetFolder}${path.sep}${filename}`
-    fs.copyFileSync( sourceFile, targetFile )
-    touchFile( targetFile, timeStamp )
-}
-
-function copyFolderFiles( sourceFolder, targetFolder, timeStamp )
-{ 
-    const dirList = fs.readdirSync( sourceFolder, { withFileTypes: true } )
-    dirList.forEach( (file) => {
-        if ( !file.isFile() ) return
-        copyFile( file.name, sourceFolder, targetFolder, timeStamp )
-    })
-}
-
-function makeFolder( folderPath )
-{
-    try {
-        fs.mkdirSync( folderPath )
-    }
-    catch( error ) {
-        if ( error && error.code == 'EEXIST' ) return
-        console.error( error )
-    } 
-}
-
-function copyFolder( folderName, sourceParent, targetParent, timeStamp )
-{
-    const sourceFolder = sourceParent + folderName
-    if ( !fs.statSync( sourceFolder ).isDirectory() ) {
-        console.error( "Source folder does not exist: ", sourceFolder )
-        return
-    }
-
-    const targetFolder = targetParent + folderName
-    makeFolder( targetFolder )
-    if ( !fs.statSync( targetFolder ).isDirectory() ) {
-        console.error( "Failed to create target folder: ", targetFolder )
-        return
-    }
-    copyFolderFiles( sourceFolder, targetFolder, timeStamp )
-}
-
-function isObject( it )
-{
-    return ( Object.prototype.toString.call( it ) === '[object Object]' )
-}
-
-function omerge( oTarget, oUpdate ) 
-{
-    if ( !isObject( oUpdate ) ) return oUpdate
-    for ( var key in oUpdate ) {
-        oTarget[key] = omerge( oTarget[key], oUpdate[key] )
-    }
-    return oTarget
-}
-
-function backupFile( filePath )
-{
-    var backupParts = filePath.split( '.' )
-    backupParts.splice( -1, 0, "old" )
-    const backupPath = backupParts.join( '.' )
-    fs.copyFileSync( filePath, backupPath )
-}
-
-function updateJsonFile( jsonFile, updateJson )
-{
-    const sourceJson = require( jsonFile )
-    backupFile( jsonFile )
-    fs.writeFileSync( jsonFile, JSON.stringify( omerge( sourceJson, updateJson ), null, 2 ) )
-}
-
 function postInstall() 
 {
-    var moduleRoot, projectRoot
-
-    const timeStamp = new Date()
-
     // set loglevel to quiet multiple warnings that we can't control
     process.env.npm_config_loglevel = "error"
-
-    // moduleRoot is the source; projectRoot is the target
-    if ( undefined == process.env.INIT_CWD ) {
-        // for local testing, e.g. at project root, run:
-        // node ./node_modules/electron-firebase/install_app/postinstall.js
-        moduleRoot = parentPath( __dirname ) 
-        projectRoot = `${process.cwd()}${path.sep}`
-    }
-    else {
-        // normal npm install case
-        moduleRoot = `${process.cwd()}${path.sep}`
-        projectRoot = `${process.env.INIT_CWD}${path.sep}`
-    }
-    console.log( "moduleRoot = ", moduleRoot, typeof moduleRoot )
-    console.log( "projectRoot = ", projectRoot, typeof projectRoot )
+    const timeStamp = new Date()
+    const { moduleRoot, projectRoot } = it.getInstallPaths()
 
     console.log( "** Update package.json scripts" )
-    const packageFile = projectRoot + "package.json"
-    const updateFile = `${moduleRoot}${path.sep}install_app${path.sep}package-update.json`
-
-    console.log( "mtime = ", getModified(updateFile).toUTCString() )
-
-    updateJsonFile( packageFile, require( updateFile ) )
+    const packageFile = it.buildPath( projectRoot, "package.json" )
+    const updateFile = it.buildPath( moduleRoot, "install_app", "package-update.json" )
+    const lastUpdate = it.getModified( updateFile )
+    it.updateJsonFile( packageFile, require( updateFile ) )
 
     console.log( "** Populate top-level folders" )
-    newFolders.forEach( (folderName) => {
-        copyFolder( folderName, moduleRoot, projectRoot, timeStamp )
+    topLevelFolders.forEach( (folderName) => {
+        it.copyFolder( folderName, moduleRoot, projectRoot, timeStamp, lastUpdate )
     })
 
-    console.log( "** Copy sample application files" )
+    console.log( "** Copy example application files" )
     appFileList.forEach( (fileName) => {
-        copyFile( fileName, moduleRoot, projectRoot, timeStamp )
+        it.copyFile( fileName, moduleRoot, projectRoot, timeStamp, lastUpdate )
     })
 
     console.log( "** Rebuilding Electron, this will take a few minutes." )
@@ -177,8 +55,8 @@ function postInstall()
     console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
     execSync( "npm install -g --silent firebase-tools" )
 
-    touchFile( updateFile )
-
+    // leave the package-update.json file with newer modified time so the next update can check it
+    it.touchFile( updateFile )
 }
 
 (function ()
@@ -189,6 +67,6 @@ function postInstall()
     catch(error) {
         console.log( error )
     }
-    exit( 0 )
+    exit(0)
 })()
 

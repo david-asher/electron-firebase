@@ -14,14 +14,12 @@ also provided that use the Google Firestore database to track cloud files and al
 basic file listing and searching. 
 
 ## Prerequisites
-* OpenSSL
 * nodejs and npm
 * git
 * For linux systems, libsecret
 
 ## Installation
 ```
-npm install -g node-gyp
 npm init
 npm install electron-firebase
 ```

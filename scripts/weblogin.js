@@ -10,39 +10,6 @@ const fbStoredUserKey   = "firebase:authUser"
 
 const queryParams = new URLSearchParams( location.search )
 
-const idpConfig = {
-    'google.com': {
-        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        scopes: [ 
-            'profile', 
-            'email', 
-            'openid', 
-            'https://www.googleapis.com/auth/devstorage.full_control' 
-        ],
-        customParameters: { prompt: 'select_account' }
-    },
-    'facebook.com': {
-        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        scopes: [ 
-            'public_profile', 
-            'email' 
-        ],
-        customParameters: { auth_type: 'reauthenticate' }
-    },
-    'twitter.com': { 
-        provider: firebase.auth.TwitterAuthProvider.PROVIDER_ID 
-    },
-    'github.com': { 
-        provider: firebase.auth.GithubAuthProvider.PROVIDER_ID 
-    },
-    'password': { 
-        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID 
-    },
-    'phone': { 
-        provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID 
-    }
-}
-
 function getQueryParam( paramName )
 {
     return queryParams.get( paramName )
@@ -174,7 +141,7 @@ async function showLoginWindow()
     return responseCode
 }
 
-function firebaseAuthUIStart( fbConfig ) 
+function firebaseAuthUIStart( fbConfig, idpConfig ) 
 {
     var uiConfig = {
         callbacks: {

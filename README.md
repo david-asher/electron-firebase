@@ -23,6 +23,18 @@ basic file listing and searching.
 npm init
 npm install electron-firebase
 ```
+Copy fields onto /config/firebase-config.json
+Firebase console --> Develop --> Authentication --> Sign-in Method
+Select Multiple accounts per email address 
+Add Authorized Domain = localhost
+https://github.com/firebase/firebaseui-web/blob/master/README.md
+
+configure facebook
+https://developers.facebook.com/apps/
+Products --> Settings --> Client OAuth Settings
+paste: Valid OAuth Redirect URIs
+--> Save Changes
+
 
 ## API documentation
 Typical usage of the APIs:

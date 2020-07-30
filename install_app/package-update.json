@@ -1,6 +1,7 @@
 {
   "scripts": {
     "rebuild": "./node_modules/.bin/electron-rebuild",
-    "deploy": "node ./config/firebase-deploy.js"
+    "deploy": "node ./config/firebase-deploy.js",
+    "start": "electron ./main.js"
   }
 }

@@ -6,12 +6,8 @@
 'use strict';
 
 const { execSync } = require( 'child_process' )
-const prompt = require("readline").createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
-const it = require( './install-tools' );
-const { exit } = require('process');
+const { exit } = require('process')
+const it = require( './install-tools' )
 
 const topLevelFolders = [
     "config",
@@ -21,6 +17,8 @@ const topLevelFolders = [
 ]
 
 const appFileList = [
+    ".firebaserc",
+    "firebase.json",
     "answerBrowser.js",
     "setupApp.js",
     "main.js"

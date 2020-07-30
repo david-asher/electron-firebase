@@ -1,7 +1,6 @@
 # project-specific ignores
 developer/
 package-lock.json
-.firebaserc
 .gitignore
 
 # Logs

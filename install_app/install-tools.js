@@ -61,6 +61,11 @@ function touchFile( filePath, timeStamp )
     fs.utimesSync( filePath, timeStamp, timeStamp )
 }
 
+/*
+ * This function will not overwrite a file that has been modified more
+ * recently than the lastUpdate; set lastUpdate to Date.now() to force overwrite. 
+ * After a successful copy the access and modified times will be set to timeStamp.
+ */
 function copyFile( filename, sourceFolder, targetFolder, timeStamp, lastUpdate )
 {
     try {

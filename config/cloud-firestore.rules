@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{allPaths=**} {
+      allow create, read, update, delete: if request.auth.uid == userId;
+    }
+    match /apps/{projectId}/{allPaths=**} {
+      allow create, read, update, delete: if request.auth != null && request.auth.token.aud == projectId;
+    }
+    match /apps/public/{allPaths=**} {
+      allow create, update, delete: if request.auth != null
+      allow read: if true
+    }
+  }
+}

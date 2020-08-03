@@ -150,6 +150,36 @@ function updateJsonFile( jsonFile, updateJson )
     fs.writeFileSync( jsonFile, JSON.stringify( omerge( sourceJson, updateJson ), null, 2 ) )
 }
 
+function checkCommand( commandString )
+{
+    var exists = true
+    try {
+        execSync( `which ${commandString}` )
+    }
+    catch (error) {
+        exists = false
+    }
+    return exists
+}
+
+function installApp( commandString, appInstallString )
+{
+    // check for command existence before installing node-gyp
+    if ( !checkCommand( commandString ) ) {
+        execSync( appInstallString )
+    }
+    // if we did not have have permission, install would have failed, so try again as su
+    if ( !checkCommand( commandString ) ) {
+        execSync( "sudo " + appInstallString )
+    }
+    // if all of this failed, stop, because we can't build without node-gyp
+    if ( !checkCommand( commandString ) ) {
+        console.error( "Cannot find " + commandString + " and failed to install it. " )
+        console.error( "Please check permissions and try to install " + commandString + " yourself before proceding." )
+        exit(23)
+    }
+}
+
 module.exports = {
     getInstallPaths: getInstallPaths,
     buildPath: buildPath,
@@ -163,5 +193,7 @@ module.exports = {
     isObject: isObject,
     omerge: omerge,
     backupFile: backupFile,
-    updateJsonFile: updateJsonFile
+    updateJsonFile: updateJsonFile,
+    checkCommand: checkCommand,
+    installApp: installApp
 }

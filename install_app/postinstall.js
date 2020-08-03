@@ -51,7 +51,7 @@ function postInstall()
     execSync( "npm run rebuild" )
 
     console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
-    execSync( "npm install -g --silent firebase-tools" )
+    it.installApp( 'firebase-tools', "npm install -g --silent firebase-tools" )
 
     // leave the package-update.json file with newer modified time so the next update can check it
     it.touchFile( updateFile )

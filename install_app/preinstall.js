@@ -5,21 +5,7 @@
  */
 'use strict';
 
-const { execSync } = require( 'child_process' )
-const { exit } = require('process')
 const it = require( './install-tools' )
-
-function checkCommand( commandString )
-{
-    var exists = true
-    try {
-        execSync( `which ${commandString}` )
-    }
-    catch (error) {
-        exists = false
-    }
-    return exists
-}
 
 process.env.npm_config_loglevel = "error"
 

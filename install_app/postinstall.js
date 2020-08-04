@@ -6,7 +6,8 @@
 'use strict';
 
 const { execSync } = require( 'child_process' )
-const { exit } = require('process')
+const { exit, env } = require('process')
+const path = require('path')
 const it = require( './install-tools' )
 
 const topLevelFolders = [
@@ -27,13 +28,14 @@ const appFileList = [
 function postInstall() 
 {
     // set loglevel to quiet multiple warnings that we can't control
-    process.env.npm_config_loglevel = "error"
+    env.npm_config_loglevel = "error"
     const timeStamp = new Date()
     const { moduleRoot, projectRoot } = it.getInstallPaths()
-
+    it.makeNpmGlobal( ".npm-global" )
+    
     console.log( "** Update package.json scripts" )
-    const packageFile = it.buildPath( projectRoot, "package.json" )
-    const updateFile = it.buildPath( moduleRoot, "install_app", "package-update.json" )
+    const packageFile = path.join( projectRoot, "package.json" )
+    const updateFile = path.join( moduleRoot, "install_app", "package-update.json" )
     const lastUpdate = it.getModified( updateFile )
     it.updateJsonFile( packageFile, require( updateFile ) )
 

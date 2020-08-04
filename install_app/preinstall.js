@@ -6,9 +6,12 @@
 'use strict';
 
 const it = require( './install-tools' )
+const { env } = require( 'process' )
 
-process.env.npm_config_loglevel = "error"
-
-console.log( "Please be patient, electron and firebase are large projects and installation may take a few minutes." )
-
-it.installApp( 'node-gyp', "npm install -g node-gyp" )
+(function ()
+{
+    env.npm_config_loglevel = "error"
+    console.log( "Please be patient, electron and firebase are large projects and installation may take a few minutes." )
+    it.makeNpmGlobal( ".npm-global" )
+    it.installApp( 'node-gyp', "npm install -g --silent node-gyp" )
+})()

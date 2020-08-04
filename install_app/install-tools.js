@@ -6,7 +6,9 @@
 'use strict';
 
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
+const { exit, env } = require('process')
 const { execSync } = require( 'child_process' )
 
 function getInstallPaths()
@@ -21,7 +23,7 @@ function getInstallPaths()
     if ( undefined == process.env.INIT_CWD ) {
         // for local testing, e.g. at project root, run:
         // node ./node_modules/electron-firebase/install_app/postinstall.js
-        moduleRoot = parentPath( __dirname ) 
+        moduleRoot = path.dirname( __dirname ) 
         projectRoot = `${process.cwd()}${path.sep}`
     }
     else {
@@ -33,16 +35,6 @@ function getInstallPaths()
         moduleRoot: moduleRoot,
         projectRoot: projectRoot
     }
-}
-
-function buildPath( ...args )
-{
-    return args.join( path.sep ).replace( path.sep+path.sep, path.sep, "g" )
-}
-
-function parentPath( filePath )
-{
-    return filePath.split( path.sep ).slice( 0, -1 ).join( path.sep ) + path.sep
 }
 
 function getModified( filePath )
@@ -70,8 +62,8 @@ function touchFile( filePath, timeStamp )
 function copyFile( filename, sourceFolder, targetFolder, timeStamp, lastUpdate )
 {
     try {
-        const sourceFile = buildPath( sourceFolder, filename )
-        const targetFile = buildPath( targetFolder, filename )
+        const sourceFile = path.join( sourceFolder, filename )
+        const targetFile = path.join( targetFolder, filename )
         // check for user modified file and do not overwrite
         const mTimeTarget = getModified( targetFile )
         if ( +mTimeTarget > +lastUpdate ) return 
@@ -103,6 +95,11 @@ function makeFolder( folderPath )
         if ( error && error.code == 'EEXIST' ) return
         console.error( error )
     } 
+}
+
+function getHomeFolder()
+{
+    return os.homedir()
 }
 
 function copyFolder( folderName, sourceParent, targetParent, timeStamp, lastUpdate )
@@ -169,10 +166,6 @@ function installApp( commandString, appInstallString )
     if ( !checkCommand( commandString ) ) {
         execSync( appInstallString )
     }
-    // if we did not have have permission, install would have failed, so try again as su
-    if ( !checkCommand( commandString ) ) {
-        execSync( "sudo " + appInstallString )
-    }
     // if all of this failed, stop, because we can't build without node-gyp
     if ( !checkCommand( commandString ) ) {
         console.error( "Cannot find " + commandString + " and failed to install it. " )
@@ -181,10 +174,17 @@ function installApp( commandString, appInstallString )
     }
 }
 
+function makeNpmGlobal( globalFolder )
+{
+    const npmGlobal = path.join( os.homedir(), globalFolder )
+    const npmGlobalBin = path.join( npmGlobal, "bin" )
+    makeFolder( npmGlobal )
+    execSync( `npm config set prefix "${npmGlobal}"` ) 
+    env.PATH = `${npmGlobalBin}:${env.PATH}`
+}
+
 module.exports = {
     getInstallPaths: getInstallPaths,
-    buildPath: buildPath,
-    parentPath: parentPath,
     getModified: getModified,
     touchFile: touchFile,
     copyFile: copyFile,
@@ -196,5 +196,6 @@ module.exports = {
     backupFile: backupFile,
     updateJsonFile: updateJsonFile,
     checkCommand: checkCommand,
-    installApp: installApp
+    installApp: installApp,
+    makeNpmGlobal: makeNpmGlobal
 }

@@ -99,13 +99,13 @@ function makeFolder( folderPath )
 
 function copyFolder( folderName, sourceParent, targetParent, timeStamp, lastUpdate )
 {
-    const sourceFolder = sourceParent + folderName
+    const sourceFolder = path.join( sourceParent, folderName )
     if ( !fs.statSync( sourceFolder ).isDirectory() ) {
         console.error( "Source folder does not exist: ", sourceFolder )
         return
     }
 
-    const targetFolder = targetParent + folderName
+    const targetFolder = path.join( targetParent, folderName )
     makeFolder( targetFolder )
     if ( !fs.statSync( targetFolder ).isDirectory() ) {
         console.error( "Failed to create target folder: ", targetFolder )

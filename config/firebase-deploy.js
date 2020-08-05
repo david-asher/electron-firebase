@@ -10,6 +10,9 @@
 const { execSync } = require( 'child_process' )
 const { exit } = require('process')
 const { writeFileSync, readFileSync }  = require('fs')
+const path = require('path')
+const { env } = require('process')
+const os = require('os')
 
 const fbrcFile = "./.firebaserc"
 const fbDeployFile = "./firebase.json"
@@ -29,26 +32,33 @@ function fbDeploy( command )
     execSync( "firebase deploy --only " + command )
 }
 
-const fbConfig = readJson( './firebase-config.json' )
-if ( !fbConfig.storageBucket ) {
-    console.error( "ERROR: firebase-config.json must be configured for your firebase project." )
-    exit(10)
-}
+(function()
+{
+    const npmGlobal = path.join( os.homedir(), ".npm-global" )
+    execSync( `npm config set prefix "${npmGlobal}"` ) 
 
-console.log( "** configure .firebaserc file" )
-var fbrcJson = readJson( fbrcFile )
-fbrcJson.projects.default = fbConfig.projectId
-writeJson( fbrcFile, fbrcJson )
+    const fbConfig = readJson( './firebase-config.json' )
+    if ( !fbConfig.storageBucket ) {
+        console.error( "ERROR: firebase-config.json must be configured for your firebase project." )
+        exit(10)
+    }
+    
+    console.log( "** configure .firebaserc file" )
+    var fbrcJson = readJson( fbrcFile )
+    fbrcJson.projects.default = fbConfig.projectId
+    writeJson( fbrcFile, fbrcJson )
+    
+    console.log( "** deploy firestore:rules" )
+    fbDeploy( "firestore:rules" )
+    
+    console.log( "** deploy storage:rules" )
+    const fbDeployJson = readJson( fbDeployFile )
+    fbDeployJson.storage[0].bucket = fbConfig.storageBucket
+    writeJson( fbDeployFile, fbDeployJson, null )
+    fbDeploy( "storage:rules" )
+    
+    console.log( "** deploy firebase functions" )
+    execSync( "npm install", { cwd: "./functions" } )
+    fbDeploy( "functions" )   
+})()
 
-console.log( "** deploy firestore:rules" )
-fbDeploy( "firestore:rules" )
-
-console.log( "** deploy storage:rules" )
-const fbDeployJson = readJson( fbDeployFile )
-fbDeployJson.storage[0].bucket = fbConfig.storageBucket
-writeJson( fbDeployFile, fbDeployJson, null )
-fbDeploy( "storage:rules" )
-
-console.log( "** deploy firebase functions" )
-execSync( "npm install", { cwd: "./functions" } )
-fbDeploy( "functions" )

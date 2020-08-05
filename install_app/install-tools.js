@@ -8,7 +8,7 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { exit, env } = require('process')
+const { env } = require('process')
 const { execSync } = require( 'child_process' )
 
 function getInstallPaths()
@@ -97,11 +97,6 @@ function makeFolder( folderPath )
     } 
 }
 
-function getHomeFolder()
-{
-    return os.homedir()
-}
-
 function copyFolder( folderName, sourceParent, targetParent, timeStamp, lastUpdate )
 {
     const sourceFolder = sourceParent + folderName
@@ -152,7 +147,7 @@ function checkCommand( commandString )
 {
     var exists = true
     try {
-        execSync( `which ${commandString}` )
+        execSync( `${commandString} --version`, {stdio : 'pipe' } )
     }
     catch (error) {
         exists = false
@@ -162,25 +157,30 @@ function checkCommand( commandString )
 
 function installApp( commandString, appInstallString )
 {
-    // check for command existence before installing node-gyp
+    // check for command existence before installing
     if ( !checkCommand( commandString ) ) {
-        execSync( appInstallString )
+        execSync( appInstallString, { stdio: 'inherit' } )
     }
-    // if all of this failed, stop, because we can't build without node-gyp
+    // if this failed, stop, because we can't build
     if ( !checkCommand( commandString ) ) {
-        console.error( "Cannot find " + commandString + " and failed to install it. " )
-        console.error( "Please check permissions and try to install " + commandString + " yourself before proceding." )
-        exit(23)
+        throw( "Cannot find " + commandString + " and failed to install it. " )
     }
+}
+
+function addToPath( newPath )
+{
+    env.PATH = `${newPath}${path.delimiter}${env.PATH}`
 }
 
 function makeNpmGlobal( globalFolder )
 {
     const npmGlobal = path.join( os.homedir(), globalFolder )
-    const npmGlobalBin = path.join( npmGlobal, "bin" )
     makeFolder( npmGlobal )
+    addToPath( npmGlobal )
+    const npmGlobalBin = path.join( npmGlobal, "bin" )
+    makeFolder( npmGlobalBin )
+    addToPath( npmGlobalBin )
     execSync( `npm config set prefix "${npmGlobal}"` ) 
-    env.PATH = `${npmGlobalBin}:${env.PATH}`
 }
 
 module.exports = {
@@ -197,5 +197,6 @@ module.exports = {
     updateJsonFile: updateJsonFile,
     checkCommand: checkCommand,
     installApp: installApp,
+    addToPath: addToPath,
     makeNpmGlobal: makeNpmGlobal
 }

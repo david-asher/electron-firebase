@@ -7,7 +7,7 @@
 
 const { execSync } = require( 'child_process' )
 const { exit, env } = require('process')
-const path = require('path')
+const { join } = require('path')
 const it = require( './install-tools' )
 
 const topLevelFolders = [
@@ -34,8 +34,8 @@ function postInstall()
     it.makeNpmGlobal( ".npm-global" )
     
     console.log( "** Update package.json scripts" )
-    const packageFile = path.join( projectRoot, "package.json" )
-    const updateFile = path.join( moduleRoot, "install_app", "package-update.json" )
+    const packageFile = join( projectRoot, "package.json" )
+    const updateFile = join( moduleRoot, "install_app", "package-update.json" )
     const lastUpdate = it.getModified( updateFile )
     it.updateJsonFile( packageFile, require( updateFile ) )
 
@@ -52,11 +52,11 @@ function postInstall()
     console.log( "** Rebuilding Electron, this will take a few minutes." )
     execSync( "npm run rebuild" )
 
-    console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
-    it.installApp( 'firebase-tools', "npm install -g --silent firebase-tools" )
-
     // leave the package-update.json file with newer modified time so the next update can check it
     it.touchFile( updateFile )
+
+    console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
+    it.installApp( 'firebase-tools', "npm install -g --silent firebase-tools" )
 }
 
 (function ()
@@ -69,4 +69,3 @@ function postInstall()
     }
     exit(0)
 })()
-

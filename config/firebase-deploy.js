@@ -16,6 +16,7 @@ const os = require('os')
 
 const fbrcFile = "./.firebaserc"
 const fbDeployFile = "./firebase.json"
+const fbConfigFile = "firebase-config.json"
 
 function writeJson( filePath, jsonContent )
 {
@@ -24,7 +25,12 @@ function writeJson( filePath, jsonContent )
 
 function readJson( filePath )
 {
-    return JSON.parse( readFileSync( filePath ) )
+    try {
+        return JSON.parse( readFileSync( filePath ) )
+    }
+    catch (error) {
+        return null
+    }
 }
 
 function fbDeploy( command )
@@ -34,15 +40,22 @@ function fbDeploy( command )
 
 (function()
 {
-    const npmGlobal = path.join( os.homedir(), ".npm-global" )
-    execSync( `npm config set prefix "${npmGlobal}"` ) 
-
-    const fbConfig = readJson( './firebase-config.json' )
-    if ( !fbConfig.storageBucket ) {
-        console.error( "ERROR: firebase-config.json must be configured for your firebase project." )
+    var fbConfig = readJson( `./developer/${fbConfigFile}` )
+    if ( !fbConfig ) fbConfig = readJson( `./config/${fbConfigFile}` )
+    if ( !fbConfig ) {
+        console.error( `ERROR: cannot find ${fbConfigFile}` ) 
         exit(10)
     }
-    
+    if ( !fbConfig.storageBucket || !fbConfig.projectId ) {
+        console.error( "ERROR: ${fbConfigFile} must be configured for your firebase project." )
+        exit(11)
+    }
+
+    console.log( "** login to firebase-tools" )
+    const npmGlobal = path.join( os.homedir(), ".npm-global" )
+    execSync( `npm config set prefix "${npmGlobal}"` ) 
+    execSync( "firebase login" )
+
     console.log( "** configure .firebaserc file" )
     var fbrcJson = readJson( fbrcFile )
     fbrcJson.projects.default = fbConfig.projectId
@@ -61,4 +74,3 @@ function fbDeploy( command )
     execSync( "npm install", { cwd: "./functions" } )
     fbDeploy( "functions" )   
 })()
-

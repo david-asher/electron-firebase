@@ -2,6 +2,7 @@
 developer/
 package-lock.json
 .gitignore
+.DS_Store
 
 # Logs
 logs

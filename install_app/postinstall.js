@@ -56,7 +56,7 @@ function postInstall()
     it.touchFile( updateFile )
 
     console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
-    it.installApp( 'firebase-tools', "npm install -g --silent firebase-tools" )
+    it.installApp( 'firebase-tools', "npm install -g firebase-tools", true )
 }
 
 (function ()

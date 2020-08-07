@@ -159,12 +159,21 @@ function installApp( commandString, appInstallString )
 {
     // check for command existence before installing
     if ( !checkCommand( commandString ) ) {
+
+console.log( "(1) installApp NOT FOUND: ", commandString )
+
         execSync( appInstallString, { stdio: 'inherit' } )
     }
     // if this failed, stop, because we can't build
     if ( !checkCommand( commandString ) ) {
+
+console.log( "(2) installApp NOT FOUND: ", commandString )
+
         throw( "Cannot find " + commandString + " and failed to install it. " )
     }
+
+console.log( "(3) installApp FOUND ! : ", commandString )
+
 }
 
 function addToPath( newPath )
@@ -175,6 +184,9 @@ function addToPath( newPath )
 function makeNpmGlobal( globalFolder )
 {
     const npmGlobal = path.join( os.homedir(), globalFolder )
+
+console.log( "npmGlobal = ", npmGlobal )
+
     makeFolder( npmGlobal )
     addToPath( npmGlobal )
     const npmGlobalBin = path.join( npmGlobal, "bin" )

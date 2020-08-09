@@ -15,8 +15,12 @@ basic file listing and searching.
 
 ## Prerequisites
 * nodejs and npm
-* git
-* For linux systems, libsecret
+
+## Platform support
+electron-firebase has been tested on:
+* Ubuntu Linux 20.04.1 LTS (Focal Fossa)
+* Apple Mac OS 10.15.5 (Catalina)
+* Microsoft Windows 10 Home version 1903
 
 ## Installation
 ```

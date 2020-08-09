@@ -20,8 +20,20 @@ basic file listing and searching.
 
 ## Installation
 ```
+# initialize your project
 npm init
+
+# install the electron-firebase framework and example application
 npm install electron-firebase
+
+# edit firebase-config.json parameters
+nano ./config/firebase-config.json
+
+# deploy security rules and cloud functions to firebase cloud
+npm run deploy
+
+# start the example application
+npm start
 ```
 Copy fields onto /config/firebase-config.json
 Firebase console --> Develop --> Authentication --> Sign-in Method

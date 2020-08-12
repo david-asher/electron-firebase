@@ -15,7 +15,7 @@ the example application, which you are encouraged to modify for your own purpose
 * Security and privacy throughout the authentication sign-in and persistence processes
 * True cross-platform cloud-connected application building across MacOS, Windows, and Linux
 * Methods for communication between the Electron Browser and Main processes
-* Authorized user access to database and cloud storage
+* Authorized user access to database and cloud storage with Firebase security rules
 * API access to Firebase Cloud Storage, which is not supported in node.js
 * Firebase Cloud Storage listing and searching capability
 * An example application for a quick start in writing your own application
@@ -280,12 +280,11 @@ fbe.auth.initializeFirebase()
 | API | Description |
 | --- | --- |
 | [mainapp](docs/mainapp.js.md) | Higher-level functions for quickly building your app.  |
-| [applib](docs/applibrary.js.md) | Collection of utilities for JSON, objects, and events.  |
 | [auth](docs/authentication.js.md) | Authentication workflow for Google Firebase.   |
-| [store](docs/fbstorage.js.md) | Interface to Google Cloud Storage in the security context of the authenticated user.  |
+| [firestore](docs/firestore.js.md) | Interface to the Firestore Database in the security context of the authenticated user.  |
+| [fbstorage](docs/fbstorage.js.md) | Interface to Google Cloud Storage in the security context of the authenticated user.  |
 | [file](docs/fileutils.js.md) | Functions for local file I/O. All functions are synchronous.  |
-| [data](docs/firestore.js.md) | Interface to the Firestore Database in the security context of the authenticated user.  |
+| [applib](docs/applibrary.js.md) | Collection of utilities for JSON, objects, and events.  |
 | [local](docs/localstorage.js.md) | Functions that use the localStorage capability in a BrowserWindow.  |
 | [server](docs/webserver.js.md) | A local webserver for secure communication with a BrowserWindow.  |
-| [window](docs/windows.js.md) | Open and manage Electron BrowserWindow instances.  |
-
+| [fbwindow](docs/windows.js.md) | Open and manage Electron BrowserWindow instances.  |

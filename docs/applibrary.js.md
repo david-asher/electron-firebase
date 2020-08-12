@@ -88,7 +88,7 @@ Performs a deep merge of the input objects.
 <a name="exp_module_applib--request"></a>
 
 ### request(options) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
-A promise interface for the npm request HTTP client. The response object from the returnedpromise contains these important properties: .status, .statusText, .headers, .data
+Interface for the npm request HTTP client. The response object from the returnedpromise contains these important properties: .status, .statusText, .headers, .data
 
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Promise object represents the HTTP response  

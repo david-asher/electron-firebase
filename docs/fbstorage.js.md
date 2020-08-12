@@ -14,38 +14,99 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 ```
 
 * [fbstorage](#module_fbstorage)
-    * [~fileStore](#module_fbstorage..fileStore)
-        * [new fileStore(firestoreRoot, storeName, setPrefix)](#new_module_fbstorage..fileStore_new)
-        * [.folders(filepath, content)](#module_fbstorage..fileStore+folders)
+    * [fileStore#find(filepath, queryMatch)](#exp_module_fbstorage--fileStore+find) ⇒ <code>object</code> ⏏
+    * [fileStore#list(folderpath, queryMatch)](#exp_module_fbstorage--fileStore+list) ⇒ <code>object</code> ⏏
+    * [fileStore#upload(filepath, content)](#exp_module_fbstorage--fileStore+upload) ⇒ <code>object</code> ⏏
+    * [fileStore#update(filepath, metadata)](#exp_module_fbstorage--fileStore+update) ⇒ <code>object</code> ⏏
+    * [fileStore#download(filepath)](#exp_module_fbstorage--fileStore+download) ⇒ <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> ⏏
+    * [fileStore#about(filepath)](#exp_module_fbstorage--fileStore+about) ⇒ <code>Promise</code> ⏏
+    * [fileStore#delete(filepath)](#exp_module_fbstorage--fileStore+delete) ⇒ <code>null</code> \| <code>string</code> ⏏
+    * [initialize()](#exp_module_fbstorage--initialize) ⏏
 
-<a name="module_fbstorage..fileStore"></a>
+<a name="exp_module_fbstorage--fileStore+find"></a>
 
-### fbstorage~fileStore
-**Kind**: inner class of [<code>fbstorage</code>](#module_fbstorage)  
+### fileStore#find(filepath, queryMatch) ⇒ <code>object</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
-* [~fileStore](#module_fbstorage..fileStore)
-    * [new fileStore(firestoreRoot, storeName, setPrefix)](#new_module_fbstorage..fileStore_new)
-    * [.folders(filepath, content)](#module_fbstorage..fileStore+folders)
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| filepath | <code>string</code> |  | Path and filename to store the file in the Cloud |
+| queryMatch | <code>string</code> | <code>&quot;path&quot;</code> | optional match parameter to query for something other than path |
 
-<a name="new_module_fbstorage..fileStore_new"></a>
+<a name="exp_module_fbstorage--fileStore+list"></a>
 
-#### new fileStore(firestoreRoot, storeName, setPrefix)
-Create a new fileStore interface.
+### fileStore#list(folderpath, queryMatch) ⇒ <code>object</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| folderpath | <code>string</code> |  | Path to query file storage |
+| queryMatch | <code>string</code> | <code>&quot;folder&quot;</code> | optional match parameter to query for something other than folder |
+
+<a name="exp_module_fbstorage--fileStore+upload"></a>
+
+### fileStore#upload(filepath, content) ⇒ <code>object</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| firestoreRoot | <code>string</code> | a database object defined in firestore.js |
-| storeName | <code>string</code> | just a moniker |
-| setPrefix | <code>string</code> | the first two segments of the file path, e.g. user/userid |
+| filepath | <code>string</code> | Path and filename to store the file in the Cloud |
+| content | <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> | File content to be written, objects must be serializable |
 
-<a name="module_fbstorage..fileStore+folders"></a>
+**Example**  
+```js
+{ name: 'users/[user-id]/Test/FileTest',  bucket: 'your-app-here.appspot.com',  generation: '123456789123456',  metageneration: '1',  contentType: 'application/json',  timeCreated: '2019-02-05T03:06:24.435Z',  updated: '2019-02-05T03:06:24.435Z',  storageClass: 'STANDARD',  size: '1005',  md5Hash: 'H3Anb534+vX2Y1HVwJxlyw==',  contentEncoding: 'identity',  contentDisposition: 'inline; filename*=utf-8\'\'FileTest',  crc32c: 'yTf15w==',  etag: 'AAAAAAA=',  downloadTokens: '00000000' }
+```
+<a name="exp_module_fbstorage--fileStore+update"></a>
 
-#### fileStore.folders(filepath, content)
-**Kind**: instance method of [<code>fileStore</code>](#module_fbstorage..fileStore)  
+### fileStore#update(filepath, metadata) ⇒ <code>object</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
-| Param | Type |
-| --- | --- |
-| filepath | <code>\*</code> | 
-| content | <code>\*</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| filepath | <code>string</code> | Path and filename to update the file in the Cloud, relative to the current user |
+| metadata |  | One or more metadata parameters to change |
+| metadata.cacheControl | <code>string</code> | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control |
+| metadata.contentDisposition | <code>string</code> | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/content-Disposition |
+| metadata.contentEncoding | <code>string</code> | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding |
+| metadata.contentLanguage | <code>string</code> | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language |
+| metadata.contentType | <code>string</code> | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type |
 
+<a name="exp_module_fbstorage--fileStore+download"></a>
+
+### fileStore#download(filepath) ⇒ <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> - - file content  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| filepath | <code>string</code> | Path and filename to retreive the file |
+
+<a name="exp_module_fbstorage--fileStore+about"></a>
+
+### fileStore#about(filepath) ⇒ <code>Promise</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>Promise</code> - A Promise object representing the meta information about the file  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| filepath | <code>string</code> | Path and filename to find the file in the Cloud, relative to the current user |
+
+<a name="exp_module_fbstorage--fileStore+delete"></a>
+
+### fileStore#delete(filepath) ⇒ <code>null</code> \| <code>string</code> ⏏
+**Kind**: Exported function  
+**Returns**: <code>null</code> \| <code>string</code> - - empty response unless there is an error  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| filepath | <code>string</code> | Path and filename to delete the file in the Cloud, relative to the current user |
+
+<a name="exp_module_fbstorage--initialize"></a>
+
+### initialize() ⏏
+**Kind**: Exported function  

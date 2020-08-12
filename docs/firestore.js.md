@@ -1,27 +1,3 @@
-## Modules
-
-<dl>
-<dt><a href="#module_firestore">firestore</a></dt>
-<dd><p>Interface to Google Cloud Firestore Database using high-level interface objects. 
-All Firestore document I/O is performed in the security context of the 
-logged-in user and the specific app you have built.</p>
-<p>It is important to understand the structure of a Firestore because it is not a file tree. A single 
-document may contain a set of properties, but not another document. A document may also contain 
-collections. A collection is a set of documents, but not properties. Therefore a document is always 
-a member of a collection, and a collection is a member of a document. You can describe a specific 
-path to a document, and it must always be an even number of path components since the document 
-parent will be a collection, except for the root document of the Firestore. If you follow only this
-interface for access to the Firestore, you will not have direct access to the root document.</p>
-</dd>
-</dl>
-
-## Classes
-
-<dl>
-<dt><a href="#firestore">firestore</a></dt>
-<dd></dd>
-</dl>
-
 <a name="module_firestore"></a>
 
 ## firestore
@@ -205,17 +181,4 @@ Firestore interfaces are defined when your app starts:* .doc - A Firestore subt
 | --- | --- | --- |
 | userid | <code>string</code> | The Firebase assigned userId from authentication process |
 | projectId | <code>string</code> | Unique string for this application, typically the Firebase projectId |
-
-<a name="firestore"></a>
-
-## firestore
-**Kind**: global class  
-<a name="new_firestore_new"></a>
-
-### new firestoreDoc(rootCollectionName, topLevelDocument)
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rootCollectionName | <code>string</code> | Top level segmentation of your Firestore, e.g. "users" |
-| topLevelDocument | <code>string</code> | A specific name (i.e. constraint) for this document tree, e.g. userId |
 

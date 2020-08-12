@@ -18,6 +18,7 @@ the example application, which you are encouraged to modify for your own purpose
 * Authorized user access to database and cloud storage with Firebase security rules
 * API access to Firebase Cloud Storage, which is not supported in node.js
 * Firebase Cloud Storage listing and searching capability
+* Persistence of window positions on the screen automagically when the user changes them
 * An example application for a quick start in writing your own application
 * Please, please, please modify the splash page (/pages/splashpage.html) before releasing your own application
 

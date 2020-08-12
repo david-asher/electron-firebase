@@ -11,7 +11,7 @@ This module will open and manage Electron BrowserWindow instances.
             * [.window()](#module_window--open+window)
             * [.waitForShow()](#module_window--open+waitForShow) ⇒ <code>Promise.&lt;void&gt;</code>
             * [.waitForClose()](#module_window--open+waitForClose) ⇒ <code>Promise.&lt;void&gt;</code>
-            * [.resize([callback])](#module_window--open+resize)
+            * [.resize()](#module_window--open+resize) ⇒ <code>object</code>
             * [.send(channel, payload)](#module_window--open+send)
             * [.receive(channel, [callback])](#module_window--open+receive) ⇒ <code>Promise.&lt;(string\|number\|object\|array)&gt;</code>
             * [.close()](#module_window--open+close)
@@ -24,13 +24,13 @@ This module will open and manage Electron BrowserWindow instances.
 Opens a BrowserWindow.
 
 **Kind**: Exported class  
-**See**: [Electron BrowserWindow](https://electronjs.org/docs/api/browser-window)  
+**See**: [BrowserWindow options](https://electronjs.org/docs/api/browser-window)  
 <a name="new_module_window--open_new"></a>
 
 #### new open(urlToOpen, [setOptions])
-Create a window.open object. The window will automatically track window changes in size and 
-position and keep the bounds changes in localStorage.
+Create a window.open object. The window will automatically track window changes in size and position and keep the bounds changes in localStorage.
 
+**Returns**: <code>Promise.&lt;WindowObject&gt;</code> - An WindowObject inhereted from BrowserWindow  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -40,45 +40,35 @@ position and keep the bounds changes in localStorage.
 <a name="module_window--open+window"></a>
 
 #### open.window()
-Why is this function here? If you create a new window.open object and pass that 
-to dialog.showMessageBox() for a modal doalog, it won't render the dialog content
-(i.e. it's a blank dialog). Even when you capture the constructor super(), the call
-to showMessageBox() still comes up blank. This method returns an actual
-BrowserWindow object that is satisfactory for building a modal dialog.
+Why is this function here? If you create a new window.open object and pass that to dialog.showMessageBox() for a modal doalog, it won't render the dialog content(i.e. it's a blank dialog). Even when you capture the constructor super(), the callto showMessageBox() still comes up blank. This method returns an actualBrowserWindow object that is satisfactory for building a modal dialog.
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
 <a name="module_window--open+waitForShow"></a>
 
 #### open.waitForShow() ⇒ <code>Promise.&lt;void&gt;</code>
-If you open the window with option show:false then call window.show(), use this function
-to get a Promise that returns after the window is visible.
+If you open the window with option show:false then call window.show(), use this functionto get a Promise that returns after the window is visible.
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
 <a name="module_window--open+waitForClose"></a>
 
 #### open.waitForClose() ⇒ <code>Promise.&lt;void&gt;</code>
-If you close the window with window.close(), use this function
-to get a Promise that returns after the window is destroyed.
+If you close the window with window.close(), use this functionto get a Promise that returns after the window is destroyed.
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
 <a name="module_window--open+resize"></a>
 
-#### open.resize([callback])
+#### open.resize() ⇒ <code>object</code>
 Recalls the last saved position and shape of the window, particularly useful for the first showing of the window.
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [callback] | <code>function</code> | Returns the previous bounds object that the window will now be set to |
-
+**Returns**: <code>object</code> - Returns the previous bounds object that the window will now be set to  
 <a name="module_window--open+send"></a>
 
 #### open.send(channel, payload)
 Sends a message - a payload on a specific channel - to the BrowserWindow
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
-**See**: {link https://electronjs.org/docs/api/web-contents#contentssendchannel-arg1-arg2-|BrowserWindow.webContents.send()}  
+**See**: [BrowserWindow.webContents.send()](https://electronjs.org/docs/api/web-contents#contentssendchannel-arg1-arg2-)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -88,12 +78,11 @@ Sends a message - a payload on a specific channel - to the BrowserWindow
 <a name="module_window--open+receive"></a>
 
 #### open.receive(channel, [callback]) ⇒ <code>Promise.&lt;(string\|number\|object\|array)&gt;</code>
-Receives a message event from the BrowserWindow, with optional callback or Promise interface. The callback
-or Promise will fire whenever a message event is received on the channel.
+Receives a message event from the BrowserWindow, with optional callback or Promise interface. The callbackor Promise will fire whenever a message event is received on the channel.
 
 **Kind**: instance method of [<code>open</code>](#exp_module_window--open)  
 **Returns**: <code>Promise.&lt;(string\|number\|object\|array)&gt;</code> - If no callback is supplied then a Promise is returned  
-**See**: {link https://electronjs.org/docs/api/web-contents#contentssendchannel-arg1-arg2-|BrowserWindow.webContents.send()}  
+**See**: [BrowserWindow.webContents.send()](https://electronjs.org/docs/api/web-contents#contentssendchannel-arg1-arg2-)  
 
 | Param | Type | Description |
 | --- | --- | --- |

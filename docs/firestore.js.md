@@ -1,93 +1,51 @@
-<a name="module_data"></a>
+<a name="module_firestore"></a>
 
-## data
-Interface to Google Cloud Firestore Database. All Firestore document I/O is performed in the 
-security context of the logged-in user.
-This data module manages a default set of root-level 
-collections: data.files, data.docs, data.apps, which are used to keep track of Cloud Storage files, 
-Firestore document sets, and registered electron apps.
+## firestore
+Interface to Google Cloud Firestore Database using high-level interface objects defined in firestore.js. All Firestore document I/O is performed in the security context of the logged-in user and the specific app you have built.Note that myAppsBase is specific to apps but not specific to users. If you need to have app-specificinformation held only in the context of a user, that should be put in an "apps" collection under myDocsBase. Documents under myAppsBase are accessible to all users, but within an app context.It is important to understand the structure of a Firestore because it is not a file tree. A single document may contain a set of properties, but not another document. A document may also contain collections. A collection is a set of documents, but not properties. Therefore a document is always a member of a collection, and a collection is a member of a document. You can describe a specific path to a document, and it must always be an even number of path components since the document parent will be a collection, except for the root document of the Firestore. If you follow only thisinterface for access to the Firestore, you will not have direct access to the root document.
 
 **See**
 
+- [https://firebase.google.com/docs/firestore/manage-data/structure-data](https://firebase.google.com/docs/firestore/manage-data/structure-data)
+- [https://firebase.google.com/docs/firestore/data-model](https://firebase.google.com/docs/firestore/data-model)Once a firestore object is defined, all document I/O is performed relative to (constrained to)this top-level document, so your code can't wander astray into other parts of the Firestorewhere you don't belong. Each API starts with a docPath parameter, and if null will refer to the top-level doc, into which you can read and write fields. If you want to create or work with documents, the docPath parameter must have an even number of path segments, e.g. "/maps/chicago" in which casethe collection "maps" will be automatically created.
 - [Firestore Authentication](https://firebase.google.com/docs/firestore/security/rules-conditions#authentication)
 - [Firestore Rules](https://firebase.google.com/docs/reference/rules/rules.firestore)
 
-**Example** *(To enable user-level security, go to the Firebase console and set the database rules to the following.)*  
+**Example**  
 ```js
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow create, read, update, delete: if request.auth.uid == userId;
-    }
-    match /users/{userId}/{document=**} {
-      allow create, read, update, delete: if request.auth.uid == userId;
-    }
-  }
-}
+<caption>To enable user-level security (which you really, really want to do), go to the Firebase console and set the database rules to the following.</caption> service cloud.firestore {  match /databases/{database}/documents {    match /users/{userId}/{allPaths=**} {      allow create, read, update, delete: if request.auth.uid == userId;    }    match /apps/{projectId}/{allPaths=**} {      allow create, read, update, delete: if request.auth != null && request.auth.token.aud == projectId;    }    match /apps/public/{allPaths=**} {      allow create, update, delete: if request.auth != null      allow read: if true    }  }}
 ```
 
-* [data](#module_data)
-    * [setup(user, [bForceUpdate])](#exp_module_data--setup) ⇒ <code>object</code> ⏏
-    * [docRef(rootCollection, [docPath])](#exp_module_data--docRef) ⇒ <code>DocumentReference</code> ⏏
-    * [docCreate(rootCollection, docPath, contents)](#exp_module_data--docCreate) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
-    * [docRead(rootCollection, docPath, [bGetFromServer])](#exp_module_data--docRead) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
-    * [docGetField(rootCollection, docPath, fieldName, [bGetFromServer])](#exp_module_data--docGetField) ⇒ <code>Promise.&lt;any&gt;</code> ⏏
-    * [docAbout(rootCollection, docPath, [bGetFromServer])](#exp_module_data--docAbout) ⇒ <code>Promise.&lt;DocumentSnapshot&gt;</code> ⏏
-    * [docUpdate(rootCollection, docPath, contents)](#exp_module_data--docUpdate) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
-    * [docDelete(rootCollection, docPath)](#exp_module_data--docDelete) ⇒ <code>Promise.&lt;void&gt;</code> ⏏
-    * [docFind(rootCollection, fieldName, fieldMatch, [matchOperator])](#exp_module_data--docFind) ⇒ <code>Promise.&lt;QuerySnapshot&gt;</code> ⏏
-    * [updateArrayElement(docRef, arrayName, newValue, [bGetFromServer])](#exp_module_data--updateArrayElement) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-    * [removeArrayElement(docRef, arrayName, oldValue, [bGetFromServer])](#exp_module_data--removeArrayElement) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-    * [addToRootCollections(collectionName)](#exp_module_data--addToRootCollections) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-    * [removeFromRootCollections(collectionName)](#exp_module_data--removeFromRootCollections) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-    * [listRootCollections()](#exp_module_data--listRootCollections) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+* [firestore](#module_firestore)
+    * [firestoreDoc#about(docPath)](#exp_module_firestore--firestoreDoc+about) ⇒ <code>Promise.&lt;DocumentSnapshot&gt;</code> ⏏
+    * [firestoreDoc#read(docPath)](#exp_module_firestore--firestoreDoc+read) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
+    * [firestoreDoc#write(docPath, [contents])](#exp_module_firestore--firestoreDoc+write) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+    * [firestoreDoc#merge(docPath, [contents])](#exp_module_firestore--firestoreDoc+merge) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+    * [firestoreDoc#update(docPath, [contents])](#exp_module_firestore--firestoreDoc+update) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+    * [firestoreDoc#delete(docPath)](#exp_module_firestore--firestoreDoc+delete) ⇒ <code>Promise.&lt;void&gt;</code> ⏏
+    * [firestoreDoc#query(collectionPath, fieldName, fieldMatch, [matchOperator])](#exp_module_firestore--firestoreDoc+query) ⇒ <code>Promise.&lt;QuerySnapshot&gt;</code> ⏏
+    * [firestoreDoc#field(docPath, fieldName)](#exp_module_firestore--firestoreDoc+field) ⇒ <code>Promise.&lt;any&gt;</code> ⏏
+    * [firestoreDoc#union(docPath, arrayName, newValue)](#exp_module_firestore--firestoreDoc+union) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+    * [firestoreDoc#splice(docPath, arrayName, newValue)](#exp_module_firestore--firestoreDoc+splice) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+    * [firestoreDoc#push(docPath, arrayName, newValue)](#exp_module_firestore--firestoreDoc+push) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+    * [firestoreDoc#pop(docPath, arrayName)](#exp_module_firestore--firestoreDoc+pop) ⇒ <code>Promise.&lt;(string\|number\|object)&gt;</code> ⏏
+    * [initialize(userid, projectId)](#exp_module_firestore--initialize) ⏏
 
-<a name="exp_module_data--setup"></a>
+<a name="exp_module_firestore--firestoreDoc+about"></a>
 
-### setup(user, [bForceUpdate]) ⇒ <code>object</code> ⏏
-The setup() function must be called before any other API call in this module.
+### firestoreDoc#about(docPath) ⇒ <code>Promise.&lt;DocumentSnapshot&gt;</code> ⏏
+Gets a DocumentSnapshot for the Firestore document which contains meta information and functionsto get data, test existence, etc.
 
 **Kind**: Exported function  
-**Returns**: <code>object</code> - The Firestore document that represent this user  
+**Returns**: <code>Promise.&lt;DocumentSnapshot&gt;</code> - An object which can be used to get further information and dataabout the document: .exists, .id, .metadata, .get(), .data(), .isEqual()  
+**See**: [DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| user | <code>User</code> | Object returned from authentication module which describes a user |
-| [bForceUpdate] | <code>boolean</code> | If true, any new information in the User object will be merged into the root user Firestore document |
-
-<a name="exp_module_data--docRef"></a>
-
-### docRef(rootCollection, [docPath]) ⇒ <code>DocumentReference</code> ⏏
-Returns a DocumentReference that can be used with Firestore APIs. If no path is specified, an 
-automatically-generated unique ID will be used for the returned DocumentReference.
-
-**Kind**: Exported function  
-**Returns**: <code>DocumentReference</code> - Object that can be used to refer to the specified document  
-**See**: [DocumentReference](https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| [docPath] | <code>string</code> | Relative path to a Firebase document within the root collection |
-
-<a name="exp_module_data--docCreate"></a>
-
-### docCreate(rootCollection, docPath, contents) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
-Creates a new document in the Firestore at the requested path.
-
-**Kind**: Exported function  
-**Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - A DocumentReference to the new Firestore document  
-**See**: [DocumentReference set()](https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#set)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
 | docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
-| contents | <code>object</code> | Content to write |
 
-<a name="exp_module_data--docRead"></a>
+<a name="exp_module_firestore--firestoreDoc+read"></a>
 
-### docRead(rootCollection, docPath, [bGetFromServer]) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
+### firestoreDoc#read(docPath) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
 Reads the Firestore document at the requested path and returns an object representing the content.
 
 **Kind**: Exported function  
@@ -95,61 +53,54 @@ Reads the Firestore document at the requested path and returns an object represe
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
-| [bGetFromServer] | <code>boolean</code> | If true, forces a read from the cloud instead of the local cache |
+| docPath | <code>string</code> | Path to a Firebase document |
 
-<a name="exp_module_data--docGetField"></a>
+<a name="exp_module_firestore--firestoreDoc+write"></a>
 
-### docGetField(rootCollection, docPath, fieldName, [bGetFromServer]) ⇒ <code>Promise.&lt;any&gt;</code> ⏏
-Gets the value at a specified field within a Firestore document.
+### firestoreDoc#write(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Creates a new document in the Firestore at the requested path, else updates an existing documentif it already exists, overwriting all fields.
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;any&gt;</code> - The data at the specified field location or undefined if no such field exists in the document  
-**See**: [DocumentSnapshot get()](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot#get)  
+**Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
+**See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
-| fieldName | <code>string</code> | The name of a top-level field within the Firebase document |
-| [bGetFromServer] | <code>boolean</code> | If true, forces a read from the cloud instead of the local cache |
+| docPath | <code>string</code> | Path to a Firebase document |
+| [contents] | <code>object</code> | Content to write into new document, or merge into existing document |
 
-<a name="exp_module_data--docAbout"></a>
+<a name="exp_module_firestore--firestoreDoc+merge"></a>
 
-### docAbout(rootCollection, docPath, [bGetFromServer]) ⇒ <code>Promise.&lt;DocumentSnapshot&gt;</code> ⏏
-Gets a DocumentSnapshot for the Firestore document which contains meta information and functions
-to get data, test existence, etc.
+### firestoreDoc#merge(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Creates a new document in the Firestore at the requested path, else updates an existing documentif it already exists, merging all fields.
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;DocumentSnapshot&gt;</code> - An object which can be used to get further information and data  
-**See**: [DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
+**Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
+**See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
-| [bGetFromServer] | <code>boolean</code> | If true, forces a read from the cloud instead of the local cache |
+| docPath | <code>string</code> | Path to a Firebase document |
+| [contents] | <code>object</code> | Content to write into new document, or merge into existing document |
 
-<a name="exp_module_data--docUpdate"></a>
+<a name="exp_module_firestore--firestoreDoc+update"></a>
 
-### docUpdate(rootCollection, docPath, contents) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
-Updates the content to an existing Firestore document, merging and overwriting fields.
+### firestoreDoc#update(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Updates an existing document in the Firestore at the requested path with the given contents. Likemerge() except it will fail if the document does not exist.
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - A DocumentReference to the updated Firestore document  
-**See**: [DocumentReference set()](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentReference#set)  
+**Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
+**See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
-| contents | <code>object</code> | Content to update |
+| docPath | <code>string</code> | Path to a Firebase document |
+| [contents] | <code>object</code> | Content to write into new document, or merge into existing document |
 
-<a name="exp_module_data--docDelete"></a>
+<a name="exp_module_firestore--firestoreDoc+delete"></a>
 
-### docDelete(rootCollection, docPath) ⇒ <code>Promise.&lt;void&gt;</code> ⏏
-Deletes the Firestore document
+### firestoreDoc#delete(docPath) ⇒ <code>Promise.&lt;void&gt;</code> ⏏
+Deletes the Firestore document at the given path.
 
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;void&gt;</code> - Returns a promise that resolves once the document is deleted  
@@ -157,13 +108,12 @@ Deletes the Firestore document
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection set |
-| docPath | <code>string</code> | Relative path to a Firebase document within the root collection |
+| docPath | <code>string</code> | Path to a Firebase document |
 
-<a name="exp_module_data--docFind"></a>
+<a name="exp_module_firestore--firestoreDoc+query"></a>
 
-### docFind(rootCollection, fieldName, fieldMatch, [matchOperator]) ⇒ <code>Promise.&lt;QuerySnapshot&gt;</code> ⏏
-Queries a collection of documents to find a match for a specific field name with optional matching operator.
+### firestoreDoc#query(collectionPath, fieldName, fieldMatch, [matchOperator]) ⇒ <code>Promise.&lt;QuerySnapshot&gt;</code> ⏏
+Queries a collection to find a match for a specific field name with optional matching operator.
 
 **Kind**: Exported function  
 **See**
@@ -172,76 +122,93 @@ Queries a collection of documents to find a match for a specific field name with
 - [QuerySnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.QuerySnapshot)
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| rootCollection | <code>string</code> | The name of a root-level collection |
-| fieldName | <code>string</code> | The name of a document field to search against all of the collection documents |
-| fieldMatch | <code>string</code> | The value of the fieldName to match against |
-| [matchOperator] | <code>string</code> | Optional comparison operator, defaults to "==" |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| collectionPath | <code>string</code> |  | The path to a collection, cannot be blank |
+| fieldName | <code>string</code> |  | The name of a document field to search against all of the collection documents |
+| fieldMatch | <code>string</code> |  | The value of the fieldName to match against |
+| [matchOperator] | <code>string</code> | <code>&quot;&#x3D;&#x3D;&quot;</code> | Optional comparison operator, defaults to "==" |
 
-<a name="exp_module_data--updateArrayElement"></a>
+<a name="exp_module_firestore--firestoreDoc+field"></a>
 
-### updateArrayElement(docRef, arrayName, newValue, [bGetFromServer]) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-This function will push a new value onto an array field of the Firestore document. The document 
-only updates if the new value doesn't exist in the array. Don't use this function for array values
-that are complex objects.
+### firestoreDoc#field(docPath, fieldName) ⇒ <code>Promise.&lt;any&gt;</code> ⏏
+Gets the value of a specified field within a Firestore document.
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;array&gt;</code> - The updated array field  
+**Returns**: <code>Promise.&lt;any&gt;</code> - The data at the specified field location or undefined if no such field exists in the document  
+**See**: [DocumentSnapshot get()](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot#get)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| docRef | <code>DocumentReference</code> | Reference to the document to be updated |
+| docPath | <code>string</code> | Path to a Firebase document |
+| fieldName | <code>string</code> | The name of a top-level field within the Firebase document |
+
+<a name="exp_module_firestore--firestoreDoc+union"></a>
+
+### firestoreDoc#union(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will insert a new value, or multiple values, onto an array field of the Firestore document. Each specified element that doesn't already exist in the array will be added to the end. If the field being modified is not already an array it will be overwritten with an array containing exactly the specified elements.
+
+**Kind**: Exported function  
+**Returns**: <code>Promise.&lt;array&gt;</code> - - The array after the new value is inserted  
+**See**: [FieldValue union](https://firebase.google.com/docs/reference/node/firebase.firestore.FieldValue#static-arrayunion)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| docPath | <code>string</code> | Path to a Firebase document |
 | arrayName | <code>string</code> | The name of the array field to be updated |
 | newValue | <code>\*</code> | The new value to push on the array field |
-| [bGetFromServer] | <code>boolean</code> | If true, forces a read from the cloud before updating the array field |
 
-<a name="exp_module_data--removeArrayElement"></a>
+<a name="exp_module_firestore--firestoreDoc+splice"></a>
 
-### removeArrayElement(docRef, arrayName, oldValue, [bGetFromServer]) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-This function will remove a value from an array field of the Firestore document. The document 
-only updates if the old value existed in the array. Don't use this function for array values
-that are complex objects.
+### firestoreDoc#splice(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will remove a value, or multiple values, from an array field of the Firestore document.
+
+**Kind**: Exported function  
+**Returns**: <code>Promise.&lt;array&gt;</code> - - The array after the value is removed  
+**See**: [FieldValue remove](https://firebase.google.com/docs/reference/node/firebase.firestore.FieldValue#static-arrayremove)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| docPath | <code>string</code> | Path to a Firebase document |
+| arrayName | <code>string</code> | The name of the array field to be updated |
+| newValue | <code>\*</code> | The new value to push on the array field |
+
+<a name="exp_module_firestore--firestoreDoc+push"></a>
+
+### firestoreDoc#push(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will push a new value onto the end of an array field of the Firestore document.
 
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;array&gt;</code> - The updated array field  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| docRef | <code>DocumentReference</code> | Reference to the document to be updated |
+| docPath | <code>string</code> | Path to a Firebase document |
 | arrayName | <code>string</code> | The name of the array field to be updated |
-| oldValue | <code>\*</code> | The old value to be removed from the array field |
-| [bGetFromServer] | <code>boolean</code> | If true, forces a read from the cloud before updating the array field |
+| newValue | <code>\*</code> | The new value to push on the array field |
 
-<a name="exp_module_data--addToRootCollections"></a>
+<a name="exp_module_firestore--firestoreDoc+pop"></a>
 
-### addToRootCollections(collectionName) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-Adds a new collection name to the top-level collection set, which can be used in other APIs 
-requiring rootCollection.
+### firestoreDoc#pop(docPath, arrayName) ⇒ <code>Promise.&lt;(string\|number\|object)&gt;</code> ⏏
+This function will pop a value from the end of an array field of the Firestore document.
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;array&gt;</code> - The updated set of top-level collections  
+**Returns**: <code>Promise.&lt;(string\|number\|object)&gt;</code> - The popped value  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| collectionName | <code>sring</code> | The name of a new collection to be added to the top-level set |
+| docPath | <code>string</code> | Path to a Firebase document |
+| arrayName | <code>string</code> | The name of the array field to be updated |
 
-<a name="exp_module_data--removeFromRootCollections"></a>
+<a name="exp_module_firestore--initialize"></a>
 
-### removeFromRootCollections(collectionName) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-Removes a collection name from the top-level collection set.
+### initialize(userid, projectId) ⏏
+Firestore interfaces are defined when your app starts:* .doc - A Firestore subtree (/users/userid/) for the signed-in user's documents in Firestore* .app - A Firestore subtree (/apps/projectId/) for the app being used, accessible to all users* .public - A Firestore subtree (/apps/public/) that any user or app and read or write to
 
 **Kind**: Exported function  
-**Returns**: <code>Promise.&lt;array&gt;</code> - The updated set of top-level collections  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| collectionName | <code>sring</code> | The name of a collection to be removed from the top-level set |
+| userid | <code>string</code> | The Firebase assigned userId from authentication process |
+| projectId | <code>string</code> | Unique string for this application, typically the Firebase projectId |
 
-<a name="exp_module_data--listRootCollections"></a>
-
-### listRootCollections() ⇒ <code>Promise.&lt;array&gt;</code> ⏏
-Returns the list of top-level collections.
-
-**Kind**: Exported function  
-**Returns**: <code>Promise.&lt;array&gt;</code> - The updated set of top-level collections  

@@ -1,14 +1,11 @@
 <a name="module_server"></a>
 
 ## server
-This module sets up a local webserver which is primarily used for secure communication with 
-a BrowserWindow. Although it is possible to use IPC for this purpose, that would require enabling 
-the nodeIntegration option for the window, which would expose the app to all manner of mischief. 
-The webserver is an instance of express, configured for HTTPS with a self-signed cert.
+This module sets up a local webserver which is primarily used for secure communication with a BrowserWindow. Although it is possible to use IPC for this purpose, that would require enabling the nodeIntegration option for the window, which would expose the app to all manner of mischief. The webserver is an instance of express, configured for HTTPS with a self-signed cert.
 
-<a name="exp_module_server--start"></a>
+<a name="exp_module_server--logRequest"></a>
 
-### start(mainApp, staticFolders) ⇒ <code>Promise.&lt;express&gt;</code> ⏏
+### logRequest(mainApp, staticFolders) ⇒ <code>Promise.&lt;express&gt;</code> ⏏
 This function will start the HTTPS local webserver and configure static document serving.
 
 **Kind**: Exported function  

@@ -4,12 +4,6 @@ applications using [Electron](https://electronjs.org/) and [Firebase](https://fi
 With a few configuration settings you can include a complete authentication workflow into your app
 that can use email/password, phone number, google, facebook, or many other identity providers. 
 
-APIs are provided that access the Google Firestore database and Google Cloud Storage in the security context 
-of the user, so that your app can automatically scale to many users yet the app only works in the context of 
-the one signed-in user. Since Google Cloud Storage does not provide basic functions to list and search files 
-for node.js clients, APIs are also provided that use the Google Firestore database to track cloud files and 
-allow for basic file listing and searching. 
-
 Electron-Firebase is unusual in being both an [NPM module](https://docs.npmjs.com/about-packages-and-modules) 
 and an example application, and it spans both worlds of the Browser JavaScript environment and the host node.js 
 environment. As such, it will install several folders and files into the root of the NPM application that form
@@ -19,6 +13,7 @@ the example application, which you are encouraged to modify for your own purpose
 * An authentication workflow within an application context for many identity providers, including phone and email
 * Authentication persistence, so that a user can launch your app at any time without signing in again
 * Security and privacy throughout the authentication sign-in and persistence processes
+* True cross-platform cloud-connected application building across MacOS, Windows, and Linux
 * Methods for communication between the Electron Browser and Main processes
 * Authorized user access to database and cloud storage
 * API access to Firebase Cloud Storage, which is not supported in node.js

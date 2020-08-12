@@ -13,7 +13,7 @@
     "start": "electron ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
-    "gendocs": "node ./lib/gendocs.js"
+    "gendocs": "node ./developer/gendocs.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.1.2",
@@ -31,7 +31,9 @@
     "selfsigned": "^1.10.7",
     "url": "^0.11.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jsdoc-to-markdown": "^6.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:david-asher/electron-firebase.git"

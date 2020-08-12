@@ -1,8 +1,18 @@
 ## Modules
 
 <dl>
-<dt><a href="#fbstorageInterface to Google Cloud Storage in the security context of the authenticated user. Keep track of every file add/remove in firestore becausefirebase cloud storage does not allow listing/searching for files.Use the REST API directly because the node.js interface does not include storage.After initialization the fbstorage module will contain 3 objects_* .file - file access limited to the current signed-in user* .app - file access limited to any user of this app but not other apps* .public - file access without restrictionmodule_">fbstorageInterface to Google Cloud Storage in the security context of the authenticated user. Keep track of every file add/remove in firestore becausefirebase cloud storage does not allow listing/searching for files.Use the REST API directly because the node.js interface does not include storage.After initialization the fbstorage module will contain 3 objects:* .file - file access limited to the current signed-in user* .app - file access limited to any user of this app but not other apps* .public - file access without restriction</a></dt>
-<dd></dd>
+<dt><a href="#module_fbstorage">fbstorage</a></dt>
+<dd><p>Interface to Google Cloud Storage in the security context of the authenticated user. 
+Keep track of every file add/remove in firestore because
+firebase cloud storage does not allow listing/searching for files.
+Use the REST API directly because the node.js interface does not include storage.</p>
+<p>After initialization the fbstorage module will contain 3 objects:</p>
+<ul>
+<li>.file - file access limited to the current signed-in user</li>
+<li>.app - file access limited to any user of this app but not other apps</li>
+<li>.public - file access without restriction</li>
+</ul>
+</dd>
 </dl>
 
 ## Classes
@@ -33,9 +43,11 @@
 <dd></dd>
 </dl>
 
-<a name="fbstorageInterface to Google Cloud Storage in the security context of the authenticated user. Keep track of every file add/remove in firestore becausefirebase cloud storage does not allow listing/searching for files.Use the REST API directly because the node.js interface does not include storage.After initialization the fbstorage module will contain 3 objects_* .file - file access limited to the current signed-in user* .app - file access limited to any user of this app but not other apps* .public - file access without restrictionmodule_"></a>
+<a name="module_fbstorage"></a>
 
-## fbstorageInterface to Google Cloud Storage in the security context of the authenticated user. Keep track of every file add/remove in firestore becausefirebase cloud storage does not allow listing/searching for files.Use the REST API directly because the node.js interface does not include storage.After initialization the fbstorage module will contain 3 objects:\* .file - file access limited to the current signed-in user\* .app - file access limited to any user of this app but not other apps\* .public - file access without restriction
+## fbstorage
+Interface to Google Cloud Storage in the security context of the authenticated user. Keep track of every file add/remove in firestore becausefirebase cloud storage does not allow listing/searching for files.Use the REST API directly because the node.js interface does not include storage.After initialization the fbstorage module will contain 3 objects:* .file - file access limited to the current signed-in user* .app - file access limited to any user of this app but not other apps* .public - file access without restriction
+
 **See**
 
 - [Firebase Storage](https://firebase.google.com/docs/storage/)

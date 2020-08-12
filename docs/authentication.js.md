@@ -41,6 +41,8 @@ Return the unique path prefix for a user.
 <a name="exp_module_auth--gcpApi"></a>
 
 ### gcpApi(requestOptions) ⇒ <code>Promise</code> ⏏
+Executes an API call to Google Cloud, taking care of user authentication and token refresh.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - Promise object represents the payload response of the API call (string|object|buffer)  
 **See**: [Request Options](https://github.com/request/request#requestoptions-callback)  
@@ -55,6 +57,8 @@ Return the unique path prefix for a user.
 <a name="exp_module_auth--signInNewUser"></a>
 
 ### signInNewUser(newUser) ⇒ <code>Promise</code> ⏏
+Completes the authentication workflow for a new user. The user credential will be saved in as a web browser identity persistence so it can be recovered on a subsequent session without forcing the user to log in again.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - A Promise object representing the user object  
 

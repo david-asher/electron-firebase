@@ -27,6 +27,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+about"></a>
 
 ### firestoreDoc#about(docPath) ⇒ <code>Promise.&lt;DocumentSnapshot&gt;</code> ⏏
+Gets a DocumentSnapshot for the Firestore document which contains meta information and functionsto get data, test existence, etc.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;DocumentSnapshot&gt;</code> - An object which can be used to get further information and dataabout the document: .exists, .id, .metadata, .get(), .data(), .isEqual()  
 **See**: [DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
@@ -38,6 +40,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+read"></a>
 
 ### firestoreDoc#read(docPath) ⇒ <code>Promise.&lt;object&gt;</code> ⏏
+Reads the Firestore document at the requested path and returns an object representing the content.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;object&gt;</code> - The contents of the requested document  
 
@@ -48,6 +52,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+write"></a>
 
 ### firestoreDoc#write(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Creates a new document in the Firestore at the requested path, else updates an existing documentif it already exists, overwriting all fields.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
 **See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
@@ -60,6 +66,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+merge"></a>
 
 ### firestoreDoc#merge(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Creates a new document in the Firestore at the requested path, else updates an existing documentif it already exists, merging all fields.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
 **See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
@@ -72,6 +80,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+update"></a>
 
 ### firestoreDoc#update(docPath, [contents]) ⇒ <code>Promise.&lt;DocumentReference&gt;</code> ⏏
+Updates an existing document in the Firestore at the requested path with the given contents. Likemerge() except it will fail if the document does not exist.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;DocumentReference&gt;</code> - DocumentReference for the docPath  
 **See**: [https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot)  
@@ -84,6 +94,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+delete"></a>
 
 ### firestoreDoc#delete(docPath) ⇒ <code>Promise.&lt;void&gt;</code> ⏏
+Deletes the Firestore document at the given path.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;void&gt;</code> - Returns a promise that resolves once the document is deleted  
 **See**: [DocumentReference delete()](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentReference#delete)  
@@ -95,6 +107,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+query"></a>
 
 ### firestoreDoc#query(collectionPath, fieldName, fieldMatch, [matchOperator]) ⇒ <code>Promise.&lt;QuerySnapshot&gt;</code> ⏏
+Queries a collection to find a match for a specific field name with optional matching operator.
+
 **Kind**: Exported function  
 **See**
 
@@ -112,6 +126,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+field"></a>
 
 ### firestoreDoc#field(docPath, fieldName) ⇒ <code>Promise.&lt;any&gt;</code> ⏏
+Gets the value of a specified field within a Firestore document.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;any&gt;</code> - The data at the specified field location or undefined if no such field exists in the document  
 **See**: [DocumentSnapshot get()](https://firebase.google.com/docs/reference/node/firebase.firestore.DocumentSnapshot#get)  
@@ -124,6 +140,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+union"></a>
 
 ### firestoreDoc#union(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will insert a new value, or multiple values, onto an array field of the Firestore document. Each specified element that doesn't already exist in the array will be added to the end. If the field being modified is not already an array it will be overwritten with an array containing exactly the specified elements.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;array&gt;</code> - - The array after the new value is inserted  
 **See**: [FieldValue union](https://firebase.google.com/docs/reference/node/firebase.firestore.FieldValue#static-arrayunion)  
@@ -137,6 +155,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+splice"></a>
 
 ### firestoreDoc#splice(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will remove a value, or multiple values, from an array field of the Firestore document.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;array&gt;</code> - - The array after the value is removed  
 **See**: [FieldValue remove](https://firebase.google.com/docs/reference/node/firebase.firestore.FieldValue#static-arrayremove)  
@@ -150,6 +170,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+push"></a>
 
 ### firestoreDoc#push(docPath, arrayName, newValue) ⇒ <code>Promise.&lt;array&gt;</code> ⏏
+This function will push a new value onto the end of an array field of the Firestore document.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;array&gt;</code> - The updated array field  
 
@@ -162,6 +184,8 @@ Interface to Google Cloud Firestore Database using high-level interface objects.
 <a name="exp_module_firestore--firestoreDoc+pop"></a>
 
 ### firestoreDoc#pop(docPath, arrayName) ⇒ <code>Promise.&lt;(string\|number\|object)&gt;</code> ⏏
+This function will pop a value from the end of an array field of the Firestore document.
+
 **Kind**: Exported function  
 **Returns**: <code>Promise.&lt;(string\|number\|object)&gt;</code> - The popped value  
 

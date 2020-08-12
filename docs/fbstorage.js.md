@@ -26,6 +26,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+find"></a>
 
 ### fileStore#find(filepath, queryMatch) ⇒ <code>object</code> ⏏
+Search the storage records in the Firestore database for a file matching the specific filepath given. The newest document matching the search criteria will be returned.
+
 **Kind**: Exported function  
 **Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
@@ -37,6 +39,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+list"></a>
 
 ### fileStore#list(folderpath, queryMatch) ⇒ <code>object</code> ⏏
+Search the storage records in the Firestore database for all files where their folder matches the specific path given, and return an array with the metadata for each file.
+
 **Kind**: Exported function  
 **Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
@@ -48,6 +52,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+upload"></a>
 
 ### fileStore#upload(filepath, content) ⇒ <code>object</code> ⏏
+Uploads local content and creates a file in Google Cloud Storage for Firebase, and a record of the file will be kept in the Cloud Firestore database, for easy reference and searching. Accepts contents as string, JSON string, object (serializable), array, or buffer. Returns a Promise containing file metadata, as:
+
 **Kind**: Exported function  
 **Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
@@ -63,6 +69,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+update"></a>
 
 ### fileStore#update(filepath, metadata) ⇒ <code>object</code> ⏏
+Change some metadata aspects of a stored file
+
 **Kind**: Exported function  
 **Returns**: <code>object</code> - - metafile descriptor for the requested file  
 
@@ -79,6 +87,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+download"></a>
 
 ### fileStore#download(filepath) ⇒ <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> ⏏
+Download a file from Firebase Storage
+
 **Kind**: Exported function  
 **Returns**: <code>string</code> \| <code>JSON</code> \| <code>buffer</code> \| <code>object</code> \| <code>array</code> - - file content  
 
@@ -89,6 +99,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+about"></a>
 
 ### fileStore#about(filepath) ⇒ <code>Promise</code> ⏏
+Gets meta information about the file, including a secure download URL that can be used anywhere
+
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - A Promise object representing the meta information about the file  
 
@@ -99,6 +111,8 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--fileStore+delete"></a>
 
 ### fileStore#delete(filepath) ⇒ <code>null</code> \| <code>string</code> ⏏
+Delete the file from Google Cloud Storage for Firebase and remove the file's record from Cloud Firestore
+
 **Kind**: Exported function  
 **Returns**: <code>null</code> \| <code>string</code> - - empty response unless there is an error  
 
@@ -109,4 +123,6 @@ const { fbstorage } = require( 'electron-firebase' )// get list of folders only
 <a name="exp_module_fbstorage--initialize"></a>
 
 ### initialize() ⏏
+Firebase Storage interfaces are defined when your app starts (this functionmust be called after firestore is initialized).
+
 **Kind**: Exported function  

@@ -58,10 +58,14 @@ Receives a message event from the global.mainWindow, with optional callback or P
 <a name="exp_module_mainapp--closeApplication"></a>
 
 ### closeApplication() ⏏
+Call this before the app closes to perform some app cleanup.
+
 **Kind**: Exported function  
 <a name="exp_module_mainapp--signoutUser"></a>
 
 ### signoutUser() ⏏
+Handles the workflow for signing out the current user. The user will be presented with a dialog box asking them to confirm signout, and optionally to sign out of the currentidentity provider as well as the app. Fires the user-signout event when complete.
+
 **Kind**: Exported function  
 <a name="exp_module_mainapp--onUserLogin"></a>
 

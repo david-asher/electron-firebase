@@ -1,0 +1,36 @@
+{
+    "name": "electron-firebase",
+    "platforms": [
+      "Web",
+      "node.js",
+      "Electron"
+    ], 
+    "content": "README.md",
+    "pages" : {
+      "docs/applibrary.js.md": "Application Library",
+      "docs/authentication.js.md": "Authentication",
+      "docs/fbstorage.js.md": "Firebase Storage",
+      "docs/fileutils.js.md": "File Utilities",
+      "docs/firestore.js.md": "Firestore Database",
+      "docs/localstorage.js.md": "Web Local Storage",
+      "docs/mainapp.js.md": "Main Application Support",
+      "docs/webserver.js.md": "TLS Web Server",
+      "docs/windows.js.md": "Window Manager"
+    },  
+    "related": [
+    ],
+    "tabs": [
+      {
+        "title": "NPM Project",
+        "href": "https://www.npmjs.com/package/electron-firebase"
+      },
+      {
+        "title": "GitHub Repo",
+        "href": "https://github.com/david-asher/electron-firebase"
+      },
+      {
+        "title": "Medium Article",
+        "href": "https://medium.com/@dja.asher/writing-cloud-connected-cross-platform-pc-apps-8bf003e2412f"
+      }
+    ]
+  }

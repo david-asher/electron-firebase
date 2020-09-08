@@ -4,7 +4,7 @@
         "port": "3090",
         "folderPath": "/pages/",
         "hostUrl": "https://localhost:3090",
-        "loginStart": "pages/loginStart.html",
+        "loginStart": "pages/loginstart.html",
         "loginRedirect": "pages/logincomplete.html",
         "splashPage": "pages/splashpage.html",
         "mainPage": "pages/index.html",

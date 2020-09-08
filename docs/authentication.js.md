@@ -11,7 +11,6 @@ Authentication workflow for Google Firebase.
     * [userPath()](#exp_module_auth--userPath) ⇒ <code>string</code> ⏏
     * [gcpApi(requestOptions)](#exp_module_auth--gcpApi) ⇒ <code>Promise</code> ⏏
     * [signInNewUser(newUser)](#exp_module_auth--signInNewUser) ⇒ <code>Promise</code> ⏏
-    * [signInSavedUser(newUser)](#exp_module_auth--signInSavedUser) ⇒ <code>Promise</code> ⏏
     * [startNewSignIn(mainWindow)](#exp_module_auth--startNewSignIn) ⇒ <code>Promise</code> ⏏
     * [getProvider()](#exp_module_auth--getProvider) ⇒ <code>string</code> ⏏
     * [getSignOutUrl(provider)](#exp_module_auth--getSignOutUrl) ⇒ <code>string</code> ⏏
@@ -42,7 +41,7 @@ Return the unique path prefix for a user.
 <a name="exp_module_auth--gcpApi"></a>
 
 ### gcpApi(requestOptions) ⇒ <code>Promise</code> ⏏
-Executes an API call to Google Cloud, taking care of user authentication.
+Executes an API call to Google Cloud, taking care of user authentication and token refresh.
 
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - Promise object represents the payload response of the API call (string|object|buffer)  
@@ -58,9 +57,7 @@ Executes an API call to Google Cloud, taking care of user authentication.
 <a name="exp_module_auth--signInNewUser"></a>
 
 ### signInNewUser(newUser) ⇒ <code>Promise</code> ⏏
-Completes the authentication workflow for a new user. As a side effect, the user credential will be
-saved in the local keychain so it can be recovered on a subsequent session without forcing the user to 
-log in again.
+Completes the authentication workflow for a new user. The user credential will be saved in as a web browser identity persistence so it can be recovered on a subsequent session without forcing the user to log in again.
 
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - A Promise object representing the user object  
@@ -69,22 +66,10 @@ log in again.
 | --- | --- | --- |
 | newUser | <code>object</code> | This is an object passed from the Web UI for authentication after a successful registration of a new user |
 
-<a name="exp_module_auth--signInSavedUser"></a>
-
-### signInSavedUser(newUser) ⇒ <code>Promise</code> ⏏
-Completes the authentication workflow for an existing user, recovering the user credential from the local keychain.
-
-**Kind**: Exported function  
-**Returns**: <code>Promise</code> - A Promise object representing the user object  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| newUser | <code>object</code> | This is an object passed from the Web UI for authentication after a successful login of an existing user |
-
 <a name="exp_module_auth--startNewSignIn"></a>
 
 ### startNewSignIn(mainWindow) ⇒ <code>Promise</code> ⏏
-Initiates the Firebase UI authentication workflow.
+Initiates the Firebase UI authentication workflow. nodeIntegration must be set to false because it wouldexpose the login page to hacking through the IPC interface.
 
 **Kind**: Exported function  
 **Returns**: <code>Promise</code> - A Promise object representing the new modal window for authentication workflow  
@@ -99,18 +84,11 @@ Initiates the Firebase UI authentication workflow.
 Gets the identity provider that was used to authenticate the current user.
 
 **Kind**: Exported function  
-**Returns**: <code>string</code> - The firebase representation of the identity provider, can be any of:             
-"google.com",
-"github.com",
-"twitter.com",
-"facebook.com",
-"password",
-"phone"  
+**Returns**: <code>string</code> - The firebase representation of the identity provider, can be any of:             "google.com","github.com","twitter.com","facebook.com","password","phone"  
 <a name="exp_module_auth--getSignOutUrl"></a>
 
 ### getSignOutUrl(provider) ⇒ <code>string</code> ⏏
-Firebase UI doesn't have a workflow for logging out from the identity provider, so this function
-returns a URL that can be used to log out directly -- if the identity provider doesn't change the URL.
+Firebase UI doesn't have a workflow for logging out from the identity provider, so this functionreturns a URL that can be used to log out directly -- if the identity provider doesn't change the URL.
 
 **Kind**: Exported function  
 **Returns**: <code>string</code> - A URL that can be called to log out of the identity provider  

@@ -35,7 +35,12 @@ function readJson( filePath )
 
 function fbDeploy( command )
 {
-    execSync( "firebase deploy --only " + command )
+    execSync( "firebase deploy --only " + command, {stdio:'inherit'} )
+}
+
+function addToPath( newPath )
+{
+    env.PATH = `${newPath}${path.delimiter}${env.PATH}`
 }
 
 (function()
@@ -51,10 +56,13 @@ function fbDeploy( command )
         exit(11)
     }
 
-    console.log( "** login to firebase-tools" )
+    console.log( "** login to firebase-tools with the Google account that you use for Firebase" )
     const npmGlobal = path.join( os.homedir(), ".npm-global" )
+    const npmGlobalBin = path.join( npmGlobal, "bin" )
+    addToPath( npmGlobal )
+    addToPath( npmGlobalBin )
     execSync( `npm config set prefix "${npmGlobal}"` ) 
-    execSync( "firebase login" )
+    execSync( "firebase login", {stdio:'inherit'} )
 
     console.log( "** configure .firebaserc file" )
     var fbrcJson = readJson( fbrcFile )

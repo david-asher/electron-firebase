@@ -1,15 +1,10 @@
 /* answerBrowser.js
- * electron-firebase
  * This is a quickstart template for building Firebase authentication workflow into an electron app
- * Copyright (c) 2019 by David Asher, https://github.com/david-asher
- * 
-
-'use strict';
-
-/*
  * This module contains functions that respond to queries from the Browser
+ * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  * @module answerBrowser
  */
+'use strict';
 
 const { mainapp, firestore, fbstorage, fbwindow } = loadModule( 'electron-firebase' )
 const urlParser = require('url').parse

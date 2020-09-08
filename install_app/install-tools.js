@@ -147,6 +147,7 @@ function checkCommand( commandString )
 {
     var exists = true
     try {
+        // stdio to pipe because we don't want to see the output
         execSync( `${commandString} --version`, {stdio : 'pipe' } )
     }
     catch (error) {
@@ -155,11 +156,11 @@ function checkCommand( commandString )
     return exists
 }
 
-function installApp( commandString, appInstallString )
+function installApp( commandString, appInstallString, bQuiet )
 {
     // check for command existence before installing
     if ( !checkCommand( commandString ) ) {
-        execSync( appInstallString, { stdio: 'inherit' } )
+        execSync( appInstallString, { stdio: bQuiet ? 'pipe' : 'inherit' } )
     }
     // if this failed, stop, because we can't build
     if ( !checkCommand( commandString ) ) {

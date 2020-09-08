@@ -1,15 +1,10 @@
 /* setupapp.js
- * electron-firebase
  * This is a quickstart template for building Firebase authentication workflow into an electron app
- * Copyright (c) 2019 by David Asher, https://github.com/david-asher
- * 
-
-'use strict';
-
-/*
  * This module contains functions that help to initialize or update the application
+ * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  * @module setupapp
  */
+'use strict';
 
 const { firestore, fbstorage } = loadModule( 'electron-firebase' )
 
@@ -100,47 +95,5 @@ async function updateUserDocs( user, appContext, appConfig )
 
 module.exports = {
     updateUserDocs: updateUserDocs
-}
-
-function makeAppDocuments( )
-{
-
-}
-
-
-async function _buildUserDocSet( user )
-{
-    /************************************************************************************
-
-    const baseDocs = makeBaseDocuments( user )
-    if ( !baseDocs ) {
-        throw( "invalid user object at buildUserRoot" )
-    }
-
-    // create the root document
-    await docRoot.set( baseDocs.root, setMergeFields )
-
-    for ( var index in collectionSet ) {
-        await addToRootCollections( collectionSet[ index ] )
-    }
-
-//    await collectionSet.forEach( async (value, index, array) => {
-//        await addToRootCollections( value )
-//    })
-
-    // put this application in the apps collection
-    await docCreate( collectionSet.apps, baseDocs.application.name, baseDocs.application )
-
-    // create new objects in the documents collection
-    await docCreate( collectionSet.docs, "profile",  baseDocs.profile ) 
-    await docCreate( collectionSet.docs, "provider", baseDocs.provider ) 
-    await docCreate( collectionSet.docs, "account",  baseDocs.account ) 
-    await docCreate( collectionSet.docs, "session",  baseDocs.session ) 
-
-    // create the files collection with a first file
-    await docCreate( collectionSet.files, "profile", baseDocs.profile )
-
-************************************************************************************/
-    return baseDocs.root
 }
 

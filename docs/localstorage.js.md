@@ -1,43 +1,19 @@
 <a name="module_local"></a>
 
 ## local
-Functions that use the localStorage capability in a BrowserWindow to store persistent information. These APIs
-run in the main node.js process and use IPC to request and transfer information from the browser. This
-feature is used in conjunction with the weblocal.js file if referenced by a BrowserWindow. weblocal.js should
-not be loaded into more than one BrowserWindow. This API is intended to mimic the localStorage API available in 
-every Browser, except the getItem() call must be asynchronous and replies with either a callback or a promise.
+Functions that use the localStorage capability in a BrowserWindow to store persistent information. These APIsrun in the main node.js process and use IPC to request and transfer information from the browser. Thisfeature is used in conjunction with the weblocal.js file if referenced by a BrowserWindow. weblocal.js shouldnot be loaded into more than one BrowserWindow. This API is intended to mimic the localStorage API available in every Browser, except the getItem() call must be asynchronous and replies with either a callback or a promise.
 
 **See**: [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)  
 
 * [local](#module_local)
-    * [setup(setPrimaryWindow, setMainIpc)](#exp_module_local--setup) ⏏
     * [setItem(key, value)](#exp_module_local--setItem) ⏏
     * [removeItem(key)](#exp_module_local--removeItem) ⏏
     * [getItem(key, [optionalCallback])](#exp_module_local--getItem) ⇒ <code>Promise.&lt;(string\|object)&gt;</code> ⏏
 
-<a name="exp_module_local--setup"></a>
-
-### setup(setPrimaryWindow, setMainIpc) ⏏
-The setup() function must be called before any other API call in this module.
-
-**Kind**: Exported function  
-**See**
-
-- [BrowserWindow](https://electronjs.org/docs/api/browser-window)
-- [ipcMain](https://electronjs.org/docs/api/ipc-main)
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| setPrimaryWindow | <code>BrowserWindow</code> | The primary application window that will be kept open |
-| setMainIpc | <code>ipcMain</code> | The main process IPC connection |
-
 <a name="exp_module_local--setItem"></a>
 
 ### setItem(key, value) ⏏
-When passed a key name and value, will add that key to the Storage object, or update that 
-key's value if it already exists. This function will not confirm that the key and value
-were written to the BrowserWindow localStorage.
+When passed a key name and value, will add that key to the Storage object, or update that key's value if it already exists. This function will not confirm that the key and valuewere written to the BrowserWindow localStorage.
 
 **Kind**: Exported function  
 **See**: [localStorage setItem()](https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem)  
@@ -50,8 +26,7 @@ were written to the BrowserWindow localStorage.
 <a name="exp_module_local--removeItem"></a>
 
 ### removeItem(key) ⏏
-When passed a key name, will remove that key from the Storage object if it exists. If there 
-is no item associated with the given key, this function will do nothing.
+When passed a key name, will remove that key from the Storage object if it exists. If there is no item associated with the given key, this function will do nothing.
 
 **Kind**: Exported function  
 **See**: [localStorage removeItem()](https://developer.mozilla.org/en-US/docs/Web/API/Storage/removeItem)  

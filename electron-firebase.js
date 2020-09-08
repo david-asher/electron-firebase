@@ -1,10 +1,10 @@
 /* electron-firebase.js
- * Copyright (c) 2019 by David Asher, https://github.com/david-asher
+ * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  */
 'use strict';
 
 /**
- * High-level functions for quickly building the main application.
+ * API interface to electron-firebase, pulls in all needed modules
  * @module electron-firebase
  */
 

@@ -5,6 +5,9 @@ package-lock.json
 .DS_Store
 settings.json
 
+# comment the following to update the files
+config/firebase-config.json
+
 # Logs
 logs
 *.log

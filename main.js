@@ -2,6 +2,9 @@
  * electron-firebase
  * This is a quickstart template for building Firebase authentication workflow into an electron app
  * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
+ * 
+ * Read about Electron security:
+ * https://www.electronjs.org/docs/tutorial/security
  */
 'use strict';
 

@@ -12,7 +12,7 @@ const queryParams = new URLSearchParams( location.search )
 
 function getQueryParam( paramName )
 {
-    return queryParams.get( paramName )
+   return queryParams.get( paramName )
 }
 
 function getTrueQueryParam( paramName )

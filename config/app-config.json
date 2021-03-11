@@ -2,15 +2,17 @@
     "debugMode": false,
     "webapp": {
         "port": "3090",
-        "folderPath": "/pages/",
+        "hostPort": "localhost:3090",
         "hostUrl": "https://localhost:3090",
+        "folderPath": "/pages/",
         "loginStart": "pages/loginstart.html",
         "loginRedirect": "pages/logincomplete.html",
         "splashPage": "pages/splashpage.html",
         "mainPage": "pages/index.html",
         "firstWidth": 1000,
         "firstHeight": 800,
-        "persistentUser": true
+        "persistentUser": true,
+        "ContentSecurityPolicy": "default-src 'self'; script-src 'self';"
     },
     "webFolders": [
         "pages",

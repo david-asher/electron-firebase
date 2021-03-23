@@ -1,9 +1,7 @@
 
 
 Content Security Policy
-    removed inline scripts, inline styles from html files (jquery, bootstrap, and fontawesome )
-    index.html moved third party libraries to local files
-    static hosted folder use Content-Security-Policy header
+    static hosted folder uses Content-Security-Policy header
 
 app-config.json
     added ContentSecurityPolicy parameter

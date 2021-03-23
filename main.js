@@ -68,7 +68,12 @@ mainapp.event.once( "user-login", (user) =>
 mainapp.event.once( "user-ready", async ( user ) => 
 {
     logwrite( "EVENT user-ready: ", user.displayName )
-    await updateUserDocs( user, global.appContext, global.appConfig )
+
+
+///////////    await updateUserDocs( user, global.appContext, global.appConfig )
+
+
+
     mainapp.sendToBrowser( 'app-ready' )
 })
 

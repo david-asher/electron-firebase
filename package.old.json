@@ -19,16 +19,14 @@
   "dependencies": {
     "@google-cloud/storage": "^5.1.2",
     "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
     "electron": "^12.0.0",
     "electron-rebuild": "^2.3.5",
     "express": "^4.17.1",
     "fast-crc32c": "^2.0.0",
     "firebase": "^8.2.10",
-    "firebaseui": "^4.7.3",
+    "firebaseui": "^4.8.0",
     "grpc": "^1.24.3",
     "helmet": "^4.4.1",
-    "https": "^1.0.0",
     "selfsigned": "^1.10.8",
     "url": "^0.11.0"
   },

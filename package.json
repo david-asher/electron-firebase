@@ -24,7 +24,7 @@
     "express": "^4.17.1",
     "fast-crc32c": "^2.0.0",
     "firebase": "^8.2.10",
-    "firebaseui": "^4.7.3",
+    "firebaseui": "^4.8.0",
     "grpc": "^1.24.3",
     "helmet": "^4.4.1",
     "selfsigned": "^1.10.8",

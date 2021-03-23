@@ -2,8 +2,9 @@
   <html>
     <head>
       <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'nonce-3f98c07a4b'; img-src 'self' 'nonce-3f98c07a4b' ">
       <title>Splash Page for Electron-Firebase Quickstart</title>
-      <style>
+      <style nonce="3f98c07a4b">
         html, body {height:100%;}
         html {display:table; width:100%;}
         body {display:table-cell; text-align:center; vertical-align:middle;}
@@ -28,8 +29,8 @@
     </head>
     <body>
       <div>
-        <img class="logobox" src="electron-logo.png">
-        <img class="logobox" src="firebase-logo.png">
+        <img class="logobox" src="electron-logo.png" nonce="3f98c07a4b">
+        <img class="logobox" src="firebase-logo.png" nonce="3f98c07a4b">
         <p class="loader"></p>
       </div>
     </body>

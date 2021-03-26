@@ -1,5 +1,5 @@
 {
-    "debugMode": true,
+    "debugMode": false,
     "webapp": {
         "port": "3090",
         "hostPort": "localhost:3090",

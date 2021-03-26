@@ -73,8 +73,11 @@ async function updateUserDocs( user, appContext, appConfig )
 
         const myProfile = await fbstorage.file.about( "aboutme/MyProfile" )
 
+console.log( "userDocs: ", userDocs )
+
         if ( !myProfile || !myProfile.exists ) {
             await fbstorage.file.upload( "aboutme/MyProfile", userDocs.profile )
+/*
             await fbstorage.file.upload( "aboutme/MyAccount", userDocs.account )
             await fbstorage.file.upload( "/info/first/second/MyProfile", userDocs.profile )
             await fbstorage.file.upload( "/info/MyProvider", userDocs.provider )
@@ -86,7 +89,10 @@ async function updateUserDocs( user, appContext, appConfig )
     
             await fbstorage.public.upload( "account/my-session", userDocs.session )
             await fbstorage.public.upload( "info/MyProvider", userDocs.provider )  
+*/
         }
+
+
     }
     catch (error) {
         console.error( error )

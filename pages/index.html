@@ -34,7 +34,7 @@
     <body>
       <div class="alert alert-secondary" role="alert">
         <h2>Electron-Firebase Quickstart Cloud Framework</h2>
-        <button type="button" class="btn btn-warning btn-sm" onclick="signout()">Sign Out</button>
+        <button type="button" class="btn btn-warning btn-sm btn-user-action" value="signout">Sign Out</button>
       </div>
       <div id="main-window-content" class="d-none">
         <div class="container border border-info rounded text-info m-3 p-3 vw-100">
@@ -116,13 +116,8 @@
         </div>
       </div>
 
-      <!--
-      <script src="/scripts/index-functions.js"></script>
-
-      -->
-
       <script nonce="3f98c07a4b"> 
-         // functions for interacting with main app, note that ipc is defined in weblocal.js
+      // functions for interacting with main app, note that ipc is defined in weblocal.js
 
       function signout() 
       {
@@ -223,10 +218,6 @@
         // send the info-request back to the main app, and 
         // stuff each response into a table row
         const response = await askMain( 'info-request', request, parameter )
-
-console.log( "askMain: ", request, parameter )
-console.log( "askMain: response = ", response)
-
         Object.entries(response).forEach( ([key,value]) => {
           createTableRow( table, key, value )
         })
@@ -257,9 +248,6 @@ console.log( "askMain: response = ", response)
 
         // request back to main for the folder list
         const response = await askMain( "info-request", "folder-list", domain )
-
-console.log( "setFolderList response = ", response )
-
         insertSpinner( navColumn, false )
         await response.forEach( (element) => {
           createNavLink( navColumn, element )
@@ -291,9 +279,6 @@ console.log( "setFolderList response = ", response )
 
       function setFileList( fileList )
       {
-
-console.log( "setFileList = ", fileList )
-
         var tableBody = setFileList.fileTable.find('.tableBody')
         tableBody.empty()
         fileList.forEach( (element) => {
@@ -329,6 +314,16 @@ console.log( "setFileList = ", fileList )
           showSpinner( setFileList.filesDiv, "hide" )
         })
       })
+
+      // trigger any class=btn-user-action button basedon its value parameter
+      $('.btn-user-action').on('click', function() 
+      {
+        switch( $(this).val() ) {
+          case 'signout': 
+            signout() 
+            break
+        }
+      });
 
       $(document).on( "click", "a.fa-file-text", async (event) =>
       {
@@ -392,7 +387,7 @@ console.log( "setFileList = ", fileList )
           // populate the folder list
           setFolderList()
       })
-
+   
       </script>
   
     </body>

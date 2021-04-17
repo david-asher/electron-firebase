@@ -12,16 +12,7 @@
         "mainPage": "pages/index.html",
         "firstWidth": 1000,
         "firstHeight": 800,
-        "persistentUser": true,
-        "ContentSecurityPolicy": [
-            "default-src 'self' ",
-            "script-src 'self' 'nonce-3f98c07a4b' *.bootstrapcdn.com code.jquery.com *.google.com *.firebaseapp.com *.cloudfunctions.net *.youtube.com ",
-            "img-src 'self' *.gstatic.com ",
-            "style-src 'self' 'unsafe-inline' *.bootstrapcdn.com *.googleapis.com *.gstatic.com ",
-            "font-src 'self' *.bootstrapcdn.com *.googleapis.com *.gstatic.com ",
-            "connect-src 'self' *.google.com *.googleapis.com *.firebaseapp.com *.youtube.com ",
-            "frame-src 'self' *.google.com *.googleapis.com *.firebaseapp.com "
-        ]
+        "persistentUser": true
     },
     "webFolders": [
         "pages",

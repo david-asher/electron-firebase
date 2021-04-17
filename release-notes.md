@@ -15,3 +15,6 @@ webserver.js
 windows.js
     webPreferences: now specifying contextIsolation and enableRemoteModule
 
+TO DO:
+* move parameters to content-security-policy.json
+* separate modal window code in index.html

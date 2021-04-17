@@ -180,10 +180,7 @@
       
       function makeImageElement( url )
       {
-        var image = $('<img>')
-        image.attr( 'src', url )
-        image.attr( 'height', 128 )
-        return image
+        return $(`<img src="${url}" alt="${url}" height="128" >`)
       }
 
       function makeJsonElement( arg )

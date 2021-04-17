@@ -1,0 +1,56 @@
+{
+    "default-src": [
+        "'self'"
+    ],
+    "script-src": [
+        "'self'",
+        "'nonce-3f98c07a4b'",
+        "*.bootstrapcdn.com", 
+        "code.jquery.com",
+        "*.google.com",
+        "*.firebaseapp.com",
+        "*.cloudfunctions.net",
+        "*.youtube.com",
+        "*.fbcdn.net",
+        "*.facebook.com"
+    ],
+    "style-src": [
+        "'self'",
+        "'nonce-3f98c07a4b'",
+        "*.bootstrapcdn.com",
+        "*.googleapis.com",
+        "*.gstatic.com",
+        "*.fbcdn.net"
+    ], 
+    "img-src": [
+        "'self'",
+        "*.gstatic.com",
+        "*.googleusercontent.com",
+        "*.githubusercontent.com",
+        "*.twimg.com",
+        "*.fbcdn.net",
+        "*.facebook.com"
+    ],
+    "font-src": [
+        "'self'",
+        "*.bootstrapcdn.com",
+        "*.googleapis.com",
+        "*.gstatic.com",
+        "*.fbcdn.net"
+    ], 
+    "connect-src": [
+        "'self'",
+        "*.google.com",
+        "*.googleapis.com",
+        "*.firebaseapp.com",
+        "*.youtube.com",
+        "*.facebook.com"
+    ], 
+    "frame-src": [
+        "'self'",
+        "*.google.com",
+        "*.googleapis.com",
+        "*.firebaseapp.com",
+        "*.facebook.com"
+    ]
+}

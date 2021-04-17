@@ -1,13 +1,14 @@
 {
-    "functions": {
-        "source": "functions"
-    },
-    "firestore": {
-        "rules": "config/cloud-firestore.rules"
-    },
-    "storage": [{
-        "rules": "config/firebase-storage.rules",
-        "bucket": null
-      }
-    ]
+  "functions": {
+    "source": "functions"
+  },
+  "firestore": {
+    "rules": "config/cloud-firestore.rules"
+  },
+  "storage": [
+    {
+      "rules": "config/firebase-storage.rules",
+      "bucket": ""
+    }
+  ]
 }

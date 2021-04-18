@@ -1,4 +1,6 @@
 /* index.js
+ * Copyright (c) 2019-2021 by David Asher, https://github.com/david-asher
+ *
  * This cloud function must be deployed to the firebase account in order to 
  * pass a custom token back to the main app (node.js) after a browser-based 
  * login completes, so that the main app can sign in with the same user

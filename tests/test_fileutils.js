@@ -91,6 +91,7 @@ async function testallFunctions()
 
     // checkCommand( commandString )
     console.log( ">> checkCommand" )
+
     assert( file.checkCommand( "mkdir" ) )
     assert( !file.checkCommand( "doesNotExist" ) )
 

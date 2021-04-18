@@ -1,20 +1,31 @@
 
+# Release 1.1.0 (April 2021)
 
-Content Security Policy
-    static hosted folder uses Content-Security-Policy header
+## Content Security Policy
+* applied to all HTML pages
+* configured in config/content-security-profile.json file
+* static hosted web folders use Content-Security-Policy header on HTML pages
 
-app-config.json
-    added ContentSecurityPolicy parameter
-    added hostPort parameter
+## updates
+* package.json dependencies
 
-webserver.js 
-    removed body-parser as independent npm module
-    app security check fix for referrer in header
-    Content-Security-Policy header
+## module changes
 
-windows.js
-    webPreferences: now specifying contextIsolation and enableRemoteModule
+### app-config.json
+* added hostPort parameter
+
+### webserver.js 
+* removed body-parser as independent npm module
+* app security check fix for referrer in header
+* Content-Security-Policy header
+
+### windows.js
+* webPreferences: now specifying contextIsolation and enableRemoteModule
+
+## tested OS support
+* Windows 10 Build 19041.928
 
 TO DO:
-* move parameters to content-security-policy.json
-* separate modal window code in index.html
+* update copyright notices
+* Linux 
+* Mac 

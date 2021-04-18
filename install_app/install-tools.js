@@ -1,5 +1,5 @@
 /* install-tools.js
- * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
+ * Copyright (c) 2019-2021 by David Asher, https://github.com/david-asher
  *
  * Helper functions for other install scripts. 
  */

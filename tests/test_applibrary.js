@@ -73,12 +73,12 @@ async function testallFunctions()
 
     // set up a route for GET and a route for POST, then test if a GET retreives
     // the same content that was sent with a POST
-    global.router.post( "/api/test/newdoc", (req, res, next ) => 
+    global.apiRouter.post( "/api/test/newdoc", (req, res, next ) => 
     {
         newDoc = req.body
         res.status( 200 ).send()
     })
-    global.router.get( "/api/test/olddoc", (req, res, next ) => 
+    global.apiRouter.get( "/api/test/olddoc", (req, res, next ) => 
     {
         res.json( newDoc )
     })

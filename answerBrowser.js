@@ -1,7 +1,8 @@
 /* answerBrowser.js
+ * Copyright (c) 2019-2021 by David Asher, https://github.com/david-asher
+ *
  * This is a quickstart template for building Firebase authentication workflow into an electron app
  * This module contains functions that respond to queries from the Browser
- * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
  * @module answerBrowser
  */
 'use strict';

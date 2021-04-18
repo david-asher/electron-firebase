@@ -1,5 +1,5 @@
 /* postinstall.js
- * Copyright (c) 2019-2020 by David Asher, https://github.com/david-asher
+ * Copyright (c) 2019-2021 by David Asher, https://github.com/david-asher
  *
  * post-installation script for electron-firebase
  */

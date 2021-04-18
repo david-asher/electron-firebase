@@ -9,6 +9,44 @@ and an example application, and it spans both worlds of the Browser JavaScript e
 environment. As such, it will install several folders and files into the root of the NPM application that form
 the example application, which you are encouraged to modify for your own purposes.
 
+- [electron-firebase](#electron-firebase)
+  - [What Electron-Firebase provides for you](#what-electron-firebase-provides-for-you)
+  - [Opinionated](#opinionated)
+  - [NOT opinionated](#not-opinionated)
+  - [Platform support](#platform-support)
+- [Installation Process Overview](#installation-process-overview)
+  - [Create a Firebase project](#create-a-firebase-project)
+  - [Enable Firebase Custom Tokens](#enable-firebase-custom-tokens)
+  - [Enable the IAM API](#enable-the-iam-api)
+  - [Setup Identity Providers](#setup-identity-providers)
+  - [Electron-Firebase Module Installation](#electron-firebase-module-installation)
+  - [Edit firebase-config.json parameters](#edit-firebase-configjson-parameters)
+    - [Firebase project settings](#firebase-project-settings)
+    - [Firebase hosting URL](#firebase-hosting-url)
+    - [Service account](#service-account)
+  - [Deploy security rules and cloud functions](#deploy-security-rules-and-cloud-functions)
+  - [Add authorized domain](#add-authorized-domain)
+  - [Setup identity providers](#setup-identity-providers-1)
+    - [Create an "app" in the identity provider](#create-an-app-in-the-identity-provider)
+    - [Configure the identity provider in Firebase](#configure-the-identity-provider-in-firebase)
+    - [Exchange App ID and Secret](#exchange-app-id-and-secret)
+    - [Enter the redirect URL at the identity provider](#enter-the-redirect-url-at-the-identity-provider)
+    - [Modify app-config.json "providers"](#modify-app-configjson-providers)
+- [Configuration files](#configuration-files)
+  - [config/firebase-config.json](#configfirebase-configjson)
+  - [config/app-config.json](#configapp-configjson)
+    - [debugMode](#debugmode)
+    - [webapp](#webapp)
+    - [webFolders](#webfolders)
+    - [apis](#apis)
+    - [logout](#logout)
+  - [providers](#providers)
+  - [config/content-security-policy.json](#configcontent-security-policyjson)
+- [The example application](#the-example-application)
+  - [Start the example application](#start-the-example-application)
+  - [Example application files and structure](#example-application-files-and-structure)
+- [API documentation](#api-documentation)
+
 ## What Electron-Firebase provides for you
 * An authentication workflow within an application context for many identity providers, including phone and email
 * Authentication persistence, so that a user can launch your app at any time without signing in again
@@ -47,7 +85,7 @@ of authentication, database, and storage.
 Electron-Firebase has been tested on:
 * Ubuntu Linux 20.04.1 LTS (Focal Fossa)
 * Apple Mac OS 10.15.5 (Catalina)
-* Microsoft Windows 10 Home version 1903
+* Microsoft Windows 10 Home
 
 # Installation Process Overview
 Although Electron-Firebase is an NPM module, there is some preparation to complete before it can be installed. 
@@ -219,30 +257,13 @@ Facebook as an example. The other identity providers will have very similar proc
     * microsoft.com
     * yahoo.com
 
-# The example application
-The npm install process copies an example application to your project folder. This application 
-generates some data sets based on the user's authentication profile, and allows the user to view that 
-information in the Firestore database or Firebase Cloud Storage. 
+# Configuration files
 
-## Start the example application
-To run the example application:
-```
-npm start
-```
+## config/firebase-config.json
+> **WARNING**: These file parameters must be changed to support your unique firebase project. 
+For details, see section: [Edit firebase-config.json parameters](#edit-firebase-config.json-parameters)
 
-## Example application files and structure
-The example application installs the following folders and files, which you are free to modify. When performing
-a subsequent npm install, any modified example application files will not be overwritten, so if you want to get the 
-newest version before an update you should change the names of the modified files.
-* /config - configuration files for your application
-* /functions - functions to be deployed to the Firebase Cloud
-* /pages - top-level web server folder for HTML pages accessible to the Browser
-* /scripts - top-level web server folder for JavaScript modules to the Browser
-* main.js - the example application main file and overall program structure
-* answerBrowser.js - app support file, functions that export APIs used by the Browser
-* setupApp.js - app support file that generates example data sets on startup
-
-## The app-config.json file
+## config/app-config.json
 A number of parameters may be modified in the __./config/app-config.json__ file. Changing some of them could
 cause your application to stop working if they are not coordinated with application code changes. 
 
@@ -270,6 +291,36 @@ as a way to perform a "deep logout".
 ## providers
 This list determines which choices for identity provider will be presented to the user. So this list must be
 modified to match the set of identity providers to be supported by your application.
+
+## config/content-security-policy.json
+The web pages in electron-firebase define [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 
+so they may securely be used with foreign scripts and pages, which is a critical component of the signin process. 
+Managing complex Content Security Policy strings can be challenging, so electron-firebase provides this configuration file
+so that you can list all of the elements individually. 
+> **WARNING**: If you add new identify providers, you will probably need to add their web asset URLs to this file. 
+
+# The example application
+The npm install process copies an example application to your project folder. This application 
+generates some data sets based on the user's authentication profile, and allows the user to view that 
+information in the Firestore database or Firebase Cloud Storage. 
+
+## Start the example application
+To run the example application:
+```
+npm start
+```
+
+## Example application files and structure
+The example application installs the following folders and files, which you are free to modify. When performing
+a subsequent npm install, any modified example application files will not be overwritten, so if you want to get the 
+newest version before an update you should change the names of the modified files.
+* /config - configuration files for your application
+* /functions - functions to be deployed to the Firebase Cloud
+* /pages - top-level web server folder for HTML pages accessible to the Browser
+* /scripts - top-level web server folder for JavaScript modules to the Browser
+* main.js - the example application main file and overall program structure
+* answerBrowser.js - app support file, functions that export APIs used by the Browser
+* setupApp.js - app support file that generates example data sets on startup
 
 # API documentation
 Typical usage of the APIs:

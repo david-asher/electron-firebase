@@ -4,7 +4,6 @@
     ],
     "script-src": [
         "'self'",
-        "'nonce-3f98c07a4b'",
         "*.bootstrapcdn.com", 
         "code.jquery.com",
         "*.google.com",
@@ -16,11 +15,20 @@
     ],
     "style-src": [
         "'self'",
-        "'nonce-3f98c07a4b'",
+        "*.google.com",
+        "*.firebaseapp.com",
+        "*.googleusercontent.com",
         "*.bootstrapcdn.com",
         "*.googleapis.com",
         "*.gstatic.com",
-        "*.fbcdn.net"
+        "*.fbcdn.net",
+        "'unsafe-hashes'",
+        "'sha256-O9ChnrQJngUlTYptX2rHTyPwYa4VlQslTnAyr1r9/XE='",
+        "'sha256-KPTVW5oJwjIe0y2cEU5idixe+0eH/ARZMQXuQgteCBw='",
+        "'sha256-72k6lx3PMqTD7y6xr91xeDYIj51JhoVJTrinJBHEt4I='",
+        "'sha256-jcChtzjXxOs5V2A5l2c5UkgoGcYO+8GLAdzsZqlWsq4='",
+        "'sha256-nriuFMNMno0iiUNQX9SLMKxBTaxm9WGUhrVusxfqDGA='",
+        "'sha256-0nnP5wTs7LWXCQGBE25MSDmq1ZSHQEHAnowTPyUoHXQ='"
     ], 
     "img-src": [
         "'self'",

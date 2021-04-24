@@ -5,33 +5,12 @@
       <title>Splash Page for Electron-Firebase Quickstart</title>
       <meta name="copyright" content="Copyright &copy; 2019-2021 by David Asher" />
       <meta name="author" content="David Asher, https://github.com/david-asher" />
-      <style nonce="3f98c07a4b">
-        html, body {height:100%;}
-        html {display:table; width:100%;}
-        body {display:table-cell; text-align:center; vertical-align:middle;}
-        .logobox {
-          width: 50%;
-        }
-        .loader {
-          border: 16px solid #f3f3f3;
-          border-top: 16px solid #3498db;
-          border-radius: 50%;
-          width: 80px;
-          height: 80px;
-          animation: spin 2s linear infinite;
-          margin-right: auto;
-          margin-left: auto;
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
+      <link type="text/css" rel="stylesheet" href="/scripts/splashpage_style.css" /> 
     </head>
     <body>
       <div>
-        <img class="logobox" src="electron-logo.png" nonce="3f98c07a4b">
-        <img class="logobox" src="firebase-logo.png" nonce="3f98c07a4b">
+        <img class="logobox" src="/pages/electron-logo.png" >
+        <img class="logobox" src="/pages/firebase-logo.png" >
         <p class="loader"></p>
       </div>
     </body>

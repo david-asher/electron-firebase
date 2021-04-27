@@ -25,3 +25,4 @@ settings.json
 .firebaserc
 firebase.json
 package.old.json
+.npmrc

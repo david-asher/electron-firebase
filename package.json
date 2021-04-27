@@ -58,8 +58,5 @@
     "electron-firebase.js",
     "main.js",
     "setupApp.js"
-  ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  }
+  ]
 }

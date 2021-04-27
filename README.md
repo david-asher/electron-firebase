@@ -34,6 +34,7 @@ the example application, which you are encouraged to modify for your own purpose
     - [Modify app-config.json "providers"](#modify-app-configjson-providers)
 - [Configuration files](#configuration-files)
   - [config/firebase-config.json](#configfirebase-configjson)
+  - [config/content-security-policy.json](#configcontent-security-policyjson)
   - [config/app-config.json](#configapp-configjson)
     - [debugMode](#debugmode)
     - [webapp](#webapp)
@@ -41,7 +42,6 @@ the example application, which you are encouraged to modify for your own purpose
     - [apis](#apis)
     - [logout](#logout)
   - [providers](#providers)
-  - [config/content-security-policy.json](#configcontent-security-policyjson)
 - [The example application](#the-example-application)
   - [Start the example application](#start-the-example-application)
   - [Example application files and structure](#example-application-files-and-structure)
@@ -83,9 +83,9 @@ of authentication, database, and storage.
 
 ## Platform support
 Electron-Firebase has been tested on:
-* Ubuntu Linux 20.04.1 LTS (Focal Fossa)
-* Apple Mac OS 10.15.5 (Catalina)
-* Microsoft Windows 10 Home
+* Ubuntu Linux 20.04.2 LTS (Focal Fossa)
+* Apple Mac OS 11.3 (Big Sur)
+* Microsoft Windows 10 Home 20H2
 
 # Installation Process Overview
 Although Electron-Firebase is an NPM module, there is some preparation to complete before it can be installed. 
@@ -260,8 +260,16 @@ Facebook as an example. The other identity providers will have very similar proc
 # Configuration files
 
 ## config/firebase-config.json
-> **WARNING**: These file parameters must be changed to support your unique firebase project. 
+> **IMPORTANT**: These file parameters must be changed to support your unique firebase project. 
 For details, see section: [Edit firebase-config.json parameters](#edit-firebase-config.json-parameters)
+
+## config/content-security-policy.json
+> **IMPORTANT**: If you add new identify providers, you will probably need to add their web asset URLs to this file. 
+The web pages in electron-firebase define [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 
+so they may securely be used with foreign scripts and pages, which is a critical component of the signin process. 
+Managing complex Content Security Policy strings can be challenging, so electron-firebase provides this configuration file
+so that you can list all of the elements individually. Note that there are several style-src 'unsafe-hash' entries which
+are compensating for the firebasui web page having a few inline style elements.
 
 ## config/app-config.json
 A number of parameters may be modified in the __./config/app-config.json__ file. Changing some of them could
@@ -269,10 +277,14 @@ cause your application to stop working if they are not coordinated with applicat
 
 ### debugMode
 Set this value to __true__ to enable debug mode: some log messages will be visible, network calls with be logged, 
-and Browser windows will be opened in developer/debug mode.
+and Browser (renderer) windows will be opened in developer/debug mode.
 
 ### webapp
-You can leave an existing file in place, and employ a new file, by changing the page path parameters.
+These keys describe some critical operating parameters like the localhost port. Most of the filenames and paths are
+shared information between the main process and renderer. "persistentUser" enables the renderer (Browser) process 
+to securely store a token that persists the firebase user identity between sessions, which makes sense for an app 
+that stays resident on a private computer. If your app is intended to be used in a public or shared context, you may 
+want to set "persistentUser" to false which will force a login every time the app is started.
 
 ### webFolders
 Electron-Firebase operates a TLS web server within the Main node.js process that hosts APIs that the Browser 
@@ -281,7 +293,9 @@ script on the web server.
 
 ### apis
 These entries are localhost URLs that the Browser uses to make API requests to the Main process. You shouldn't
-modify these, but it's a way to keep consistent API definitions between the Browser and Main processes.
+modify these, but it's a way to keep consistent API definitions between the Browser and Main processes. You can
+use this mechanism if you would like to add custom Main process apis that can be accessed by the Browser, or in fact
+by any other application with access to localhost.
 
 ### logout
 There are really two levels of sign-in and two levels of sign-out - the Firebase application, and the identity
@@ -291,13 +305,6 @@ as a way to perform a "deep logout".
 ## providers
 This list determines which choices for identity provider will be presented to the user. So this list must be
 modified to match the set of identity providers to be supported by your application.
-
-## config/content-security-policy.json
-The web pages in electron-firebase define [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 
-so they may securely be used with foreign scripts and pages, which is a critical component of the signin process. 
-Managing complex Content Security Policy strings can be challenging, so electron-firebase provides this configuration file
-so that you can list all of the elements individually. 
-> **WARNING**: If you add new identify providers, you will probably need to add their web asset URLs to this file. 
 
 # The example application
 The npm install process copies an example application to your project folder. This application 

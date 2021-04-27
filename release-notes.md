@@ -2,12 +2,11 @@
 # Release 1.1.0 (April 2021)
 
 ## Content Security Policy
-* applied to all HTML pages
-* configured in config/content-security-profile.json file
-* static hosted web folders use Content-Security-Policy header on HTML pages
+* CSP is now applied to all HTML pages
+* The policies are configured in the config/content-security-profile.json file
 
 ## updates
-* package.json dependencies
+* package.json dependencies, as of April 2021
 
 ## module changes
 
@@ -21,11 +20,3 @@
 
 ### windows.js
 * webPreferences: now specifying contextIsolation and enableRemoteModule
-
-## tested OS support
-* Windows 10 Build 19041.928
-
-TO DO:
-* update copyright notices
-* Linux 
-* Mac 

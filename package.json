@@ -1,7 +1,7 @@
 {
   "name": "electron-firebase",
   "productName": "Electron-Firebase Quickstart Framework",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "framework for building firebase cloud authentication and database in an electron app",
   "main": "electron-firebase.js",
   "config": {

@@ -1,5 +1,13 @@
 
-# Release 1.1.0 (April 2021)
+
+# Release 1.4.0 (May 2021)
+
+## localsecrets
+* new module and API for saving data in encrypted storage
+
+## post-install build stability
+
+# Release 1.2.0 (April 2021)
 
 ## Content Security Policy
 * CSP is now applied to all HTML pages

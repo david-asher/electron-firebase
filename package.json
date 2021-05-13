@@ -9,7 +9,7 @@
   },
   "scripts": {
     "preinstall": "node ./install_app/preinstall.js",
-    "postinstall": "node ./install_app/postinstall.js",
+    "postinstall": "node --trace-warnings --trace-deprecation ./install_app/postinstall.js",
     "start": "electron ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
@@ -17,21 +17,25 @@
     "deploy": "node ./config/firebase-deploy.js"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.1.2",
     "axios": "^0.21.1",
-    "electron": "^12.0.4",
-    "electron-rebuild": "^2.3.5",
+    "electron-store": "^8.0.0",
     "express": "^4.17.1",
     "fast-crc32c": "^2.0.0",
-    "firebase": "^8.4.1",
+    "firebase": "^8.5.0",
     "firebaseui": "^4.8.0",
-    "grpc": "^1.24.3",
-    "helmet": "^4.5.0",
-    "selfsigned": "^1.10.8",
+    "helmet": "^4.6.0",
+    "keytar": "^7.7.0",
+    "node-machine-id": "^1.1.12",
+    "selfsigned": "^1.10.11",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jsdoc-to-markdown": "^7.0.0"
+    "@mapbox/node-pre-gyp": "^1.0.4",
+    "electron": "^12.0.7",
+    "electron-rebuild": "^2.3.5",
+    "firebase-tools": "^9.10.2",
+    "jsdoc-to-markdown": "^7.0.0",
+    "node-gyp": "^8.0.0"
   },
   "repository": {
     "type": "git",

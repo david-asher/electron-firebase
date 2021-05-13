@@ -14,7 +14,8 @@ const topLevelFolders = [
     "config",
     "pages",
     "scripts",
-    "functions"
+    "functions",
+    "logs"
 ]
 
 const appFileList = [
@@ -55,8 +56,7 @@ function postInstall()
     // leave the package-update.json file with newer modified time so the next update can check it
     it.touchFile( updateFile )
 
-    console.log( "** Installing firebase-tools, required to deploy functions to the cloud." )
-    it.installApp( 'firebase-tools', "npm install -g firebase-tools", true )
+    console.log( "** Installation complete, enter 'npm start' to start the sample app." )
 }
 
 (function ()

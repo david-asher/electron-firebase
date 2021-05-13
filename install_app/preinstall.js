@@ -14,5 +14,4 @@ const { env } = require( 'process' );
     env.npm_config_loglevel = "error"
     console.log( "Please be patient, electron and firebase are large projects and installation may take a few minutes." )
     it.makeNpmGlobal( ".npm-global" )
-    it.installApp( 'node-gyp', "npm install -g node-gyp", true )
 })()

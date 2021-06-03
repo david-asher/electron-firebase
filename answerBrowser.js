@@ -47,8 +47,8 @@ async function getDocs( filename )
 }
 
 async function listFolders( domain = "file" )
-// domain is file | app | public
 {
+    // domain is file | app | public
     var folderList
     try {
         folderList = await fbstorage[ domain ].folders()

@@ -38,24 +38,24 @@ const { updateUserDocs } = loadModule('setupApp')
 
 // Some startup code
 
-!function() 
+async function configureApp() 
 {
     // call this instead of console.log, so output will be suppressed if debugMode isn't set
     global.logwrite = function( ...stuff ) {}
 
     // one call to setup the electron-firebase framework
-    mainapp.setupAppConfig()
-
+    await mainapp.setupAppConfig()
     if ( !global.appConfig.debugMode ) return
 
     // show all warnings, comment this line of it's too much for you
     process.on('warning', e => console.warn(e.stack));
 
+    // the replacement log function
     global.logwrite = function( ...stuff )
     {
         console.log.apply( null, stuff )
     }
-}()
+}
 
 // electron-firebase framework event handling
 
@@ -103,6 +103,8 @@ mainapp.event.once( "main-window-ready", (window) =>
 // see: https://www.electronjs.org/docs/api/app#event-ready
 app.on( 'ready', async (launchInfo) => 
 {
+    await configureApp() 
+
     logwrite( "EVENT app ready" )
     global.launchInfo = launchInfo | {}
     try {

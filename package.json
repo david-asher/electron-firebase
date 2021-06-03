@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "node ./install_app/preinstall.js",
     "postinstall": "node --trace-warnings --trace-deprecation ./install_app/postinstall.js",
-    "start": "electron ./main.js",
+    "start": "electron --trace-warnings ./main.js",
     "test": "electron ./tests/main_test_all.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "gendocs": "node ./developer/gendocs.js",
@@ -18,10 +18,11 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "electron": "^13.0.1",
     "electron-store": "^8.0.0",
     "express": "^4.17.1",
     "fast-crc32c": "^2.0.0",
-    "firebase": "^8.5.0",
+    "firebase": "^8.6.3",
     "firebaseui": "^4.8.0",
     "helmet": "^4.6.0",
     "keytar": "^7.7.0",
@@ -30,12 +31,12 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.4",
-    "electron": "^12.0.7",
+    "@mapbox/node-pre-gyp": "^1.0.5",
     "electron-rebuild": "^2.3.5",
-    "firebase-tools": "^9.10.2",
+    "firebase-tools": "^9.12.0",
     "jsdoc-to-markdown": "^7.0.0",
-    "node-gyp": "^8.0.0"
+    "node-abi": "^2.30.0",
+    "node-gyp": "^8.1.0"
   },
   "repository": {
     "type": "git",

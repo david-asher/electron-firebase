@@ -175,8 +175,14 @@ function firebaseAuthUIStart( fbConfig, idpConfig )
     fbConfig.providers.forEach( ( provider ) => {
         uiConfig.signInOptions.push( idpConfig[ provider ] )
     })
-    var ui = new firebaseui.auth.AuthUI( firebase.auth() )
-    ui.start('#firebaseui-auth-container', uiConfig)
+
+    try {
+        var ui = new firebaseui.auth.AuthUI( firebase.auth() )
+        ui.start('#firebaseui-auth-container', uiConfig)
+    }
+    catch (error) {
+        console.error( "firebaseui.auth.AuthUI error = ", error )
+    }
 }
 
 async function checkForPersistentUser()

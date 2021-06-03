@@ -4,6 +4,9 @@
  * This is a quickstart template for building Firebase authentication workflow into an electron app
  * This module contains functions that help to initialize or update the application
  * @module setupapp
+ * 
+ * You app probably doesn't want any of these functions, but they are examples of reading
+ * and writing user information to the firestore DB and firebase cloud storage
  */
 'use strict';
 

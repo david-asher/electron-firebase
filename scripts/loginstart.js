@@ -58,6 +58,7 @@ async function startApplication( fbConfig )
 
         // we must make a decision: if there is a persistent user then do not start the login workflow
         const foundUser = await checkForPersistentUser()
+
         if ( !foundUser ) {
             throw( "NO USER" )
         }
@@ -82,6 +83,6 @@ document.onreadystatechange = function ()
     api( 'GET', getQueryParam( "firebaseconfig" ), null )
     .then( startApplication )
     .catch( (error) => {
-        alert( "ERROR getting app configuration, please restart application" )
+        alert( "ERROR getting app configuration, please restart application; " + error )
     })
 }

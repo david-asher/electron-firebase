@@ -89,6 +89,9 @@ async function infoRequest( request, ...parameters )
     case 'file-list':
         sendContent = await listFiles( parameters[0], parameters[1] )
         break
+    default:
+        console.error( "infoRequest unknown: ", request, parameters )
+        return
     }
     mainapp.sendToBrowser( 'info-request', sendContent )
 }

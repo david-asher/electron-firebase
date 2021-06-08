@@ -63,6 +63,11 @@ async function setFolderList()
   navColumn.find(".nav-link").remove()
   insertSpinner( navColumn, true )
 
+  // don't show the file list
+  setFileList.filesDiv = $("#nav-folder-files")
+  setFileList.fileTable = setFileList.filesDiv.find( ".table" )
+  setFileList( [] )
+
   // request back to main for the folder list
   const response = await askMain( "info-request", "folder-list", domain )
   insertSpinner( navColumn, false )

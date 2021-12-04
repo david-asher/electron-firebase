@@ -12,6 +12,7 @@
         "splashPageTimeout": 2,
         "firstWidth": 1000,
         "firstHeight": 800,
+        "userAgent": "Chrome",
         "persistentUser": true
     },
     "webFolders": [

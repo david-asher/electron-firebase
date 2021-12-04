@@ -212,5 +212,5 @@ document.onreadystatechange = function ()
 
       // populate the folder list
       setFolderList()
-  })
+    })
 }

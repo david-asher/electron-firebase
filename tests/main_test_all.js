@@ -173,7 +173,7 @@ app.on( 'ready', async (launchInfo) =>
         await mainapp.startMainApp({
             title:  "TEST Window: " + global.fbConfig.projectId,
             open_html: "tests/testpage_local.html",
-            show: true, ///////////////////////////////////////// false,
+            show: false,
             movable: false,
             resizable: false
         })

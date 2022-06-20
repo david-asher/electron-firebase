@@ -128,7 +128,7 @@ your project's service account as follows.
 It may take a few minutes for this status to be propagated to your project.
 
 ## Setup Identity Providers
-configure facebook
+Configure facebook
 https://developers.facebook.com/apps/
 Products --> Settings --> Client OAuth Settings
 paste: Valid OAuth Redirect URIs
